@@ -48,7 +48,7 @@ app.get('/user/addEmpresa', async (req, res) =>{
     res.sendFile(__dirname+'/src/CadastroEmpresa.html')
 })
 
-app.get('/user/controleEmpresa', async (req, res) => {
+app.get('/admin/empresa', async (req, res) => {
     res.sendFile(__dirname+'/src/ControleEmpresa.html')
 });
 //Outros
