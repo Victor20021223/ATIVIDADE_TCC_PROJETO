@@ -8,42 +8,8 @@ const path = require("path");
 
 
 //Conexão com Banco 
-const db = require('./Models/db');
-const user = require('./Models/User');
-
-//Query
-/*connection.query('SELECT * FROM users', function(err, rows, fields){
-    if(!err){
-        console.log('Resultado:', rows);
-    }else{
-        console.log('Erro ao realizar consulta');
-    }
-});*/
-
-/*connection.query('INSERT  INTO users(NOME, EMAIL, SENHA, GENERO, CELULAR) VALUES ("VictorT", "teste@email", "123", "Masculino", "44997322931")',function(err, result){
-    if(!err){
-        console.log("Usuario cadastrado")
-    }else{
-        console.log("Erro ao cadastrar")
-    }
-});*/
-
-/*connection.query('UPDATE users SET NOME = "TESTE" WHERE id = 1', function(err, result){
-    if(!err){
-        console.log("Usuario editado com sucesso")
-    }else{
-        console.log("Usuario não atualizado")
-    }
-});*/
-
-/*connection.query('DELETE FROM users', function(err,result){
-    if(!err){
-        console.log("Usuario deletado")
-    }else{
-        console.log("Usuario não deletado")
-    }
-});*/
-
+//const db = require('./Models/db');
+//const user = require('./Models/User');
 
 //Public
 app.use(express.static('public'));
