@@ -15,7 +15,7 @@ const path = require("path");
 app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, "public")));
 
-//Rotas
+//Rotas USER
 app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html")
 });
@@ -48,8 +48,13 @@ app.get('/user/addEmpresa', async (req, res) =>{
     res.sendFile(__dirname+'/src/CadastroEmpresa.html')
 })
 
+//Rotas ADMIN
 app.get('/admin/empresa', async (req, res) => {
     res.sendFile(__dirname+'/src/ControleEmpresa.html')
+});
+
+app.get('/admin/profissional', async (req, res) => {
+    res.sendFile(__dirname+'/src/empresaProfissionais.html')
 });
 //Outros
 const PORT = 8080
