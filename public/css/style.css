@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap');
+
+/*Estilo Geral*/
+* {
+    font-family: 'Tilt Neon', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: black;
+}
+
+/*Estilo Menu*/
+header {
+    background-color: aquamarine;
+    box-shadow: 0px 3px 10px #660bb100;
+    color: black;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    padding: 15px;
+}
+
+footer {
+    background-color: aquamarine;
+    color: black;
+    padding: 10px;
+    text-align: center;
+    margin-top: 45px;
+    position: static;
+}
+
+ul{
+    text-decoration: none;
+    list-style: none;
+}
+
+li {
+    text-decoration: none;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+    font-size: 1rem;
+}
+
+a:hover{
+    color: antiquewhite;
+}
+
+/*Estilo Header*/
+
+header{
+    position: relative;
+    padding: 0 2rem;
+}
+
+.navbar{
+    width: 110%;
+    height: 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.navbar .logo{
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: left;
+}
+
+.navbar .links{
+    display: flex;
+    gap: 2rem;
+    font-size: 1rem;
+}
+
+/*Estilo Main*/
+
+#cards {
+    margin-top: 40px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+
+#carousel {
+    margin: 0px auto;
+    background-color: black;
+    height: 300px;
+    border-radius: 10px;
+}
+
+.carousel-inner {
+    display: flex;
+    justify-content: center;
+}
+
+.img_carousel {
+    max-width: 400px;
+    max-height: 150px;
+    margin: 0px auto;
+}
+
+/* Estilo Sobre nós*/
+
+.mainSobreNos {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    margin-bottom: 60px;
+}
+
+.tituloSobreNos {
+    margin-top: 50px;
+    text-decoration: double;
+    text-transform: uppercase;
+}
+
+#opcaoSobreNos {
+    margin-top: 90px;
+    height: 350px;
+}
+
+.facaParte{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    text-align: center;
+}
+
+.facaParte a{
+    background-color: aquamarine;
+    padding: 20px;
+    width: 150px;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    border: none;
+}
+
+.facaParte a:hover{
+    background-color: antiquewhite;
+
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/stylelogin.css">
+    <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <title>Login</title>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-success">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Sistema Agenda</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/user">Incio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/meusplanos">Meus Planos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/sobrenos">Sobre Nós</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+    <main>
+        <form class="card">
+            <div class="card-body">
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <input type="email" class="form-control" id="validaEmailUsuario" aria-describedby="emailHelp">
+            </div>
+            <div class="card-body mb-3">
+                <label for="exampleInputPassword1" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="validaSenhaUsuario">
+            </div>
+            <div class="mb-5 m-2 row-2" style="text-align: center;">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <a class="btn btn-primary" href="/user/login/add">Criar conta</a>
+            </div>
+        </form>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

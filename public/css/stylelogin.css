@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap');
+/*Estilo Geral*/
+*{
+font-family: 'Tilt Neon', sans-serif;
+padding: 0;
+margin: 0;
+}
+
+body{
+    margin: 0%;
+    background-color: black;
+    text-align: center;
+    align-items: center;
+    margin-top: 120px;
+}
+
+main{
+    background-color: aliceblue;
+    display: block;
+    padding: 30px;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 5px;
+    width: 50%;
+    box-shadow: 1px 1px 10px  7px rgb(125, 141, 125);
+    margin: auto;
+    margin-top: 20px;
+}
+
+button{
+    text-align: center;
+    text-decoration: none;
+}
+
+#main{
+    display: flex;
+    flex-direction: row;
+}
+
+#CadastroEmpresaMenu{
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    width: 50%;
+}
+
+#menu{
+    text-decoration: none;
+    text-align: center;
+    align-items: center;
+}
+
+main #menu .email{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: space-around;
+    height: 50px;
+}
+
+main #menu .senha h2{
+    margin: 0px 32px;
+    text-align: right;
+}
+
+main #menu .email h2{
+    margin: 0px 35px;
+    text-align: right;
+}
+
+main #menu .senha{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    justify-content: space-around;
+    height: 50px;
+}
+
+main #menu .confirma{
+    margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+main #menu .confirma a{
+    text-decoration: none;
+    background-color: aqua;
+    padding: 12px;
+    border: none;
+    border-radius: 15px;
+    margin-right: 30px;
+    margin-left: 30px;
+}
+
+main #menu .confirma a:hover{
+    background-color: antiquewhite;
+
+}
+
+main #menu .confirma button{
+    margin: 0px 40px;
+    padding: 10px;
+    background-color: aqua;
+    border: none;
+    border-radius: 15px;
+}
+
+/*Estilo Login Cadastro*/
+
