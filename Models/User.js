@@ -2,6 +2,12 @@ const Sequelize = require('sequelize');
 const db = require('./db');
 
 const User = db.define( 'users',{
+    id:{
+        type:Sequelize.STRING,
+        required:true,
+        primaryKey:true,
+        autoIncrement:true
+    },
     nome:{
         type: Sequelize.STRING,
         allowNull:false,
@@ -33,6 +39,7 @@ const User = db.define( 'users',{
     }
 });
 
+//Criat Tabela caso não exista
 User.sync();
 
 module.exports = User;
