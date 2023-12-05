@@ -4,7 +4,7 @@ const sequelize = new Sequelize("sistema", "root", "Sistema123", {
     host: 'localhost',
     dialect: 'mysql',
     define: {
-        timestamp: false
+        timestamps: false
     }
 });
 
