@@ -5,7 +5,7 @@ const path = require("path");
 
 
 //Config
-app.use
+app.use(express.json());
 
 //Conexão com Banco 
 const db = require('./Models/db');
@@ -13,7 +13,6 @@ const User = require('./Models/User');
 
 //Public
 app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, "public")));
 
 //Rotas USER
 app.get('/', async (req, res) => {
@@ -34,19 +33,10 @@ app.get('/user/login/add', async (req, res) => {
 
 app.post('/user/login/cadastrar', async (req, res) => {
     console.log(req.body);
+    res.send("Pagina Cadastrar");
 
-    await User.create(req.body)
-        .then(() => {
-            return res.json({
-                erro: false,
-                mensagem: "Usuario cadastrado com sucesso"
-            })
-        }).catch(() => {
-            return res.status(400).json({
-                erro: true,
-                mensagem: "Usuario não cadastrado com sucesso"
-            });
-        });
+    await User.create(req.body);
+
 });
 
 app.get('/user/meusplanos', async (req, res) => {

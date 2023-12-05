@@ -2,37 +2,35 @@ const Sequelize = require('sequelize');
 const db = require('./db');
 
 const User = db.define( 'users',{
-    id:{
-        type:Sequelize.STRING,
+    ID:{
+        type: Sequelize.DataTypes.INTEGER,
         required:true,
         primaryKey:true,
-        autoIncrement:true
+        autoIncrement: true,
+        allowNull:false
     },
-    nome:{
+    NOME:{
         type: Sequelize.STRING,
         allowNull:false,
         required:true
     },
-    celular:{
+    CELULAR:{
         type: Sequelize.STRING,
         required:true,
         allowNull:false,
-        validate: {
-            len: [8, 11]
-          }
     },
-    email:{
+    EMAIL:{
         type: Sequelize.STRING,
         required:true,
         allowNull:false,
         unique:true
     },
-    senha:{
+    SENHA:{
         type: Sequelize.STRING,
         allowNull:false,
         required:true
     },
-    genero:{
+    GENERO:{
         type: Sequelize.STRING,
         allowNull:false,
         required:true

@@ -2,7 +2,10 @@ const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize("sistema", "root", "Sistema123", {
     host: 'localhost',
-    dialect: 'mysql'
+    dialect: 'mysql',
+    define: {
+        timestamp: false
+    }
 });
 
 sequelize.authenticate().then(function(){
