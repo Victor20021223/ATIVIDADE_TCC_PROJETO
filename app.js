@@ -57,6 +57,7 @@ app.get('/user/sobrenos', async (req, res) => {
     res.sendFile(__dirname + "/src/SobreNos.html")
 });
 
+
 app.get('/user/addEmpresa', async (req, res) => {
     res.sendFile(__dirname + '/src/CadastroEmpresa.html')
 });
