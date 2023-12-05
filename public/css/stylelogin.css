@@ -51,6 +51,22 @@ button{
     align-items: center;
 }
 
+#divisao{
+    display: flex;
+    justify-content: space-between;
+}
+
+#divisao .table{
+    width: 100px;
+    margin-left: 50px;
+    justify-content: center;
+}
+.needs-validation{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
 main #menu .email{
     display: flex;
     flex-direction: row;
