@@ -47,6 +47,10 @@ app.get('/user/sobrenos', async (req, res) => {
 app.get('/user/addEmpresa', async (req, res) =>{
     res.sendFile(__dirname+'/src/CadastroEmpresa.html')
 })
+
+app.get('/user/controleEmpresa', async (req, res) => {
+    res.sendFile(__dirname+'/src/ControleEmpresa.html')
+});
 //Outros
 const PORT = 8080
 app.listen(PORT, () => {
