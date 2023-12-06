@@ -38,34 +38,21 @@
         </nav>
       </header>
     <main>
-        <form class="needs-validation" method="post" action="/addProfissional">
-            <div class="form-row">
+        <form  method="post" action="/addProfissional">
                 <div class="col mb-3">
                     <label for="NomeProfissional">Nome</label>
-                    <input type="text" class="form-control" id="NomeProfissional" placeholder="Nome"
+                    <input type="text" class="form-control" id="NomeProfissional" name="NomeProfissional" placeholder="Nome"
                         required>
-                    <div class="valid-feedback">
-                        Tudo certo!
-                    </div>
                 </div>
                 <div class="col mb-3">
                     <label for="Funcao">Função</label>
-                    <input type="text" class="form-control" id="Funcao" placeholder="Função"
+                    <input type="text" class="form-control" id="Funcao" name="Funcao" placeholder="Função"
                         required>
-                    <div class="valid-feedback">
-                        Tudo certo!
-                    </div>
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="col-md-4 mb-3" id="ContatoPro">
                     <label for="Contato">Contato</label>
-                    <input type="text" class="form-control" id="Contato" placeholder="Contato" required>
-                    <div class="invalid-feedback">
-                        Por favor, informe o numero de contato.
-                    </div>
+                    <input type="text" class="form-control" id="Contato" name="Contato" placeholder="Contato" required>
                 </div>
-            </div>
             <button class="btn" type="submit" style="background-color: aquamarine;">Enviar</button>
         </form>   
     </main>

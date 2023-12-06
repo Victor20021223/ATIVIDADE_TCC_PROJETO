@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
+const { Console } = require('console');
 //Public
 app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -22,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Rotas GET
 
 app.get('/', async (req, res) => {
-    res.sendFile(__dirname + "/src/index.html")
+    res.sendFile(__dirname + "/src/index.html") 
 });
 
 app.get('/user', async (req, res) => {
@@ -60,7 +61,6 @@ app.post('/add', async (req, res) => {
         GENERO: req.body.generoUsuario
     })
     res.sendFile(__dirname + "/src/index.html")
-
 });
 
 //Rotas ADMIN
@@ -75,14 +75,14 @@ app.get('/admin/profissional', async (req, res) => {
 });
 
 app.get('/admin/servicos', async (req, res) => {
-    res.sendFile(__dirname + '/src/empresaServicos.html')
+    res.sendFile(__dirname + '/src/empresaServicos.html') 
 });
 
 app.get('/admin/addProfissional', async (req, res) => {
     res.sendFile(__dirname+'/src/cad_cadastroProfissional.html')
 });
 
-app.get('/admin/profissional', (req, res) => {
+app.get('/admin/profissional',async (req, res) => {
     const query = 'SELECT * FROM profissionais';
     connection.query(query, (error, results, fields) => {
         if (error) throw error;
@@ -95,13 +95,12 @@ app.get('/admin/profissional', (req, res) => {
 
 app.post('/addProfissional', async (req, res) => {
     await Profissional.create({
-        NOME: req.body.NomeProfissional,
-        FUNCAO: req.body.Funcao,
-        CONTATO: req.body.Contato,
+        NOME:req.body.NomeProfissional,
+        FUNCAO:req.body.Funcao,
+        CONTATO:req.body.Contato, 
         SITUACAO:'A'
-    })
-    res.sendFile(__dirname + "/src/empresaProfissional.html")
-
+    }) 
+    res.sendFile(__dirname+'/src/empresaPRofissionais.html')
 });
 
 

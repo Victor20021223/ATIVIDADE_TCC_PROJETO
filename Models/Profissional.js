@@ -4,10 +4,10 @@ const sequelize = require('./db');
 
 const Profissional = db.define('profissionais',{
     ID:{
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         required:true,
         primaryKey:true,
-        autoIncrement: true,
+        autoIncrement:true,
         allowNull:false
     },
     NOME:{

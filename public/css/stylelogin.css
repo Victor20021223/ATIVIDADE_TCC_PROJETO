@@ -34,6 +34,10 @@ button {
     text-decoration: none;
 }
 
+button:hover{
+    background-color: antiquewhite;
+}
+
 a {
     text-decoration: none;
 }
@@ -165,4 +169,8 @@ main #menu .confirma button {
 #ContatoPro {
     margin: 0 auto;
     text-align: center;
+}
+
+.btn:hover{
+    background-color: antiquewhite;
 }
