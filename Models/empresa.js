@@ -6,8 +6,8 @@ const Empresa = db.define('empresas',{
         type: Sequelize.INTEGER,
         allowNull:false,
         unique:true,
-        primaryKey:true,
-        autpIncrement:true
+        autoIncrement: true,
+        primaryKey:true
     },
     NOME:{
         type: Sequelize.Sequelize.STRING,
