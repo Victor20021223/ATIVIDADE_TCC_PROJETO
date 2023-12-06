@@ -29,7 +29,7 @@ const Empresa = db.define('empresas',{
         }
     },
     IMAGEM:{
-        type: Sequelize.imagen,
+        type: Sequelize.IMAGEM,
         allowNull:true
     }
 });
