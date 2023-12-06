@@ -4,6 +4,7 @@ const app = express();
 const path = require("path");
 const bodyParser = require("body-parser");
 
+
 //Config
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -12,9 +13,10 @@ app.use(bodyParser.json());
 //Conexão com Banco 
 const db = require('./Models/db');
 const User = require('./Models/User');
+const Profissional = require('./Models/Profissional');
 //Public
 app.use(express.static('public'));
-
+app.use(express.static(path.join(__dirname, 'public')));
 //Rotas USER
 
 //Rotas GET
@@ -79,6 +81,29 @@ app.get('/admin/servicos', async (req, res) => {
 app.get('/admin/addProfissional', async (req, res) => {
     res.sendFile(__dirname+'/src/cad_cadastroProfissional.html')
 });
+
+app.get('/admin/profissional', (req, res) => {
+    const query = 'SELECT * FROM profissionais';
+    connection.query(query, (error, results, fields) => {
+        if (error) throw error;
+
+        res.json(results);
+    });
+});
+
+//Rotas POST
+
+app.post('/addProfissional', async (req, res) => {
+    await Profissional.create({
+        NOME: req.body.NomeProfissional,
+        FUNCAO: req.body.Funcao,
+        CONTATO: req.body.Contato,
+        SITUACAO:'A'
+    })
+    res.sendFile(__dirname + "/src/empresaProfissional.html")
+
+});
+
 
 //Outros
 const PORT = 8080

@@ -39,35 +39,17 @@
   </header>
   <main>
     <div class="profissional">
-      <table class="table">
+      <table id="profissionnais" class="table">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">Primeiro</th>
-            <th scope="col">Último</th>
-            <th scope="col">Nickname</th>
+            <th scope="col">ID</th>
+            <th scope="col">NOME</th>
+            <th scope="col">FUNCAO</th>
+            <th scope="col">CONTATO</th>
+            <th scope="col">SITUACAO</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
 
@@ -76,6 +58,24 @@
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const tabelaDados = document.getElementById('profissionais').getElementsByTagName('tbody')[0];
+
+      // Puxar dados usando fetch no método GET
+      fetch('/admin/profissional')
+        .then(response => response.json())
+        .then(data => {
+          // Popula a tabela com os dados recebidos
+          data.forEach(item => {
+            const newRow = tabelaDados.insertRow();
+            newRow.innerHTML = `<td>${item.ID}</td><td>${item.NOME}</td><td>${item.FUNCAO}</td><td>${item.CONTATO}</td><td>${item.SITUACAO}</td>`;
+          });
+        })
+        .catch(error => console.error('Erro:', error));
+    });
+
+  </script>
 </body>
 
 </html>
