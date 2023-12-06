@@ -72,6 +72,15 @@ app.get('/admin', async (req, res) => {
 app.get('/admin/profissional', async (req, res) => {
     res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
+
+app.get('/admin/servicos', async (req, res) => {
+    res.sendFile(__dirname + '/src/empresaProfissionais.html')
+});
+
+app.get('/admin/addProfissional', async (req, res) => {
+    res.sendFile(__dirname+'/src/cad_cadastroProfissional.html')
+});
+
 //Outros
 const PORT = 8080
 app.listen(PORT, () => {

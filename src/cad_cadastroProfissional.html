@@ -6,102 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/stylelogin.css">
     <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <title>Cadastro Profissional/title>
+    <title>Cadastro Profissional</title>
 </head>
 
 <body>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link " href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Serviços</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/admin/profissional">Profissionais</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Horarios</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </header>
     <main>
-        <form class="needs-validation" novalidate>
+        <form class="needs-validation" novalidate action="/admin/empresa/Profissional" method="post">
             <div class="form-row">
-                <div class="col-md-4 mb-3">
-                    <label for="validationCustom01">Primeiro nome</label>
-                    <input type="text" class="form-control" id="validationCustom01" placeholder="Nome" value="Mark"
+                <div class="col mb-3">
+                    <label for="NomeProfissional">Nome</label>
+                    <input type="text" class="form-control" id="NomeProfissional" placeholder="Nome"
                         required>
                     <div class="valid-feedback">
                         Tudo certo!
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <label for="validationCustom02">Sobrenome</label>
-                    <input type="text" class="form-control" id="validationCustom02" placeholder="Sobrenome" value="Otto"
+                <div class="col mb-3">
+                    <label for="Funcao">Função</label>
+                    <input type="text" class="form-control" id="Funcao" placeholder="Função"
                         required>
                     <div class="valid-feedback">
                         Tudo certo!
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <label for="validationCustomUsername">Usuário</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        </div>
-                        <input type="text" class="form-control" id="validationCustomUsername" placeholder="Usuário"
-                            aria-describedby="inputGroupPrepend" required>
-                        <div class="invalid-feedback">
-                            Por favor, escolha um nome de usuário.
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="form-row">
-                <div class="col-md-6 mb-3">
-                    <label for="validationCustom03">Cidade</label>
-                    <input type="text" class="form-control" id="validationCustom03" placeholder="Cidade" required>
+                <div class="col-md-4 mb-3" id="ContatoPro">
+                    <label for="Contato">Contato</label>
+                    <input type="text" class="form-control" id="Contato" placeholder="Contato" required>
                     <div class="invalid-feedback">
-                        Por favor, informe uma cidade válida.
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label for="validationCustom04">Estado</label>
-                    <input type="text" class="form-control" id="validationCustom04" placeholder="Estado" required>
-                    <div class="invalid-feedback">
-                        Por favor, informe um estado válido.
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label for="validationCustom05">CEP</label>
-                    <input type="text" class="form-control" id="validationCustom05" placeholder="CEP" required>
-                    <div class="invalid-feedback">
-                        Por favor, informe um CEP válido.
+                        Por favor, informe o numero de contato.
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-                    <label class="form-check-label" for="invalidCheck">
-                        Concordo com os termos e condições
-                    </label>
-                    <div class="invalid-feedback">
-                        Você deve concordar, antes de continuar.
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-primary" type="submit">Enviar</button>
-        </form>
-
-        <script>
-            // Exemplo de JavaScript inicial para desativar envios de formulário, se houver campos inválidos.
-            (function () {
-                'use strict';
-                window.addEventListener('load', function () {
-                    // Pega todos os formulários que nós queremos aplicar estilos de validação Bootstrap personalizados.
-                    var forms = document.getElementsByClassName('needs-validation');
-                    // Faz um loop neles e evita o envio
-                    var validation = Array.prototype.filter.call(forms, function (form) {
-                        form.addEventListener('submit', function (event) {
-                            if (form.checkValidity() === false) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                            }
-                            form.classList.add('was-validated');
-                        }, false);
-                    });
-                }, false);
-            })();
-        </script>
+            <button class="btn" type="submit" style="background-color: aquamarine;">Enviar</button>
+        </form>   
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

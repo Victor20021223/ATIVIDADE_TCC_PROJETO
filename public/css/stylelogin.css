@@ -33,6 +33,10 @@ button{
     text-decoration: none;
 }
 
+a{
+    text-decoration: none;
+}
+
 #main{
     display: flex;
     flex-direction: row;
@@ -131,5 +135,26 @@ main #menu .confirma button{
     border-radius: 15px;
 }
 
-/*Estilo Login Cadastro*/
+/*Estilo Profissional*/
+.cadastroProfissional{
+    margin: 0 auto;
+    margin-top: 15px;
+    text-align: center;
+}
 
+.cadastroProfissional a{
+    padding: 20px;
+    border-radius: 5px;
+    background-color: aquamarine;
+    width: 150px;
+    color: black;
+}
+
+.cadastroProfissional a:hover{
+    background-color: antiquewhite;
+}
+
+#ContatoPro{
+    margin: 0 auto;
+    text-align: center;
+}
