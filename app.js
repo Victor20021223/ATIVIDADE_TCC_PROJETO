@@ -12,7 +12,6 @@ app.use(bodyParser.json());
 //Conexão com Banco 
 const db = require('./Models/db');
 const User = require('./Models/User');
-
 //Public
 app.use(express.static('public'));
 
@@ -74,7 +73,7 @@ app.get('/admin/profissional', async (req, res) => {
 });
 
 app.get('/admin/servicos', async (req, res) => {
-    res.sendFile(__dirname + '/src/empresaProfissionais.html')
+    res.sendFile(__dirname + '/src/empresaServicos.html')
 });
 
 app.get('/admin/addProfissional', async (req, res) => {

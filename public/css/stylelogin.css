@@ -1,12 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap');
+
 /*Estilo Geral*/
-*{
-font-family: 'Tilt Neon', sans-serif;
-padding: 0;
-margin: 0;
+* {
+    font-family: 'Tilt Neon', sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
-body{
+body {
     margin: 0%;
     background-color: black;
     text-align: center;
@@ -14,7 +15,7 @@ body{
     margin-top: 120px;
 }
 
-main{
+main {
     background-color: aliceblue;
     display: block;
     padding: 30px;
@@ -23,62 +24,69 @@ main{
     justify-content: center;
     border-radius: 5px;
     width: 50%;
-    box-shadow: 1px 1px 10px  7px rgb(125, 141, 125);
+    box-shadow: 1px 1px 10px 7px rgb(125, 141, 125);
     margin: auto;
     margin-top: 20px;
 }
 
-button{
+button {
     text-align: center;
     text-decoration: none;
 }
 
-a{
+a {
     text-decoration: none;
 }
 
-#main{
+#main {
     display: flex;
     flex-direction: row;
 }
 
-#CadastroEmpresaMenu{
+#CadastroEmpresaMenu {
     display: flex;
     flex-direction: row;
     gap: 50px;
     width: 50%;
 }
 
-#menu{
+#menu {
     text-decoration: none;
     text-align: center;
     align-items: center;
 }
 
-.profissional{
+.profissional {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-#divisao{
+.servicos {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.table{
+#divisao {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.table {
     justify-content: center;
     height: 100px;
     width: 100px;
 }
-.needs-validation{
+
+.needs-validation {
     display: flex;
     justify-content: center;
     flex-direction: column;
 }
 
-main #menu .email{
+main #menu .email {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -87,17 +95,17 @@ main #menu .email{
     height: 50px;
 }
 
-main #menu .senha h2{
+main #menu .senha h2 {
     margin: 0px 32px;
     text-align: right;
 }
 
-main #menu .email h2{
+main #menu .email h2 {
     margin: 0px 35px;
     text-align: right;
 }
 
-main #menu .senha{
+main #menu .senha {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -106,13 +114,13 @@ main #menu .senha{
     height: 50px;
 }
 
-main #menu .confirma{
+main #menu .confirma {
     margin-top: 20px;
     align-items: center;
     justify-content: center;
 }
 
-main #menu .confirma a{
+main #menu .confirma a {
     text-decoration: none;
     background-color: aqua;
     padding: 12px;
@@ -122,12 +130,12 @@ main #menu .confirma a{
     margin-left: 30px;
 }
 
-main #menu .confirma a:hover{
+main #menu .confirma a:hover {
     background-color: antiquewhite;
 
 }
 
-main #menu .confirma button{
+main #menu .confirma button {
     margin: 0px 40px;
     padding: 10px;
     background-color: aqua;
@@ -136,13 +144,13 @@ main #menu .confirma button{
 }
 
 /*Estilo Profissional*/
-.cadastroProfissional{
+.cadastroProfissional {
     margin: 0 auto;
     margin-top: 15px;
     text-align: center;
 }
 
-.cadastroProfissional a{
+.cadastroProfissional a {
     padding: 20px;
     border-radius: 5px;
     background-color: aquamarine;
@@ -150,11 +158,11 @@ main #menu .confirma button{
     color: black;
 }
 
-.cadastroProfissional a:hover{
+.cadastroProfissional a:hover {
     background-color: antiquewhite;
 }
 
-#ContatoPro{
+#ContatoPro {
     margin: 0 auto;
     text-align: center;
 }
