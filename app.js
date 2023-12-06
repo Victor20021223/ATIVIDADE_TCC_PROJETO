@@ -18,6 +18,8 @@ const Empresa = require('./Models/empresa');
 app.use(express.static('public'));
 
 //Rotas USER
+
+//Rotas GET
 app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html")
 });
@@ -34,18 +36,6 @@ app.get('/user/login/add', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_CadastroUsuario.html")
 });
 
-app.post('/add', async (req, res) => {
-    await User.create({
-        NOME:req.body.nomeUsuario,
-        CELULAR:req.body.celularUsuario,
-        EMAIL:req.body.emailUsuario,
-        SENHA:req.body.senhaUsuario,
-        GENERO:req.body.generoUsuario
-    })
-    res.sendFile(__dirname+"/src/index.html")
-    
-});
-
 app.get('/user/meusplanos', async (req, res) => {
     res.sendFile(__dirname + "/src/MeusPlanos.html")
 });
@@ -58,6 +48,35 @@ app.get('/user/sobrenos', async (req, res) => {
 app.get('/user/addEmpresa', async (req, res) => {
     res.sendFile(__dirname + '/src/CadastroEmpresa.html')
 });
+
+//Rotas POST
+app.post('/add', async (req, res) => {
+    await User.create({
+        NOME:req.body.nomeUsuario,
+        CELULAR:req.body.celularUsuario,
+        EMAIL:req.body.emailUsuario,
+        SENHA:req.body.senhaUsuario,
+        GENERO:req.body.generoUsuario
+    })
+    res.sendFile(__dirname+"/src/index.html")
+    
+});
+
+app.post('/addEmpresa', async (req, res) =>{
+    await Empresa.create({
+        NOME:req.body.nomeEmpresa,
+        CNPJ:req.body.CNPJ,
+        EMAIL:req.body.emailEmpresa,
+        TELAFONE:req.body.telefoneEmpresa,
+        LOGRADOURO:req.body.logradouro,
+        NUMERO:req.body.numero,
+        BAIRRO:req.body.bairro,
+        IMAGEM:req.body.imagem
+    })
+    res.sendFile(__dirname+'/src/ControleEmpresa.html')
+})
+
+
 
 //Rotas ADMIN
 app.get('/admin/empresa', async (req, res) => {

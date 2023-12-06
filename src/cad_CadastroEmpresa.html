@@ -36,7 +36,7 @@
   </header>
   <main id="CadastroEmpresaMenu">
     <div id="main">
-      <form class="row g-3">
+      <form class="row g-1" action="/addEmpresa" method="post">
         <div class="col-md-12">
           <label for="nomeEmpresa" class="form-label">Nome</label>
           <input type="text" class="form-control" id="nomeEmpresa" name="nomeEmpresa" required>
@@ -49,13 +49,9 @@
           <label for="emailEmpresa" class="form-label">Email</label>
           <input type="text" class="form-control" id="emailEmpresa" name="emailEmpresa" required>
         </div>
-        <div class="col-md-6">
-          <label for="cidade" class="form-label">Cidade</label>
-          <input type="text" class="form-control" id="cidade" name="cidade" required>
-        </div>
-        <div class="col-md-6">
-          <label for="estado" class="form-label">Estado</label>
-          <input type="text" class="form-control" id="estado" name="estado" required>
+        <div class="col-md-12">
+          <label for="telefoneEmpresa" class="form-label">Telefone</label>
+          <input type="text" class="form-control" id="telefoneEmpresa" name="telefoneEmpresa" required>
         </div>
         <div class="col-md-12">
           <label for="logradouro" class="form-label">Logradouro</label>
