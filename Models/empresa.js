@@ -1,12 +1,14 @@
+const Sequelize = require('sequelize');
+const db = require('./db');
 
-const empresa = db.define('empresa',{
-    id:{
+const Empresa = db.define('empresas',{
+    ID:{
         type: Sequelize.INTEGER,
         allowNull:false,
         unique:true,
         primaryKey:true
     },
-    nome:{
+    NOME:{
         type: Sequelize.Sequelize.STRING,
         allowNull:false,
     },
@@ -15,21 +17,23 @@ const empresa = db.define('empresa',{
         allowNull: false,
         unique:true
     },
-    email:{
+    EMAIL:{
         type: Sequelize.STRING,
         allowNull:true
     },
-    senha:{
+    SENHA:{
         type:Sequelize.STRING,
         allowNull:false,
         validate:{
             is: /^[0-9a-f]{64}$/i
         }
     },
-    imagen:{
+    IMAGEM:{
         type: Sequelize.imagen,
         allowNull:true
     }
 });
 
-empresa.sync();
+Empresa.sync();
+
+module.exports = Empresa;

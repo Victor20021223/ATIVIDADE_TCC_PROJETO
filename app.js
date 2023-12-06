@@ -2,14 +2,17 @@
 const express = require('express');
 const app = express();
 const path = require("path");
-
+const bodyParser = require("body-parser");
 
 //Config
 app.use(express.json());
+app.use(bodyParser.urlencoded({extended : false}));
+app.use(bodyParser.json());
 
 //Conexão com Banco 
 const db = require('./Models/db');
 const User = require('./Models/User');
+const Empresa = require('./Models/Empresa');
 
 //Public
 app.use(express.static('public'));
@@ -24,19 +27,23 @@ app.get('/user', async (req, res) => {
 });
 
 app.get('/user/login', async (req, res) => {
-    res.sendFile(__dirname + "/src/login.html")
+    res.sendFile(__dirname + "/src/cad_login.html")
 });
 
 app.get('/user/login/add', async (req, res) => {
-    res.sendFile(__dirname + "/src/CadastroUsuario.html")
+    res.sendFile(__dirname + "/src/cad_CadastroUsuario.html")
 });
 
-app.post('/user/login/cadastrar', async (req, res) => {
-    console.log(req.body);
-    res.send("Pagina Cadastrar");
-
-    await User.create(req.body);
-
+app.post('/add', async (req, res) => {
+    await User.create({
+        NOME:req.body.nomeUsuario,
+        CELULAR:req.body.celularUsuario,
+        EMAIL:req.body.emailUsuario,
+        SENHA:req.body.senhaUsuario,
+        GENERO:req.body.generoUsuario
+    })
+    res.sendFile(__dirname+"/src/index.html")
+    
 });
 
 app.get('/user/meusplanos', async (req, res) => {
