@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 //Conexão com Banco 
 const db = require('./Models/db');
 const User = require('./Models/User');
-const Empresa = require('./Models/Empresa');
+const Empresa = require('./Models/empresa');
 
 //Public
 app.use(express.static('public'));
