@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('./db');
+const sequelize = require('./db');
 
 const User = db.define( 'users',{
     ID:{
@@ -29,9 +30,6 @@ const User = db.define( 'users',{
         type: Sequelize.STRING,
         allowNull:false,
         required:true,
-        validate:{
-            is: /^[0-9a-f]{64}$/i
-        }
     },
     GENERO:{
         type: Sequelize.STRING,
@@ -42,6 +40,8 @@ const User = db.define( 'users',{
 
 //Criat Tabela caso não exista
 User.sync();
+
+
 
 module.exports = User;
 

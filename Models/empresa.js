@@ -10,7 +10,7 @@ const Empresa = db.define('empresas',{
         primaryKey:true
     },
     NOME:{
-        type: Sequelize.Sequelize.STRING,
+        type: Sequelize.STRING,
         allowNull:false,
     },
     CNPJ:{
@@ -25,13 +25,26 @@ const Empresa = db.define('empresas',{
     SENHA:{
         type:Sequelize.STRING,
         allowNull:false,
-        validate:{
-            is: /^[0-9a-f]{64}$/i
-        }
     },
     IMAGEM:{
         type: Sequelize.BLOB,
         allowNull:true
+    },
+    LOGRADOURO:{
+        type:Sequelize.STRING,
+        allowNull:false
+    },
+    NUMERO:{
+        type:Sequelize.STRING,
+        allowNull:false
+    },
+    BAIRRO:{
+        type:Sequelize.STRING,
+        allowNull:false
+    },
+    TELEFONE:{
+        type:Sequelize.STRING,
+        allowNull:false
     }
 });
 

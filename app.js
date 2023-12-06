@@ -67,7 +67,8 @@ app.post('/addEmpresa', async (req, res) =>{
         NOME:req.body.nomeEmpresa,
         CNPJ:req.body.CNPJ,
         EMAIL:req.body.emailEmpresa,
-        TELAFONE:req.body.telefoneEmpresa,
+        SENHA:req.body.senhaEmpresa,
+        TELEFONE:req.body.telefoneEmpresa,
         LOGRADOURO:req.body.logradouro,
         NUMERO:req.body.numero,
         BAIRRO:req.body.bairro,
@@ -96,3 +97,6 @@ const PORT = 8080
 app.listen(PORT, () => {
     console.log("Servidor Rodando!!!")
 });
+
+//Query
+
