@@ -65,7 +65,7 @@ app.post('/add', async (req, res) => {
 //Rotas ADMIN
 
 //Rotas Get
-app.get('/admin/empresa', async (req, res) => {
+app.get('/admin', async (req, res) => {
     res.sendFile(__dirname + '/src/ControleEmpresa.html')
 });
 

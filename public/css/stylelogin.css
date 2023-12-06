@@ -51,15 +51,22 @@ button{
     align-items: center;
 }
 
-#divisao{
+.profissional{
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
 }
 
-#divisao .table{
-    width: 100px;
-    margin-left: 50px;
+#divisao{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.table{
     justify-content: center;
+    height: 100px;
+    width: 100px;
 }
 .needs-validation{
     display: flex;
