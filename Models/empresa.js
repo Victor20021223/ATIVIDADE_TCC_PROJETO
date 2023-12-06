@@ -6,7 +6,8 @@ const Empresa = db.define('empresas',{
         type: Sequelize.INTEGER,
         allowNull:false,
         unique:true,
-        primaryKey:true
+        primaryKey:true,
+        autpIncrement:true
     },
     NOME:{
         type: Sequelize.Sequelize.STRING,
@@ -29,7 +30,7 @@ const Empresa = db.define('empresas',{
         }
     },
     IMAGEM:{
-        type: Sequelize.IMAGEM,
+        type: Sequelize.BLOB,
         allowNull:true
     }
 });

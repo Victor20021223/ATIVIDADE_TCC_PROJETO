@@ -28,7 +28,10 @@ const User = db.define( 'users',{
     SENHA:{
         type: Sequelize.STRING,
         allowNull:false,
-        required:true
+        required:true,
+        validate:{
+            is: /^[0-9a-f]{64}$/i
+        }
     },
     GENERO:{
         type: Sequelize.STRING,

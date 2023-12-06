@@ -45,8 +45,8 @@ app.get('/user/sobrenos', async (req, res) => {
 });
 
 
-app.get('/user/addEmpresa', async (req, res) => {
-    res.sendFile(__dirname + '/src/CadastroEmpresa.html')
+app.get('/addEmpresa', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_CadastroEmpresa.html')
 });
 
 //Rotas POST
@@ -76,9 +76,14 @@ app.post('/addEmpresa', async (req, res) =>{
     res.sendFile(__dirname+'/src/ControleEmpresa.html')
 })
 
+app.post("uplods-image", async (req, res) =>{
+
+})
 
 
 //Rotas ADMIN
+
+//Rotas Get
 app.get('/admin/empresa', async (req, res) => {
     res.sendFile(__dirname + '/src/ControleEmpresa.html')
 });
