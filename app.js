@@ -12,7 +12,6 @@ app.use(bodyParser.json());
 //Conexão com Banco 
 const db = require('./Models/db');
 const User = require('./Models/User');
-const Empresa = require('./Models/empresa');
 
 //Public
 app.use(express.static('public'));
@@ -20,18 +19,6 @@ app.use(express.static('public'));
 //Rotas USER
 
 //Rotas GET
-
-app.get('/cards', (req, res) => {
-    const query = 'SELECT * FROM empresas';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Erro ao executar a consulta:', err);
-            res.status(500).send('Erro interno do servidor');
-            return;
-        }
-        res.json(results);
-    });
-});
 
 app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html")
@@ -74,26 +61,6 @@ app.post('/add', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html")
 
 });
-
-app.post('/addEmpresa', async (req, res) => {
-    await Empresa.create({
-        NOME: req.body.nomeEmpresa,
-        CNPJ: req.body.CNPJ,
-        EMAIL: req.body.emailEmpresa,
-        SENHA: req.body.senhaEmpresa,
-        TELEFONE: req.body.telefoneEmpresa,
-        LOGRADOURO: req.body.logradouro,
-        NUMERO: req.body.numero,
-        BAIRRO: req.body.bairro,
-        IMAGEM: req.body.imagem
-    })
-    res.sendFile(__dirname + '/src/ControleEmpresa.html')
-})
-
-app.post("uplods-image", async (req, res) => {
-
-})
-
 
 //Rotas ADMIN
 
