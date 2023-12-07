@@ -42,6 +42,38 @@ a {
     text-decoration: none;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 600px) {
+    th:nth-child(3), td:nth-child(3) {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    th, td {
+        font-size: 14px;
+    }
+}
+
+
+#table-container {
+    overflow-x: auto;
+}
+
+
 #main {
     display: flex;
     flex-direction: row;
@@ -148,42 +180,23 @@ main #menu .confirma button {
 }
 
 /*Estilo Profissional*/
-.cadastroProfissional {
+.cadastro {
     margin: 0 auto;
     margin-top: 15px;
     text-align: center;
 }
 
-.cadastroProfissional a {
-    padding: 20px;
+.cadastro a {
+    padding: 15px;
     border-radius: 5px;
     background-color: aquamarine;
     width: 150px;
     color: black;
 }
 
-.cadastroProfissional a:hover {
+.cadastro a:hover {
     background-color: antiquewhite;
 }
-
-.cadastroServico {
-    margin: 0 auto;
-    margin-top: 15px;
-    text-align: center;
-}
-
-.cadastroServico a {
-    padding: 20px;
-    border-radius: 5px;
-    background-color: aquamarine;
-    width: 150px;
-    color: black;
-}
-
-.cadastroServico a:hover {
-    background-color: antiquewhite;
-}
-
 
 #ContatoPro {
     margin: 0 auto;

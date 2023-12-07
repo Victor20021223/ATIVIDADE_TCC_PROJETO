@@ -15,6 +15,7 @@ const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
+const Horario = require('./Models/Horario');
 
 //Public
 app.use(express.static('public'));
@@ -78,12 +79,20 @@ app.get('/admin/servicos', async (req, res) => {
     res.sendFile(__dirname + '/src/empresaServicos.html') 
 });
 
+app.get('/admin/horarios', async (req, res) =>{
+    res.sendFile(__dirname+'/src/empresaHorarios.html')
+})
+
 app.get('/admin/addServico', async (req, res) => {
     res.sendFile(__dirname+'/src/cad_cadastroServico.html')
 });
 
 app.get('/admin/addProfissional', async (req, res) => {
     res.sendFile(__dirname+'/src/cad_cadastroProfissional.html')
+});
+
+app.get('/admin/addHorario', async (req, res) => {
+    res.sendFile(__dirname+'/src/cad_cadastroHorarios.html')
 });
 
 app.get('/admin/profissional',async (req, res) => {
@@ -121,6 +130,18 @@ app.post('/addServico', async (req, res) => {
         SOBRE:req.body.Sobre,
         VALOR:req.body.valor, 
         SITUACAO:'A'
+    }) 
+    res.sendFile(__dirname+'/src/empresaPRofissionais.html')
+});
+
+app.post('/addHorario', async (req, res) => {
+    await Horario.create({
+        DIAS_DA_SEMANA:req.body.DiaSemana,
+        HORA_INICIO_EXPEDIENTE:req.body.HoraInicio,
+        HORA_FIM_EXPEDIENTE:req.body.HoraFim, 
+        INTERVALO_INICIO:req.body.IntervaloInicio,
+        INTERVALO_FIM:req.body.IntervaloFim,
+        INTERVALO_ENTRE_ATEND:req.body.IntervaloAtendimento
     }) 
     res.sendFile(__dirname+'/src/empresaPRofissionais.html')
 });

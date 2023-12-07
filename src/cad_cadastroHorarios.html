@@ -38,20 +38,39 @@
         </nav>
     </header>
     <main>
-        <form method="post" action="/addServico">
+        <form method="post" action="/addHorario">
+
+            <select class="form-select" aria-label="Default select example" name="DiaSemana">
+                <option selected>Selecione o dia da semana</option>
+                <option value="1">Segunda-feira</option>
+                <option value="2">Terça-feira</option>
+                <option value="3">Quarta-feira</option>
+                <option value="4">Quinta-feira</option>
+                <option value="5">Sexta-feira</option>
+                <option value="6">Sabado-feira</option>
+                <option value="7">Domingo-feira</option>
+            </select>
+
             <div class="col mb-3">
-                <label for="descricao">Descrição</label>
-                <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Descrição"
+                <label for="HoraInicio">Horario Inicio atendimento</label>
+                <input type="time" class="form-control" id="HoraInicio" name="HoraInicio" placeholder="Hora Agenda"
                     required>
             </div>
-            <div class="form-floating">
-                <textarea class="form-control" placeholder="Sobre o servico" id="Sobre" name="Sobre"
-                    style="height: 100px"></textarea>
-                <label for="floatingTextarea2">Sobre o serviços</label>
+            <div class="col mb-3">
+                <label for="HoraFim">Horario Fim de atendimento</label>
+                <input type="time" class="form-control" id="HoraFim" name="HoraFim" placeholder="Hora Fim" required>
             </div>
             <div class="col-md-4 mb-3" id="ContatoPro">
-                <label for="valor">Valor</label>
-                <input type="text" class="form-control" id="valor" name="valor" placeholder="Valor" required>
+                <label for="IntervaloAtendimento">Intervalo entre atendimento</label>
+                <input type="time" class="form-control" id="IntervaloAtendimento" name="IntervaloAtendimento" placeholder="Intervalo entre atendimento" required>
+            </div>
+            <div class="col mb-3">
+                <label for="IntervaloInicio">Intervalo Inicio</label>
+                <input type="time" class="form-control" id="IntervaloInicio" name="IntervaloInicio" placeholder="Intervalo Inicio" required>
+            </div>
+            <div class="col mb-3">
+                <label for="IntervaloFim">Intervalo Fim</label>
+                <input type="time" class="form-control" id="IntervaloFim" name="IntervaloFim" placeholder="Intervalo Fim" required>
             </div>
             <button class="btn" type="submit" style="background-color: aquamarine;">Enviar</button>
         </form>
