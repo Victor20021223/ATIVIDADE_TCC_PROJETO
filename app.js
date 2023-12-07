@@ -27,7 +27,7 @@ app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html") 
 });
 
-app.get('/user', async (req, res) => {
+app.get('/user', async (req, res) => { 
     res.sendFile(__dirname + "/src/index.html")
 });
 
@@ -142,8 +142,8 @@ app.post('/addHorario', async (req, res) => {
         INTERVALO_INICIO:req.body.IntervaloInicio,
         INTERVALO_FIM:req.body.IntervaloFim,
         INTERVALO_ENTRE_ATEND:req.body.IntervaloAtendimento
-    }) 
-    res.sendFile(__dirname+'/src/empresaPRofissionais.html')
+    })  
+    res.sendFile(__dirname+'/src/empresaHorarios.html')
 });
 
 //Outros

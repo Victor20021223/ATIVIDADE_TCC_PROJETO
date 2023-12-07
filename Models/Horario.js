@@ -16,28 +16,32 @@ const Horario = db.define('horarios',{
         allowNull:false
     },
     HORA_INICIO_EXPEDIENTE:{
-        type:Sequelize.DATE,
+        type:Sequelize.TIME,
         required:true,
         allowNull:false
     },
     HORA_FIM_EXPEDIENTE:{
-        type:Sequelize.DATE,
+        type:Sequelize.TIME,
         required:true,
         allowNull:false
     },
     INTERVALO_INICIO:{
-        type:Sequelize.DATE,
+        type:Sequelize.TIME,
         required:true,
         allowNull:false
     },
     INTERVALO_FIM:{
-        type:Sequelize.DATE,
+        type:Sequelize.TIME,
         required:true,
         allowNull:false
     },
     INTERVALO_ENTRE_ATEND:{
-        type:Sequelize.DATE,
+        type:Sequelize.TIME,
         required:true,
         allowNull:false
     }
-})
+});
+
+Horario.sync();
+
+module.exports = Horario;
