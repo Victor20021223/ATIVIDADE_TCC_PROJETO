@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 const path = require("path");
 const bodyParser = require("body-parser");
+const session = require('express-session');
+const flash = require('connect-flash');
 
 //Config
 app.use(express.json());
@@ -19,6 +21,70 @@ const Evento = require('./Models/Evento');
 
 //Public
 app.use(express.static('public'));
+
+//Session
+app.use(session({
+    secret: "SistemaAgenda20231203",
+    resave: true,
+    saveUninitialized:true
+}))
+app.use(flash());
+
+//Middleware
+app.use((req,res,next) =>{
+    res.locals.sucess_msg = req.flash("sucess_msg")
+    res.locals.error_msg = req.flash("error_msg")
+    next()
+});
+
+//Funcao
+function verificaAutenticacao(req, res, next) {
+    // Verificar se o usuário está autenticado
+    if (req.session && req.session.usuario) {
+      return next(); // O usuário está autenticado, continue
+    } else {
+      return res.redirect('/login'); // Redirecione para a página de login se não estiver autenticado
+    }
+}  
+
+//Calendar
+app.get('/eventos', async (req, res) => {
+    try {
+      const eventos = await Evento.findAll();
+      res.json(eventos);
+    } catch (error) {
+      console.error('Erro ao obter eventos:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+  });
+
+  app.put('/eventos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, start, end } = req.body;
+    try {
+      const eventoAtualizado = await Evento.update({ title, start, end }, { where: { id } });
+      if (eventoAtualizado[0] === 1) {
+        res.json({ mensagem: 'Evento atualizado com sucesso.' });
+      } else {
+        res.status(404).json({ erro: 'Evento não encontrado.' });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar evento:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+  });
+
+  // Rota para criar um novo evento
+  app.post('/eventos', async (req, res) => {
+    const { title, start, end } = req.body;
+    try {
+      const novoEvento = await Evento.create({ title, start, end });
+      res.json(novoEvento);
+    } catch (error) {
+      console.error('Erro ao criar evento:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+  });
 
 //Rotas USER
 
@@ -52,6 +118,10 @@ app.get('/addEmpresa', async (req, res) => {
     res.sendFile(__dirname + '/src/cad_CadastroEmpresa.html')
 });
 
+app.get('/agendar', async (req,res) =>{
+    res.sendFile(__dirname+'/src/index.html')
+});
+
 //Rotas POST
 app.post('/add', async (req, res) => {
     await User.create({
@@ -61,6 +131,7 @@ app.post('/add', async (req, res) => {
         SENHA: req.body.senhaUsuario,
         GENERO: req.body.generoUsuario
     })
+    req.flash("success_msg", "Categoria criada com sucesso")
     res.sendFile(__dirname + "/src/index.html")
 });
 

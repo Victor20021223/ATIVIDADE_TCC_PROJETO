@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="/css/style.css">
   <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <title>Tcc</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/locale/pt-br.js"></script>
 
+  <title>Tcc</title>
 </head>
 
 <body>
@@ -46,28 +47,79 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        var eventos = [
-          { id: 5, title: 'Horário 1', start: '2023-12-07T10:00:00', end: '2023-12-07T11:00:00' },
-          { id: 6, title: 'Horário 2', start: '2023-12-07T12:00:00', end: '2023-12-07T13:00:00' },
-          // Adicione mais eventos conforme necessário
-        ];
-    
         $('#calendario').fullCalendar({
           header: {
             left: 'prev,next today',
+            locale: 'pt-br',
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
           },
           defaultView: 'month',
-          editable: false,
-          events: eventos,
+          editable: true,
+          eventSources: [
+            // Rota para obter eventos
+            {
+              url: '/eventos',
+              method: 'GET',
+              failure: function () {
+                alert('Erro ao carregar eventos.');
+              }
+            }
+          ],
           eventClick: function (event) {
-            // Aqui você pode adicionar a lógica para lidar com o clique em um evento
-            alert('ID do Horário: ' + event.id);
-          }
+            const novoTitulo = prompt('Novo título:', event.title);
+            if (novoTitulo !== null) {
+              const dadosAtualizados = {
+                title: novoTitulo,
+                start: event.start.format(),
+                end: event.end ? event.end.format() : null
+              };
+    
+              // Rota para atualizar um evento
+              $.ajax({
+                url: `/eventos/${event.id}`,
+                type: 'PUT',
+                data: JSON.stringify(dadosAtualizados),
+                contentType: 'application/json',
+                success: function () {
+                  alert('Evento atualizado com sucesso.');
+                  $('#calendario').fullCalendar('refetchEvents');
+                },
+                error: function () {
+                  alert('Erro ao atualizar evento.');
+                }
+              });
+            }
+          },
+          dayClick: function (date) {
+            // Aqui você pode adicionar a lógica para lidar com o clique em um dia
+            const novoEvento = {
+              title: 'Novo Evento',
+              start: date.format(),
+              end: moment(date).add(1, 'hour').format()
+            };
+    
+            // Rota para criar um novo evento
+            $.ajax({
+              url: '/eventos',
+              type: 'POST',
+              data: JSON.stringify(novoEvento),
+              contentType: 'application/json',
+              success: function (response) {
+                alert('Novo evento criado com sucesso. ID: ' + response.id);
+                $('#calendario').fullCalendar('refetchEvents');
+              },
+              error: function () {
+                alert('Erro ao criar novo evento.');
+              }
+            });
+          },
+    
+          // ... (código posterior)
         });
       });
     </script>
+    
   </main>
 
   <footer class="fixed-bottom" style="padding: 30px;">
