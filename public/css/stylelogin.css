@@ -166,6 +166,25 @@ main #menu .confirma button {
     background-color: antiquewhite;
 }
 
+.cadastroServico {
+    margin: 0 auto;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.cadastroServico a {
+    padding: 20px;
+    border-radius: 5px;
+    background-color: aquamarine;
+    width: 150px;
+    color: black;
+}
+
+.cadastroServico a:hover {
+    background-color: antiquewhite;
+}
+
+
 #ContatoPro {
     margin: 0 auto;
     text-align: center;
