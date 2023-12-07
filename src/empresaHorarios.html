@@ -37,7 +37,7 @@
       </div>
     </nav>
   </header>
-  <main id="horarios">
+  <main>
     <section>
       <h2>Dias da Semana</h2>
       <table border="1">
@@ -50,11 +50,42 @@
           <!-- Os dados serão exibidos aqui -->
         </tbody>
       </table>
-    </section>
+      <script>
+        // Função para fazer a requisição AJAX
+        async function carregarDiasSemana() {
+          try {
+            const response = await fetch('/admin/horarios/list');
+            const { erro, dataDiasSemana } = await response.json();
 
+            const tabelaDiasSemana = document.getElementById('tabelaDiasSemana');
+
+            // Limpar tabela antes de adicionar novos dados
+            tabelaDiasSemana.innerHTML = '';
+
+            if (!erro && dataDiasSemana.length > 0) {
+              dataDiasSemana.forEach(diaSemana => {
+                const newRow = tabelaDiasSemana.insertRow();
+                newRow.insertCell(0).innerText = diaSemana.DIAS_SEMANAS;
+              });
+            } else {
+              const newRow = tabelaDiasSemana.insertRow();
+              const cell = newRow.insertCell(0);
+              cell.colSpan = 1; // Ajuste conforme o número de colunas
+              cell.innerText = 'Nenhum dia da semana encontrado.';
+            }
+          } catch (error) {
+            console.error('Erro ao carregar dias da semana:', error);
+          }
+        }
+        // Chame a função para carregar os horários quando a página carregar
+        window.onload = function () {
+          carregarDiasSemana();
+        };
+      </script>
+    </section>
     <section>
-      <h2>Horários</h2>
-      <table border="1">
+      <h2>Horários Disponíveis</h2>
+      <table class="table table-bordered">
         <thead>
           <tr>
             <th>Hora Livre</th>
@@ -64,71 +95,42 @@
           <!-- Os dados serão exibidos aqui -->
         </tbody>
       </table>
-    </section>
 
-    <script>
-      // Função para fazer a requisição AJAX
-      async function carregarDiasSemana() {
-        try {
-          const response = await fetch('/admin/horarios/list');
-          const { erro, dataDiasSemana } = await response.json();
 
-          const tabelaDiasSemana = document.getElementById('tabelaDiasSemana');
+      <script>
+        // Função para fazer a requisição AJAX
+        async function carregarHorarios() {
+          try {
+            const response = await fetch('/admin/horarios/hora');
+            const { erro, dataHorario } = await response.json();
 
-          // Limpar tabela antes de adicionar novos dados
-          tabelaDiasSemana.innerHTML = '';
+            const tabelaHorarios = document.getElementById('tabelaHorarios');
 
-          if (!erro && dataDiasSemana.length > 0) {
-            dataDiasSemana.forEach(diaSemana => {
-              const newRow = tabelaDiasSemana.insertRow();
-              newRow.insertCell(0).innerText = diaSemana.DIAS_SEMANAS;
-            });
-          } else {
-            const newRow = tabelaDiasSemana.insertRow();
-            const cell = newRow.insertCell(0);
-            cell.colSpan = 1; // Ajuste conforme o número de colunas
-            cell.innerText = 'Nenhum dia da semana encontrado.';
-          }
-        } catch (error) {
-          console.error('Erro ao carregar dias da semana:', error);
-        }
-      }
+            // Limpar tabela antes de adicionar novos dados
+            tabelaHorarios.innerHTML = '';
 
-      async function carregarHorarios() {
-        try {
-          const response = await fetch('http://localhost:8080/admin/horarios/list');
-          const { erro, dataHorarios } = await response.json();
-
-          const tabelaHorarios = document.getElementById('tabelaHorarios');
-
-          // Limpar tabela antes de adicionar novos dados
-          tabelaHorarios.innerHTML = '';
-
-          if (!erro && dataHorarios.length > 0) {
-            dataHorarios.forEach(horario => {
+            if (!erro && dataHorario.length > 0) {
+              dataHorario.forEach(horario => {
+                const newRow = tabelaHorarios.insertRow();
+                newRow.insertCell(0).innerText = horario.HORA_LIVRE;
+              });
+            } else {
               const newRow = tabelaHorarios.insertRow();
-              newRow.insertCell(0).innerText = horario.ID;
-              newRow.insertCell(1).innerText = horario.HORA_LIVRE;
-            });
-          } else {
-            const newRow = tabelaHorarios.insertRow();
-            const cell = newRow.insertCell(0);
-            cell.colSpan = 2; // Ajuste conforme o número de colunas
-            cell.innerText = 'Nenhum horário encontrado.';
+              const cell = newRow.insertCell(0);
+              cell.colSpan = 1; // Ajuste conforme o número de colunas
+              cell.innerText = 'Nenhum horário encontrado.';
+            }
+          } catch (error) {
+            console.error('Erro ao carregar horários:', error);
           }
-        } catch (error) {
-          console.error('Erro ao carregar horários:', error);
         }
-      }
 
-      // Chame a função para carregar os horários quando a página carregar
-      window.onload = function () {
-        carregarHorarios();
-        carregarDiasSemana();
-      };
-
-    </script>
-
+        // Chame a função para carregar os horários quando a página carregar
+        window.onload = function () {
+          carregarHorarios();
+        };
+      </script>
+    </section>
     <div class="cadastro">
       <a href="/admin/addHorario" style="text-decoration: none;">Cadastrar Horário</a>
     </div>
