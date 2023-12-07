@@ -90,7 +90,7 @@ app.get('/eventos', async (req, res) => {
 
 //Rotas GET
 app.get('/', async (req, res) => {
-    res.sendFile(__dirname + "/src/index.html")
+    res.sendFile(__dirname + "/src/ControleEmpresa.html")
 });
 
 app.get('/user', async (req, res) => {
