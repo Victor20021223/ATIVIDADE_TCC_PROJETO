@@ -14,14 +14,14 @@ app.use(bodyParser.json());
 const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
-const { Console } = require('console');
+const Servicos = require('./Models/Servicos');
+
 //Public
 app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, 'public')));
+
 //Rotas USER
 
 //Rotas GET
-
 app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html") 
 });
@@ -78,13 +78,26 @@ app.get('/admin/servicos', async (req, res) => {
     res.sendFile(__dirname + '/src/empresaServicos.html') 
 });
 
+app.get('/admin/addServico', async (req, res) => {
+    res.sendFile(__dirname+'/src/cad_cadastroServico.html')
+});
+
 app.get('/admin/addProfissional', async (req, res) => {
     res.sendFile(__dirname+'/src/cad_cadastroProfissional.html')
 });
 
 app.get('/admin/profissional',async (req, res) => {
     const query = 'SELECT * FROM profissionais';
-    connection.query(query, (error, results, fields) => {
+    Profissional.query(query, (error, results, fields) => {
+        if (error) throw error;
+
+        res.json(results);
+    });
+});
+
+app.get('/admin/servicos', async (req, res) => {
+    const query = 'SELECT * FROM servicos';
+    Servicos.query(query, (error, results, fields) => {
         if (error) throw error;
 
         res.json(results);
@@ -92,7 +105,6 @@ app.get('/admin/profissional',async (req, res) => {
 });
 
 //Rotas POST
-
 app.post('/addProfissional', async (req, res) => {
     await Profissional.create({
         NOME:req.body.NomeProfissional,
@@ -103,6 +115,15 @@ app.post('/addProfissional', async (req, res) => {
     res.sendFile(__dirname+'/src/empresaPRofissionais.html')
 });
 
+app.post('/addServico', async (req, res) => {
+    await Servicos.create({
+        DESCRICAO:req.body.descricao,
+        SOBRE:req.body.Sobre,
+        VALOR:req.body.valor, 
+        SITUACAO:'A'
+    }) 
+    res.sendFile(__dirname+'/src/empresaPRofissionais.html')
+});
 
 //Outros
 const PORT = 8080
