@@ -35,7 +35,7 @@ const Horario = db.define('horarios',{
         required:true,
         allowNull:false
     },
-    INTERVALO_ENTRE_ATEND:{
+    TEMPO_ATENDIMENTO:{
         type:Sequelize.TIME,
         required:true,
         allowNull:false
