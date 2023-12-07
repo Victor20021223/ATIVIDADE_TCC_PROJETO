@@ -37,52 +37,7 @@
       </div>
     </nav>
   </header>
-  <main>
-    <section>
-      <h2>Dias da Semana</h2>
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Dias da Semana</th>
-          </tr>
-        </thead>
-        <tbody id="tabelaDiasSemana">
-          <!-- Os dados serão exibidos aqui -->
-        </tbody>
-      </table>
-      <script>
-        // Função para fazer a requisição AJAX
-        async function carregarDiasSemana() {
-          try {
-            const response = await fetch('/admin/horarios/list');
-            const { erro, dataDiasSemana } = await response.json();
-
-            const tabelaDiasSemana = document.getElementById('tabelaDiasSemana');
-
-            // Limpar tabela antes de adicionar novos dados
-            tabelaDiasSemana.innerHTML = '';
-
-            if (!erro && dataDiasSemana.length > 0) {
-              dataDiasSemana.forEach(diaSemana => {
-                const newRow = tabelaDiasSemana.insertRow();
-                newRow.insertCell(0).innerText = diaSemana.DIAS_SEMANAS;
-              });
-            } else {
-              const newRow = tabelaDiasSemana.insertRow();
-              const cell = newRow.insertCell(0);
-              cell.colSpan = 1; // Ajuste conforme o número de colunas
-              cell.innerText = 'Nenhum dia da semana encontrado.';
-            }
-          } catch (error) {
-            console.error('Erro ao carregar dias da semana:', error);
-          }
-        }
-        // Chame a função para carregar os horários quando a página carregar
-        window.onload = function () {
-          carregarDiasSemana();
-        };
-      </script>
-    </section>
+  <main>    
     <section>
       <h2>Horários Disponíveis</h2>
       <table class="table table-bordered">

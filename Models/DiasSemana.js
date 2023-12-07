@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('./db');
 const sequelize = require('./db');
 
-const DiasSemana = db.define('dias_semana',{
+const DiasSemana = db.define('dias_semanas',{
     ID:{
         type: Sequelize.DataTypes.INTEGER,
         required:true,

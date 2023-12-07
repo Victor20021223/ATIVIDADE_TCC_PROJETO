@@ -91,8 +91,8 @@ app.get('/admin/addProfissional', async (req, res) => {
     res.sendFile(__dirname + '/src/cad_cadastroProfissional.html')
 });
 
-app.get('/admin/addHorario', async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_cadastroHorarios.html')
+app.get('/admin/addHorario/hora', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_cadastroHorariosadd.html')
 });
 
 app.get('/admin/profissional/list', async (req, res) => {
@@ -114,20 +114,6 @@ app.get('/admin/servicos/list', async (req, res) => {
         return res.json({
             erro: false,
             dataServicos
-        });
-    }).catch(() =>{
-        return res.status(400).json({
-            erro:true,
-            mensagem: "Erro: Nenhum valor encontrado para pagina"
-        })
-    })
-});
-
-app.get('/admin/horarios/list', async (req, res) => {
-    await DiasSemana.findAll().then((dataDiasSemana) => {
-        return res.json({
-            erro: false,
-            dataDiasSemana
         });
     }).catch(() =>{
         return res.status(400).json({
@@ -159,7 +145,7 @@ app.post('/addProfissional', async (req, res) => {
         CONTATO: req.body.Contato,
         SITUACAO: 'A'
     })
-    res.sendFile(__dirname + '/src/empresaPRofissionais.html')
+    res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
 
 app.post('/addServico', async (req, res) => {
@@ -171,14 +157,6 @@ app.post('/addServico', async (req, res) => {
     })
     res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
-
-app.post('/addHorario/opcaoDia', async (req, res) => {
-    await DiasSemana.create({
-        DIAS_SEMANAS:req.body.opcaoDia
-    })
-    res.sendFile(__dirname+"/src/cad_cadastroHorarioadd.html")
-});
-
 
 app.post('/addHorario/hora', async (req, res) => {
     await Horario.create({
