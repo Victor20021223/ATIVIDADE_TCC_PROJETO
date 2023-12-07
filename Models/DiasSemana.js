@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('./db');
 const sequelize = require('./db');
-const Horario = require('./Horario');
 
 const DiasSemana = de.define('dias_semanas',{
     ID:{
