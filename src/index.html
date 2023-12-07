@@ -42,6 +42,7 @@
   </header>
 
   <main>
+    <div id="overlay"></div>
 
     <div id="calendario"></div>
 
@@ -49,6 +50,7 @@
       document.addEventListener('DOMContentLoaded', function () {
         $('#calendario').fullCalendar({
           header: {
+            initialView:'timeGridWeek',
             left: 'prev,next today',
             locale: 'pt-br',
             center: 'title',
