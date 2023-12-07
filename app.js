@@ -22,18 +22,6 @@ app.use(express.static('public'));
 //Rotas USER
 
 //Rotas GET
-app.get('/events', (req, res) => {
-    const query = 'SELECT * FROM horarios';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Erro ao obter eventos do banco de dados:', err);
-            res.status(500).send('Erro interno do servidor');
-        } else {
-            res.json(results);
-        }
-    });
-});
-
 app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html") 
 });
@@ -147,12 +135,7 @@ app.post('/addServico', async (req, res) => {
 
 app.post('/addHorario', async (req, res) => {
     await Horario.create({
-        DIAS_DA_SEMANA:req.body.DiaSemana,
-        HORA_INICIO_EXPEDIENTE:req.body.HoraInicio,
-        HORA_FIM_EXPEDIENTE:req.body.HoraFim, 
-        INTERVALO_INICIO:req.body.IntervaloInicio,
-        INTERVALO_FIM:req.body.IntervaloFim,
-        TEMPO_ATENDIMENTO:req.body.IntervaloAtendimento
+        HORA_LIVRE:req.body.HorariosDiponiveis, 
     })  
     res.sendFile(__dirname+'/src/empresaHorarios.html')
 });

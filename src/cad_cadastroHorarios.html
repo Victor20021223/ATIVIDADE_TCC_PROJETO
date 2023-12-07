@@ -39,38 +39,9 @@
     </header>
     <main>
         <form method="post" action="/addHorario">
-
-            <select class="form-select" aria-label="Default select example" name="DiaSemana">
-                <option selected>Selecione o dia da semana</option>
-                <option value="1">Segunda-feira</option>
-                <option value="2">Terça-feira</option>
-                <option value="3">Quarta-feira</option>
-                <option value="4">Quinta-feira</option>
-                <option value="5">Sexta-feira</option>
-                <option value="6">Sabado-feira</option>
-                <option value="7">Domingo-feira</option>
-            </select>
-
-            <div class="col mb-3">
-                <label for="HoraInicio">Horario Inicio atendimento</label>
-                <input type="time" class="form-control" id="HoraInicio" name="HoraInicio" placeholder="Hora Agenda"
-                    required>
-            </div>
-            <div class="col mb-3">
-                <label for="HoraFim">Horario Fim de atendimento</label>
-                <input type="time" class="form-control" id="HoraFim" name="HoraFim" placeholder="Hora Fim" required>
-            </div>
             <div class="col-md-4 mb-3" id="ContatoPro">
-                <label for="IntervaloAtendimento">Tempo atendimento</label>
-                <input type="time" class="form-control" id="IntervaloAtendimento" name="IntervaloAtendimento" placeholder="Intervalo entre atendimento" required>
-            </div>
-            <div class="col mb-3">
-                <label for="IntervaloInicio">Intervalo Inicio</label>
-                <input type="time" class="form-control" id="IntervaloInicio" name="IntervaloInicio" placeholder="Intervalo Inicio" required>
-            </div>
-            <div class="col mb-3">
-                <label for="IntervaloFim">Intervalo Fim</label>
-                <input type="time" class="form-control" id="IntervaloFim" name="IntervaloFim" placeholder="Intervalo Fim" required>
+                <label for="HorariosDiponiveis">Horarios Disponiveis</label>
+                <input type="time" class="form-control" id="HorariosDiponiveis" name="HorariosDiponiveis" placeholder="Horarios Disponiveis" required>
             </div>
             <button class="btn" type="submit" style="background-color: aquamarine;">Enviar</button>
         </form>
