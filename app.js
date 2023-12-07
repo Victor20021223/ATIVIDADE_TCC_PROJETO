@@ -15,11 +15,32 @@ const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
+const EventoSemanal = require('./Models/events');
 
 //Public
 app.use(express.static('public')); 
 
 //Rotas USER
+
+app.get('/events', (req, res) => {
+    EventoSemanal.findAll().then(events => {
+        res.json(events);
+    }).catch(err => {
+        console.error('Erro ao obter eventos do banco de dados:', err);
+        res.status(500).send('Erro interno do servidor');
+    });
+});
+
+
+app.post('/events/add', (req, res) => {
+    const { title, start_time, end_time, day_of_week } = req.body;
+    EventoSemanal.create({ title, start_time, end_time, day_of_week }).then(event => {
+        res.json({ id: event.id });
+    }).catch(err => {
+        console.error('Erro ao adicionar evento no banco de dados:', err);
+        res.status(500).send('Erro interno do servidor');
+    });
+});
 
 //Rotas GET
 app.get('/', async (req, res) => {
