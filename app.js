@@ -15,7 +15,7 @@ const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
-const DiasSemana = require('./Models/DiasSemana');
+const Evento = require('./Models/Evento');
 
 //Public
 app.use(express.static('public'));
@@ -91,8 +91,8 @@ app.get('/admin/addProfissional', async (req, res) => {
     res.sendFile(__dirname + '/src/cad_cadastroProfissional.html')
 });
 
-app.get('/admin/addHorario/hora', async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_cadastroHorariosadd.html')
+app.get('/admin/addHorario', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_cadastroHorario.html')
 });
 
 app.get('/admin/profissional/list', async (req, res) => {
