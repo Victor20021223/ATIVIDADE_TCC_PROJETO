@@ -124,10 +124,24 @@ app.get('/admin/servicos/list', async (req, res) => {
 });
 
 app.get('/admin/horarios/list', async (req, res) => {
-    await Servicos.findAll().then((dataHorarios) => {
+    await DiasSemana.findAll().then((dataDiasSemana) => {
         return res.json({
             erro: false,
-            dataHorarios
+            dataDiasSemana
+        });
+    }).catch(() =>{
+        return res.status(400).json({
+            erro:true,
+            mensagem: "Erro: Nenhum valor encontrado para pagina"
+        })
+    })
+});
+
+app.get('/admin/horarios/hora', async (req, res) => {
+    await Horario.findAll().then((dataHorario) => {
+        return res.json({
+            erro: false,
+            dataHorario
         });
     }).catch(() =>{
         return res.status(400).json({

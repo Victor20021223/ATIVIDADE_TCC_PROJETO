@@ -179,6 +179,13 @@ main #menu .confirma button {
     border-radius: 15px;
 }
 
+#horarios{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
 /*Estilo Profissional*/
 .cadastro {
     margin: 0 auto;

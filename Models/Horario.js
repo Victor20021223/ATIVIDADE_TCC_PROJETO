@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('./db');
 const sequelize = require('./db');
-const DiasSemana = require('./DiasSemana');
 
 const Horario = db.define('horarios',{
     ID:{
@@ -18,10 +17,7 @@ const Horario = db.define('horarios',{
     }
 });
 
-Horario.belongsTo(DiasSemana,{
-    constraint:true,
-    foreignKey: 'ID_HORARIO_DIA_FK'
-})
+
 
 Horario.sync();
 

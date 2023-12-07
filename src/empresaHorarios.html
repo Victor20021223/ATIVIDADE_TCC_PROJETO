@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/stylelogin.css">
-  <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <title>Horários</title>
 </head>
 
@@ -30,31 +30,107 @@
               <a class="nav-link" href="/admin/profissional">Profissionais</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/admin/horarios">Horarios</a>
+              <a class="nav-link" href="/admin/horarios">Horários</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
   </header>
-  <main>
-    <div class="horarios" id="table-container">
-      <table id="horarios" class="table">
+  <main id="horarios">
+    <section>
+      <h2>Dias da Semana</h2>
+      <table border="1">
         <thead>
           <tr>
-            <th scope="col">HORA_LIVRE</th>
+            <th>Dias da Semana</th>
           </tr>
         </thead>
-        <tbody>
-            <tr>
-
-            </tr>
+        <tbody id="tabelaDiasSemana">
+          <!-- Os dados serão exibidos aqui -->
         </tbody>
       </table>
-    </div>
+    </section>
+
+    <section>
+      <h2>Horários</h2>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Hora Livre</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaHorarios">
+          <!-- Os dados serão exibidos aqui -->
+        </tbody>
+      </table>
+    </section>
+
+    <script>
+      // Função para fazer a requisição AJAX
+      async function carregarDiasSemana() {
+        try {
+          const response = await fetch('/admin/horarios/list');
+          const { erro, dataDiasSemana } = await response.json();
+
+          const tabelaDiasSemana = document.getElementById('tabelaDiasSemana');
+
+          // Limpar tabela antes de adicionar novos dados
+          tabelaDiasSemana.innerHTML = '';
+
+          if (!erro && dataDiasSemana.length > 0) {
+            dataDiasSemana.forEach(diaSemana => {
+              const newRow = tabelaDiasSemana.insertRow();
+              newRow.insertCell(0).innerText = diaSemana.DIAS_SEMANAS;
+            });
+          } else {
+            const newRow = tabelaDiasSemana.insertRow();
+            const cell = newRow.insertCell(0);
+            cell.colSpan = 1; // Ajuste conforme o número de colunas
+            cell.innerText = 'Nenhum dia da semana encontrado.';
+          }
+        } catch (error) {
+          console.error('Erro ao carregar dias da semana:', error);
+        }
+      }
+
+      async function carregarHorarios() {
+        try {
+          const response = await fetch('http://localhost:8080/admin/horarios/list');
+          const { erro, dataHorarios } = await response.json();
+
+          const tabelaHorarios = document.getElementById('tabelaHorarios');
+
+          // Limpar tabela antes de adicionar novos dados
+          tabelaHorarios.innerHTML = '';
+
+          if (!erro && dataHorarios.length > 0) {
+            dataHorarios.forEach(horario => {
+              const newRow = tabelaHorarios.insertRow();
+              newRow.insertCell(0).innerText = horario.ID;
+              newRow.insertCell(1).innerText = horario.HORA_LIVRE;
+            });
+          } else {
+            const newRow = tabelaHorarios.insertRow();
+            const cell = newRow.insertCell(0);
+            cell.colSpan = 2; // Ajuste conforme o número de colunas
+            cell.innerText = 'Nenhum horário encontrado.';
+          }
+        } catch (error) {
+          console.error('Erro ao carregar horários:', error);
+        }
+      }
+
+      // Chame a função para carregar os horários quando a página carregar
+      window.onload = function () {
+        carregarHorarios();
+        carregarDiasSemana();
+      };
+
+    </script>
 
     <div class="cadastro">
-      <a href="/admin/addHorario" style="text-decoration: none;">Cadastrar Horario</a>
+      <a href="/admin/addHorario" style="text-decoration: none;">Cadastrar Horário</a>
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
