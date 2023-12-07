@@ -20,7 +20,7 @@ const Horario = db.define('horarios',{
 
 Horario.belongsTo(DiasSemana,{
     constraint:true,
-    foreignKey: 'idDiasSemanas'
+    foreignKey: 'ID_HORARIO_DIA_FK'
 })
 
 Horario.sync();

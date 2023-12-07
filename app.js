@@ -15,6 +15,7 @@ const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
+const DiasSemana = require('./Models/DiasSemana');
 
 //Public
 app.use(express.static('public'));
@@ -158,6 +159,11 @@ app.post('/addServico', async (req, res) => {
 });
 
 app.post('/addHorario', async (req, res) => {
+    await DiasSemana.create({
+        DIAS_SEMANAS:req.body.opcaoDia
+    })
+
+
     await Horario.create({
         HORA_LIVRE: req.body.HorariosDiponiveis,
     })

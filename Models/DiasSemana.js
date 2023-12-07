@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('./db');
 const sequelize = require('./db');
 
-const DiasSemana = de.define('dias_semanas',{
+const DiasSemana = db.define('dias_semanas',{
     ID:{
         type: Sequelize.DataTypes.INTEGER,
         required:true,
@@ -16,3 +16,7 @@ const DiasSemana = de.define('dias_semanas',{
         allowNull:false
     }
 })
+
+DiasSemana.sync();
+
+module.exports = DiasSemana;
