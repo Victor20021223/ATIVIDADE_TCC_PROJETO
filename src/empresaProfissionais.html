@@ -38,44 +38,62 @@
     </nav>
   </header>
   <main>
-    <div class="profissional" id="table-container">
-      <table id="profissionais" class="table">
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">NOME</th>
-            <th scope="col">FUNCAO</th>
-            <th scope="col">CONTATO</th>
-            <th scope="col">SITUAÇÂO</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <table border="1" class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Função</th>
+          <th>Contato</th>
+          <th>Situação</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaProfissionais">
+        <!-- Os dados serão exibidos aqui -->
+      </tbody>
+    </table>
+  
+    <script>
+      // Função para fazer a requisição AJAX
+      async function carregarProfissionais() {
+        try {
+          const response = await fetch('/admin/profissional/list');
+          const { erro, dataProfissional } = await response.json();
+  
+          const tabelaProfissionais = document.getElementById('tabelaProfissionais');
+  
+          // Limpar tabela antes de adicionar novos dados
+          tabelaProfissionais.innerHTML = '';
+  
+          if (!erro && dataProfissional.length > 0) {
+            dataProfissional.forEach(profissional => {
+              const newRow = tabelaProfissionais.insertRow();
+              newRow.insertCell(0).innerText = profissional.NOME;
+              newRow.insertCell(1).innerText = profissional.FUNCAO;
+              newRow.insertCell(2).innerText = profissional.CONTATO;
+              newRow.insertCell(3).innerText = profissional.SITUACAO;
+            });
+          } else {
+            const newRow = tabelaProfissionais.insertRow();
+            const cell = newRow.insertCell(0);
+            cell.colSpan = 7; // Ajuste conforme o número de colunas
+            cell.innerText = 'Nenhum profissional encontrado.';
+          }
+        } catch (error) {
+          console.error('Erro ao carregar profissionais:', error);
+        }
+      }
+  
+      // Chame a função para carregar os profissionais quando a página carregar
+      window.onload = carregarProfissionais;
+    </script>
+    
+
 
     <div class="cadastro">
       <a href="/admin/addProfissional" style="text-decoration: none;">Cadastrar Profissional</a>
     </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const tabelaDados = document.getElementById('profissionais').getElementsByTagName('tbody')[0];
-
-      // Puxar dados usando fetch no método GET
-      fetch('/admin/profissional')
-        .then(response => response.json())
-        .then(data => {
-          // Popula a tabela com os dados recebidos
-          data.forEach(item => {
-            const newRow = tabelaDados.insertRow();
-            newRow.innerHTML = `<td>${item.ID}</td><td>${item.NOME}</td><td>${item.FUNCAO}</td><td>${item.CONTATO}</td><td>${item.SITUACAO}</td>`;
-          });
-        })
-        .catch(error => console.error('Erro:', error));
-    });
-
-  </script>
 </body>
 
 </html>

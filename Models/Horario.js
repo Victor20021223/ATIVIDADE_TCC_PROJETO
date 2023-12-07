@@ -10,32 +10,7 @@ const Horario = db.define('horarios',{
         autoIncrement: true,
         allowNull:false
     },
-    DIAS_DA_SEMANA:{
-        type:Sequelize.STRING,
-        required:true,
-        allowNull:false
-    },
-    HORA_INICIO_EXPEDIENTE:{
-        type:Sequelize.TIME,
-        required:true,
-        allowNull:false
-    },
-    HORA_FIM_EXPEDIENTE:{
-        type:Sequelize.TIME,
-        required:true,
-        allowNull:false
-    },
-    INTERVALO_INICIO:{
-        type:Sequelize.TIME,
-        required:true,
-        allowNull:false
-    },
-    INTERVALO_FIM:{
-        type:Sequelize.TIME,
-        required:true,
-        allowNull:false
-    },
-    TEMPO_ATENDIMENTO:{
+    HORA_LIVRE:{
         type:Sequelize.TIME,
         required:true,
         allowNull:false
