@@ -41,6 +41,12 @@ const User = db.define( 'users',{
 //Criat Tabela caso não exista
 User.sync();
 
+User.beforeCreate(async (user) => {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
+  });
+
+  return User;
 
 
 module.exports = User;
