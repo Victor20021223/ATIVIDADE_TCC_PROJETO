@@ -17,7 +17,7 @@ const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
-const Horario = require('./Models/Horario');
+const Horario = require('./Models/Horario'); 
 const Evento = require('./Models/Evento');
 
 //Public
@@ -98,10 +98,17 @@ app.get('/user', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html")
 });
 
-app.get('/user/login', async (req, res) => {
-    
-    res.sendFile(__dirname + "/src/cad_login.html")
-    
+app.get('/user/login', async (req, res) => {  
+    res.sendFile(__dirname + "/src/cad_login.html")  
+});
+
+app.post('/user/login', async (req, res) => {  
+    const user = await User.findOne({
+        attributes: ['ID','NOME','EMAIL','SENHA'],
+        where: {
+            email:req.body.emailUsuario,
+        }
+    })
 });
 
 app.get('/user/login/add', async (req, res) => {
@@ -134,7 +141,6 @@ app.post('/add', async (req, res) => {
         SENHA: req.body.senhaUsuario,
         GENERO: req.body.generoUsuario
     })
-    req.flash("success_msg", "Categoria criada com sucesso")
     res.sendFile(__dirname + "/src/index.html")
 });
 
