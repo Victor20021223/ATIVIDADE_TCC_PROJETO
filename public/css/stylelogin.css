@@ -203,6 +203,10 @@ main #menu .confirma button {
     text-align: center;
 }
 
+.btn{
+    margin-top: 10px;
+}
+
 .btn:hover{
     background-color: antiquewhite;
 }

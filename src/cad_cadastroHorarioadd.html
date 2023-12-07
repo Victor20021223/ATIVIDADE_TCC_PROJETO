@@ -38,18 +38,11 @@
         </nav>
     </header>
     <main>
-        <form method="post" action="/addHorario/opcaoDia">
-            <label for="opcaoDia">Selecione o dia:</label>
-            <select class="form-select" aria-label="Default select example" name="opcaoDia" id="opcaoDia">
-                <option value="" selected disabled>Selecione o dia</option>
-                <option value="Segunda">Segunda-feira</option>
-                <option value="Terca">Terça-feira</option>
-                <option value="Quarta">Quarta-feira</option>
-                <option value="Quinta">Quinta-feira</option>
-                <option value="Sexta">Sexta-feira</option>
-                <option value="Sabado">Sábado</option>
-                <option value="Domingo">Domingo</option>
-            </select>
+        <form method="post" action="/addHorario/hora">
+            <div class="col-md-4 mb-3" id="ContatoPro">
+                <label for="HorariosDiponiveis">Horarios Disponiveis</label>
+                <input type="time" class="form-control" id="HorariosDiponiveis" name="HorariosDiponiveis" placeholder="Horarios Disponiveis" required>
+            </div>
             <button class="btn" type="submit" style="background-color: aquamarine;">Enviar</button>
         </form>
     </main>

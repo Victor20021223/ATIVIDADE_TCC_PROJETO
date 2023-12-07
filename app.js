@@ -155,18 +155,18 @@ app.post('/addServico', async (req, res) => {
         VALOR: req.body.valor,
         SITUACAO: 'A'
     })
-    res.sendFile(__dirname + '/src/empresaPRofissionais.html')
+    res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
 
-app.post('/addHorario', async (req, res) => {
+app.post('/addHorario/opcaoDia', async (req, res) => {
     await DiasSemana.create({
         DIAS_SEMANAS:req.body.opcaoDia
     })
-    res.sendFile(__dirname+"/src/cad_cadastroHorario.html")
+    res.sendFile(__dirname+"/src/cad_cadastroHorarioadd.html")
 });
 
 
-app.post('/addHorario', async (req, res) => {
+app.post('/addHorario/hora', async (req, res) => {
     await Horario.create({
         HORA_LIVRE: req.body.HorariosDiponiveis,
     })
