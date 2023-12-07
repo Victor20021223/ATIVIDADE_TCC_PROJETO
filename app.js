@@ -162,12 +162,16 @@ app.post('/addHorario', async (req, res) => {
     await DiasSemana.create({
         DIAS_SEMANAS:req.body.opcaoDia
     })
+    res.sendFile(__dirname+"/src/cad_cadastroHorario.html")
+});
 
 
+app.post('/addHorario', async (req, res) => {
     await Horario.create({
         HORA_LIVRE: req.body.HorariosDiponiveis,
     })
     res.sendFile(__dirname + '/src/empresaHorarios.html')
+    
 });
 
 //Outros
