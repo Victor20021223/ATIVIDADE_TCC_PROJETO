@@ -5,6 +5,8 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+require("./config/auth")(passport)
 
 
 //Config
@@ -29,6 +31,8 @@ app.use(session({
     resave: true,
     saveUninitialized:true
 }))
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
 
 //Middleware
@@ -58,23 +62,6 @@ app.get('/eventos', async (req, res) => {
       res.status(500).json({ erro: 'Erro interno do servidor' });
     }
   });
-
-  app.put('/eventos/:id', async (req, res) => {
-    const { id } = req.params;
-    const { title, start, end } = req.body;
-    try {
-      const eventoAtualizado = await Evento.update({ title, start, end }, { where: { id } });
-      if (eventoAtualizado[0] === 1) {
-        res.json({ mensagem: 'Evento atualizado com sucesso.' });
-      } else {
-        res.status(404).json({ erro: 'Evento não encontrado.' });
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar evento:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
-    }
-  });
-
   // Rota para criar um novo evento
   app.post('/eventos', async (req, res) => {
     const { title, start, end } = req.body;
@@ -203,19 +190,19 @@ app.get('/admin/servicos/list', async (req, res) => {
     })
 });
 
-app.get('/admin/horarios/hora', async (req, res) => {
+app.get('/addHorario/hora', async (req, res) => { 
     await Horario.findAll().then((dataHorario) => {
         return res.json({
             erro: false,
             dataHorario
         });
     }).catch(() =>{
-        return res.status(400).json({
+        return res.status(400).json({  
             erro:true,
             mensagem: "Erro: Nenhum valor encontrado para pagina"
         })
     })
-});
+}); 
 
 //Rotas POST
 app.post('/addProfissional', async (req, res) => {

@@ -40,107 +40,85 @@
       </div>
     </nav>
   </header>
+    <main>
 
-  <main>
-    <div id="overlay"></div>
-
-    <div id="calendario"></div>
-
-    <!-- Modal para mostrar horários disponíveis -->
-    <div class="modal fade" id="horariosModal" tabindex="-1" role="dialog" aria-labelledby="horariosModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="horariosModalLabel">Horários Disponíveis</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id="horariosList">
-            <!-- Lista de horários será exibida aqui -->
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        $('#calendario').fullCalendar({
-          header: {
-            initialView:'timeGridWeek',
-            left: 'prev,next today',
-            locale: 'pt-br',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
-          },
-          defaultView: 'month',
-          eventSources: [
-            // Rota para obter eventos
-            {
-              url: '/eventos',
-              method: 'GET',
-              failure: function () {
-                alert('Erro ao carregar eventos.');
-              }
-            }
-          ],
-          eventClick: function (event) {
-            const novoTitulo = prompt('Agendamento', event.title);
-            if (novoTitulo !== null) {
-              const dadosAtualizados = {
-                title: novoTitulo,
-                start: event.start.format(),
-                end: event.end ? event.end.format() : null
-              };
+      <div id="calendario"></div>
     
-              // Rota para atualizar um evento
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          $('#calendario').fullCalendar({
+            header: {
+              left: 'prev,next today',
+              locale: 'pt-br',
+              center: 'title',
+              right: 'month,agendaWeek,agendaDay'
+            },
+            defaultView: 'month',
+            editable: true,
+            eventSources: [
+              // Rota para obter eventos
+              {
+                url: '/eventos',
+                method: 'GET',
+                failure: function () {
+                  alert('Erro ao carregar eventos.');
+                }
+              }
+            ],
+            eventClick: function (event) {
+              const novoTitulo = prompt('Novo título:', event.title);
+              if (novoTitulo !== null) {
+                const dadosAtualizados = {
+                  title: novoTitulo,
+                  start: event.start.format(),
+                  end: event.end ? event.end.format() : null
+                };
+      
+                // Rota para atualizar um evento
+                $.ajax({
+                  url: `/eventos/${event.id}`,
+                  type: 'PUT',
+                  data: JSON.stringify(dadosAtualizados),
+                  contentType: 'application/json',
+                  success: function () {
+                    alert('Evento atualizado com sucesso.');
+                    $('#calendario').fullCalendar('refetchEvents');
+                  },
+                  error: function () {
+                    alert('Erro ao atualizar evento.');
+                  }
+                });
+              }
+            },
+            dayClick: function (date) {
+              // Aqui você pode adicionar a lógica para lidar com o clique em um dia
+              const novoEvento = {
+                title: 'Novo Evento',
+                start: date.format(),
+                end: moment(date).add(1, 'hour').format()
+              };
+      
+              // Rota para criar um novo evento
               $.ajax({
-                url: `/eventos/${event.id}`,
+                url: '/eventos',
                 type: 'POST',
-                data: JSON.stringify(dadosAtualizados),
+                data: JSON.stringify(novoEvento),
                 contentType: 'application/json',
-                success: function () {
-                  alert('Evento atualizado com sucesso.');
+                success: function (response) {
+                  alert('Novo evento criado com sucesso. ID: ' + response.id);
                   $('#calendario').fullCalendar('refetchEvents');
                 },
                 error: function () {
-                  alert('Erro ao atualizar evento.');
+                  alert('Erro ao criar novo evento.');
                 }
               });
-            }
-          },
-          dayClick: function (date) {
-            const novoEvento = {
-              title: 'Novo',
-              start: date.format(),
-              end: moment(date).add(1, 'hour').format()
-            };
-    
-            // Rota para criar um novo evento
-            $.ajax({
-              url: '/eventos',
-              type: 'POST',
-              data: JSON.stringify(novoEvento),
-              contentType: 'application/json',
-              success: function (response) {
-                alert('Novo evento criado com sucesso. ID: ' + response.id);
-                $('#calendario').fullCalendar('refetchEvents');
-                // Adicione lógica de notificação aqui, se necessário
-              },
-              error: function () {
-                alert('Erro ao criar novo evento.');
-              }
-            });
-          },
-    
-          // ... (código posterior)
+            },
+      
+            // ... (código posterior)
+          });
         });
-      });
-    </script>
-    
+      </script>
+
   </main>
 
 
