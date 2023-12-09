@@ -75,6 +75,12 @@ th {
 
 /*Estilo Header*/
 
+.container-fluid{
+    background-color: aquamarine;
+    padding: 15px;
+    margin: 0 0;
+}
+
 .facaParte a {
     background-color: aquamarine;
     padding: 15px;

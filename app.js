@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
-require("./config/auth")(passport)
+const bcrypt = require('bcryptjs');
+require("./config/auth")(passport);
 
 
 //Config
@@ -80,7 +81,7 @@ app.get('/eventos', async (req, res) => {
 
 //Rotas GET
 app.get('/', async (req, res) => {
-    res.sendFile(__dirname + "/src/ControleEmpresa.html")
+    res.sendFile(__dirname + "/src/index.html")
 });
 
 app.get('/user', async (req, res) => {
@@ -91,13 +92,38 @@ app.get('/user/login', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_login.html")  
 });
 
-app.post('/user/login', async (req, res) => {  
-    const user = await User.findOne({
-        attributes: ['ID','NOME','EMAIL','SENHA'],
-        where: {
-            email:req.body.emailUsuario,
+app.post('/user/login/sync', async (req, res, next) => {
+    try {
+        // Busca o usuário pelo email
+        const user = await User.findOne({
+            attributes: ['ID','NOME','EMAIL', 'SENHA'], // Ajuste conforme necessário
+            where: {
+                email: req.body.emailConfirma,
+            }
+        });
+        // Verifica se o usuário foi encontrado
+        if (!user) {
+            alert('Senha ou Email incorretos');
+             return redirect('/login');
         }
-    })
+        // Agora você pode verificar a senha usando o bcrypt
+        const senhaCorreta = await bcrypt.compare(req.body.senhaConfirma, user.SENHA);
+
+        if (!senhaCorreta) {
+            alert('Senha ou Email incorretos');
+            return redirect('/login');
+        }
+
+        // Aqui você pode adicionar lógica adicional para gerar tokens de autenticação, etc.
+
+        // Se a autenticação for bem-sucedida, você pode enviar uma resposta de sucesso
+        res.status(200).json({ message: 'Autenticação bem-sucedida' });
+
+    } catch (error) {
+        // Trate qualquer erro que possa ocorrer durante o processo
+        console.error('Erro durante a autenticação:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
 });
 
 app.get('/user/login/add', async (req, res) => {
