@@ -77,7 +77,6 @@
             right: 'month,agendaWeek,agendaDay'
           },
           defaultView: 'month',
-          editable: true,
           eventSources: [
             // Rota para obter eventos
             {
@@ -89,7 +88,7 @@
             }
           ],
           eventClick: function (event) {
-            const novoTitulo = prompt('Novo título:', event.title);
+            const novoTitulo = prompt('Agendamento', event.title);
             if (novoTitulo !== null) {
               const dadosAtualizados = {
                 title: novoTitulo,
@@ -100,7 +99,7 @@
               // Rota para atualizar um evento
               $.ajax({
                 url: `/eventos/${event.id}`,
-                type: 'PUT',
+                type: 'POST',
                 data: JSON.stringify(dadosAtualizados),
                 contentType: 'application/json',
                 success: function () {

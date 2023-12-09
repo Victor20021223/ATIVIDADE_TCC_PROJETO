@@ -235,7 +235,7 @@ app.post('/addServico', async (req, res) => {
         VALOR: req.body.valor,
         SITUACAO: 'A'
     })
-    res.sendFile(__dirname + '/src/empresaProfissionais.html')
+    res.sendFile(__dirname + '/src/empresaServicos.html')
 });
 
 app.post('/addHorario/hora', async (req, res) => {
