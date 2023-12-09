@@ -63,14 +63,16 @@ app.get('/eventos', async (req, res) => {
     }
   });
   // Rota para criar um novo evento
-  app.post('/eventos', async (req, res) => {
+  app.post('/eventos', async (req, res, next) => {
     const { title, start, end } = req.body;
     try {
       const novoEvento = await Evento.create({ title, start, end });
       res.json(novoEvento);
+      next();
     } catch (error) {
       console.error('Erro ao criar evento:', error);
       res.status(500).json({ erro: 'Erro interno do servidor' });
+      redirect('./login');
     }
   });
 
