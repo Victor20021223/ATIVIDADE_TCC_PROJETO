@@ -60,15 +60,11 @@
                 <label for="eventTitle" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="eventTitle" placeholder="Informe seu nome" required>
               </div>
-                <input type="datetime-local" class="form-control" id="eventStart" value="datetime-local" required>
-                <input type="datetime-local" class="form-control" id="eventEnd" value="datetime-local" required>
               <div class="mb-3">
                 <label for="eventService" class="form-label">Serviço</label>
                 <select class="form-select" id="eventService" required>
-                  <!-- Populate this dropdown with your list of services -->
                   <option value="1">Service 1</option>
                   <option value="2">Service 2</option>
-                  <!-- Add more options as needed -->
                 </select>
               </div>
               <div class="mb-3">
@@ -80,11 +76,11 @@
                 </select>
               </div>
               <div class="mb-3">
-                <label for="eventHorario" class="form-label">Profissional</label>
+                <label for="eventHorario" class="form-label">Horário</label>
                 <select class="form-select" name="eventHorario" id="eventHorario" required>
                   <option value="1">Horario1</option>
                   <option value="2">Horario2</option>
-                  <option value="3" name="eventHorario">Horario3</option>
+                  <option value="3">Horario3</option>
                 </select>
               </div>
               <button type="submit" class="btn btn-primary">Criar Evento</button>
@@ -124,6 +120,9 @@
           dayClick: function (date) {
             // Abre o modal ao clicar em um dia
             $('#newEventModal').modal('show');
+            $('#eventStart').val(moment().format('YYYY-MM-DDTHH:mm'));
+            $('#eventEnd').val(moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'));
+
             // Submete o formulário ao criar um novo evento
             $('#newEventForm').off('submit').on('submit', function (e) {
               e.preventDefault();

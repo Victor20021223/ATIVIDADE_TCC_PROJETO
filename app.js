@@ -108,6 +108,9 @@ app.get('/relatorio-eventos', async (req, res) => {
       
         eventos.forEach(evento => {
           doc.fontSize(12).text(`Título: ${evento.title}`);
+          doc.fontSize(12).text(`Serviço: ${evento.service}`)
+          doc.fontSize(12).text(`Profissional: ${evento.professional}`)
+          doc.fontSize(12).text(`Horários: ${evento.horario}`)
           doc.moveDown();
         });
       
