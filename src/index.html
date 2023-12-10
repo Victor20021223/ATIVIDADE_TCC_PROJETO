@@ -90,6 +90,12 @@
       </div>
     </div>
     <script>
+
+      // Recarrega a página a cada 5 segundos
+      setInterval(function () {
+        location.reload();
+      }, 5000);
+      
       document.addEventListener('DOMContentLoaded', function () {
         $('#calendario').fullCalendar({
           header: {
@@ -130,7 +136,7 @@
                 professional: $('#eventProfessional').val(),
                 horario: $('#eventHorario').val(),
                 start: moment().format(date.format()),
-                end: moment().add(1, 'hour').format(date.format()) 
+                end: moment().add(1, 'hour').format(date.format())
               };
 
               // Rota para criar um novo evento
