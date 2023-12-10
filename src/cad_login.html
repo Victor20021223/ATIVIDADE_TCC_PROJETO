@@ -2,19 +2,20 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/stylelogin.css">
-    <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/stylelogin.css">
+  <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <title>Login</title>
 </head>
 
 <body>
   <header>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-success">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Sistema Agenda</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg" id="Barra">
+      <div class="container-fluid p-2" style="background-color: aquamarine;">
+        <a class="navbar-brand" href="/user">Sistema Agenda</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+          aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
@@ -30,28 +31,30 @@
       </div>
     </nav>
   </header>
-    <main>
-        <form class="card" method="post" action="/user/login/sync">
-            <div class="card-body">
-                <label for="emailConfirma" class="form-label">Email</label>
-                <input type="email" class="form-control" id="emailConfirma" aria-describedby="emailHelp">
-                <div class="invalid-feedback">
-                  Por favor, escolha um nome de email.
-              </div>
-            </div>
-            <div class="card-body mb-3">
-                <label for="senhaConfirma" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senhaConfirma">
-                <div class="invalid-feedback">
-                  Por favor, escolha um nome de senha.
-              </div>
-            </div>
-            <div class="mb-5 m-2 row-2" style="text-align: center;">
-            <button type="submit" class="btn btn-primary">Entrar</button>
-            <a class="btn btn-primary" href="/user/login/add">Criar conta</a>
-            </div>
-        </form>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <main>
+    <form class="card" method="post" action="/user/login/sync">
+      <div class="card-body">
+        <label for="emailConfirma" class="form-label">Email</label>
+        <input type="email" class="form-control" id="emailConfirma" name="emailConfirma" aria-describedby="emailHelp"
+          required>
+        <div class="invalid-feedback">
+          Por favor, escolha um email válido.
+        </div>
+      </div>
+      <div class="card-body mb-3">
+        <label for="senhaConfirma" class="form-label">Senha</label>
+        <input type="password" class="form-control" id="senhaConfirma" name="senhaConfirma" required>
+        <div class="invalid-feedback">
+          Por favor, escolha uma senha válida.
+        </div>
+      </div>
+      <div class="mb-5 m-2 row-2" style="text-align: center;">
+        <button type="submit" class="btn btn-primary">Entrar</button>
+        <a class="btn btn-primary" href="/user/login/add">Criar conta</a>
+      </div>
+    </form>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

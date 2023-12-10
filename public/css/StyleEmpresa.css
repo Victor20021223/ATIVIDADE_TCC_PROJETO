@@ -28,3 +28,9 @@ td {
 th {
     background-color: #f2f2f2;
 }
+
+.container-fluid{
+    background-color: aquamarine;
+    padding: 15px;
+    margin: 0 0;
+}

@@ -11,8 +11,19 @@ require("./config/auth")(passport);
 
 
 //Config
+
+//Session
+app.use(session({
+    secret: "SistemaAgenda20231203",
+    resave: true,
+    saveUninitialized:true
+}))
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //Conexão com Banco 
@@ -26,20 +37,13 @@ const Evento = require('./Models/Evento');
 //Public
 app.use(express.static('public'));
 
-//Session
-app.use(session({
-    secret: "SistemaAgenda20231203",
-    resave: true,
-    saveUninitialized:true
-}))
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
+
 
 //Middleware
 app.use((req,res,next) =>{
     res.locals.sucess_msg = req.flash("sucess_msg")
     res.locals.error_msg = req.flash("error_msg")
+    res.locals.error = req.flash("error")
     next()
 });
 
@@ -73,7 +77,7 @@ app.get('/eventos', async (req, res) => {
     } catch (error) {
       console.error('Erro ao criar evento:', error);
       res.status(500).json({ erro: 'Erro interno do servidor' });
-      redirect('./login');
+       return redirect('./');
     }
   });
 
@@ -81,7 +85,7 @@ app.get('/eventos', async (req, res) => {
 
 //Rotas GET
 app.get('/', async (req, res) => {
-    res.sendFile(__dirname + "/src/index.html")
+    res.sendFile(__dirname + "/src/index.html") 
 });
 
 app.get('/user', async (req, res) => {
@@ -93,37 +97,12 @@ app.get('/user/login', async (req, res) => {
 });
 
 app.post('/user/login/sync', async (req, res, next) => {
-    try {
-        // Busca o usuário pelo email
-        const user = await User.findOne({
-            attributes: ['ID','NOME','EMAIL', 'SENHA'], // Ajuste conforme necessário
-            where: {
-                email: req.body.emailConfirma,
-            }
-        });
-        // Verifica se o usuário foi encontrado
-        if (!user) {
-            alert('Senha ou Email incorretos');
-             return redirect('/login');
-        }
-        // Agora você pode verificar a senha usando o bcrypt
-        const senhaCorreta = await bcrypt.compare(req.body.senhaConfirma, user.SENHA);
 
-        if (!senhaCorreta) {
-            alert('Senha ou Email incorretos');
-            return redirect('/login');
-        }
-
-        // Aqui você pode adicionar lógica adicional para gerar tokens de autenticação, etc.
-
-        // Se a autenticação for bem-sucedida, você pode enviar uma resposta de sucesso
-        res.status(200).json({ message: 'Autenticação bem-sucedida' });
-
-    } catch (error) {
-        // Trate qualquer erro que possa ocorrer durante o processo
-        console.error('Erro durante a autenticação:', error);
-        res.status(500).json({ error: 'Erro interno do servidor' });
-    }
+    passport.authenticate("local", {
+        successRedirect: "/",
+        failureRedirect: "/user/login",
+        failureFlash: true
+    })(req, res, next)
 });
 
 app.get('/user/login/add', async (req, res) => {
@@ -149,6 +128,17 @@ app.get('/agendar', async (req,res) =>{
 
 //Rotas POST
 app.post('/add', async (req, res) => {
+
+    var erros = []
+
+    if(!req.body.emailUsuario || typeof req.body.emailUsuario == undefined || req.body.emailUsuario == null){
+        erros.push({text: "Nome inválido"})
+    }
+
+    if(!req.body.emailUsuario || typeof req.body.emailUsuario == undefined || req.body.emailUsuario == null){
+        erros.push({text: "Senha inválida"})
+    }
+
     await User.create({
         NOME: req.body.nomeUsuario,
         CELULAR: req.body.celularUsuario,
