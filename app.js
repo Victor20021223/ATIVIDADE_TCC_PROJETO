@@ -107,8 +107,13 @@ app.get('/relatorio-eventos', async (req, res) => {
         const eventos = await Evento.findAll();
       
         eventos.forEach(evento => {
+
+            const servico = Servicos.findOne({ where: { ID: evento.eventService } });
+            const professional = Profissional.findOne({ where: { ID: evento.eventProfessional } });
+            const horario = Horario.findOne({ where: { ID: evento.eventHorario } });
+
             doc.fontSize(12).text(`Título: ${evento.title}`);
-            doc.fontSize(12).text(`Serviço: ${evento.service}`);
+            doc.fontSize(12).text(`Serviço: ${servico.DESCRICAO}`);  
             doc.fontSize(12).text(`Profissional: ${evento.professional}`);
             doc.fontSize(12).text(`Horários: ${evento.horario}`);
             doc.moveDown();
