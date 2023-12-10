@@ -107,11 +107,11 @@ app.get('/relatorio-eventos', async (req, res) => {
         const eventos = await Evento.findAll();
       
         eventos.forEach(evento => {
-          doc.fontSize(12).text(`Título: ${evento.title}`);
-          doc.fontSize(12).text(`Serviço: ${evento.service}`)
-          doc.fontSize(12).text(`Profissional: ${evento.professional}`)
-          doc.fontSize(12).text(`Horários: ${evento.horario}`)
-          doc.moveDown();
+            doc.fontSize(12).text(`Título: ${evento.title}`);
+            doc.fontSize(12).text(`Serviço: ${evento.service}`);
+            doc.fontSize(12).text(`Profissional: ${evento.professional}`);
+            doc.fontSize(12).text(`Horários: ${evento.horario}`);
+            doc.moveDown();
         });
       
         // Finalize o documento PDF
