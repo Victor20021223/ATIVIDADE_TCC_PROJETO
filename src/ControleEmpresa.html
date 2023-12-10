@@ -2,129 +2,97 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styleEmpresa.css">
-    <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/locale/pt-br.js"></script>
 
-    <title>Painel Empresa</title>
+  <title>Controle Empresa</title>
 </head>
 
 <body>
   <header>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/admin">ADMIN</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link "  href="/admin">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/servicos">Serviços</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/profissional">Profissionais</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/horarios">Horarios</a>
-        </li>
-      </ul>
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/admin">ADMIN</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link " href="/admin">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/servicos">Serviços</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/profissional">Profissionais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/horarios">Horarios</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div id="relatorio">
+      <a href="/relatorio-eventos" style="text-decoration: none;">Gerar relatorio PDF</a>
     </div>
-  </div>
-</nav>
-</header>
-<main>
+    <div id="calendario"></div>
 
-  <div id="calendario"></div>
+    <!-- Modal para mostrar informações do evento -->
+    <div class="modal fade" id="eventInfoModal" tabindex="-1" aria-labelledby="eventInfoModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="eventInfoModalLabel">Detalhes do Evento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h6>Título: <span id="eventTitle"></span></h6>
+            <p>Início: <span id="eventStart"></span></p>
+            <p>Fim: <span id="eventEnd"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      $('#calendario').fullCalendar({
-        header: {
-          left: 'prev,next today',
-          locale: 'pt-br',
-          center: 'title',
-          right: 'month,agendaWeek,agendaDay'
-        },
-        defaultView: 'month',
-        editable: true,
-        eventSources: [
-          // Rota para obter eventos
-          {
-            url: '/eventos',
-            method: 'GET',
-            failure: function () {
-              alert('Erro ao carregar eventos.');
-            }
-          }
-        ],
-        eventClick: function (event) {
-          const novoTitulo = prompt('Novo título:', event.title);
-          if (novoTitulo !== null) {
-            const dadosAtualizados = {
-              title: novoTitulo,
-              start: event.start.format(),
-              end: event.end ? event.end.format() : null
-            };
-  
-            // Rota para atualizar um evento
-            $.ajax({
-              url: `/eventos/${event.id}`,
-              type: 'PUT',
-              data: JSON.stringify(dadosAtualizados),
-              contentType: 'application/json',
-              success: function () {
-                alert('Evento atualizado com sucesso.');
-                $('#calendario').fullCalendar('refetchEvents');
-              },
-              error: function () {
-                alert('Erro ao atualizar evento.');
-              }
-            });
-          }
-        },
-        dayClick: function (date) {
-          // Aqui você pode adicionar a lógica para lidar com o clique em um dia
-          const novoEvento = {
-            title: 'Novo Evento',
-            start: date.format(),
-            end: moment(date).add(1, 'hour').format()
-          };
-  
-          // Rota para criar um novo evento
-          $.ajax({
-            url: '/eventos',
-            type: 'POST',
-            data: JSON.stringify(novoEvento),
-            contentType: 'application/json',
-            success: function (response) {
-              alert('Novo evento criado com sucesso. ID: ' + response.id);
-              $('#calendario').fullCalendar('refetchEvents');
-            },
-            error: function () {
-              alert('Erro ao criar novo evento.');
-            }
-          });
-        },
-  
-        // ... (código posterior)
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        $('#calendario').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            locale: 'pt-br',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+          },
+          defaultView: 'month',
+          events: '/eventos', // Rota para obter os eventos
+          eventClick: function (event) {
+            // Preenche os campos do modal com os dados do evento clicado
+            $('#eventTitle').text(event.title);
+            $('#eventStart').text(moment(event.start).format('LLLL'));
+            $('#eventEnd').text(event.end ? moment(event.end).format('LLLL') : 'N/A');
+
+            // Abre o modal ao clicar em um evento
+            $('#eventInfoModal').modal('show');
+          },
+        });
       });
-    });
-  </script>
-  
-</main>
-<footer class="fixed-bottom" style="padding: 30px;">
-  <h1 style="text-align: center;">FACEC</h1>
-</footer>
+    </script>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
