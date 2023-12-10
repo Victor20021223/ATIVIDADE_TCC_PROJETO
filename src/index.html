@@ -129,8 +129,8 @@
                 service: $('#eventService').val(),
                 professional: $('#eventProfessional').val(),
                 horario: $('#eventHorario').val(),
-                start: moment().format('YYYY-MM-DD'),
-                end: moment().add(1, 'hour').format('YYYY-MM-DD') 
+                start: moment().format(date.format()),
+                end: moment().add(1, 'hour').format(date.format()) 
               };
 
               // Rota para criar um novo evento
