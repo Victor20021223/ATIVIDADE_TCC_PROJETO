@@ -79,7 +79,7 @@ app.post('/eventos', async (req, res, next) => {
         next();
     } catch (error) {
         console.error('Erro ao criar evento:', error); 
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+        res.status(500).json({ erro: 'Erro interno do servidor' });   
         return redirect('./'); // Assuming you have a route handler for redirect  
     }
 });

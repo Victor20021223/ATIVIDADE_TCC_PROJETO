@@ -120,20 +120,17 @@
           dayClick: function (date) {
             // Abre o modal ao clicar em um dia
             $('#newEventModal').modal('show');
-            $('#eventStart').val(moment().format('YYYY-MM-DDTHH:mm'));
-            $('#eventEnd').val(moment().add(1, 'hour').format('YYYY-MM-DDTHH:mm'));
-
             // Submete o formulário ao criar um novo evento
             $('#newEventForm').off('submit').on('submit', function (e) {
               e.preventDefault();
 
               const novoEvento = {
                 title: $('#eventTitle').val(),
-                start: $('#eventStart').val(),
-                end: $('eventEnd').val(),
                 service: $('#eventService').val(),
                 professional: $('#eventProfessional').val(),
-                horario: $('#eventHorario').val()
+                horario: $('#eventHorario').val(),
+                start: moment().format('YYYY-MM-DD'),
+                end: moment().add(1, 'hour').format('YYYY-MM-DD') 
               };
 
               // Rota para criar um novo evento
