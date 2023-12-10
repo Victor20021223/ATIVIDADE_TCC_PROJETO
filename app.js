@@ -108,14 +108,14 @@ app.get('/relatorio-eventos', async (req, res) => {
       
         eventos.forEach(evento => {
 
-            const servico = Servicos.findOne({ where: { ID: evento.eventService } });
-            const professional = Profissional.findOne({ where: { ID: evento.eventProfessional } });
-            const horario = Horario.findOne({ where: { ID: evento.eventHorario } });
+            const servico = Servicos.findOne({ where: { ID: 1 } });
+            const professional = Profissional.findOne({ where: { ID: 1 } });
+            const horario = Horario.findOne({ where: { ID: 1 } });
 
             doc.fontSize(12).text(`Título: ${evento.title}`);
             doc.fontSize(12).text(`Serviço: ${servico.DESCRICAO}`);  
-            doc.fontSize(12).text(`Profissional: ${evento.professional}`);
-            doc.fontSize(12).text(`Horários: ${evento.horario}`);
+            doc.fontSize(12).text(`Profissional: ${professional.NOME}`);
+            doc.fontSize(12).text(`Horários: ${horario.HORA_LIVRE}`);
             doc.moveDown();
         });
       
@@ -223,6 +223,10 @@ app.get('/admin/addProfissional', async (req, res) => {
 
 app.get('/admin/addHorario', async (req, res) => {
     res.sendFile(__dirname + '/src/cad_cadastroHorario.html')
+});
+
+app.get('/admin/relatorio', async (req, res) => {
+    res.sendFile(__dirname + '/src/Relatorios.html')
 });
 
 app.get('/admin/profissional/list', async (req, res) => {
