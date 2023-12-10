@@ -45,27 +45,47 @@
     <div id="calendario"></div>
 
     <!-- Modal para opções do dia -->
-    <div class="modal fade" id="newEventModal" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
+    <div class="modal fade" id="newEventModal" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true"
+      style="background-color: transparent;">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="newEventModalLabel">Novo Evento</h5>
+            <h5 class="modal-title" id="newEventModalLabel">Novo Agendamento</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <!-- Formulário para criar um novo evento -->
-            <form id="newEventForm">
+            <form id="newEventForm" method="post" action="/eventos">
               <div class="mb-3">
-                <label for="eventTitle" class="form-label">Título do Evento</label>
-                <input type="text" class="form-control" id="eventTitle" required>
+                <label for="eventTitle" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="eventTitle" placeholder="Informe seu nome" required>
+              </div>
+                <input type="datetime-local" class="form-control" id="eventStart" value="datetime-local" required>
+                <input type="datetime-local" class="form-control" id="eventEnd" value="datetime-local" required>
+              <div class="mb-3">
+                <label for="eventService" class="form-label">Serviço</label>
+                <select class="form-select" id="eventService" required>
+                  <!-- Populate this dropdown with your list of services -->
+                  <option value="1">Service 1</option>
+                  <option value="2">Service 2</option>
+                  <!-- Add more options as needed -->
+                </select>
               </div>
               <div class="mb-3">
-                <label for="eventStart" class="form-label">Início do Evento</label>
-                <input type="datetime-local" class="form-control" id="eventStart" required>
+                <label for="eventProfessional" class="form-label">Profissional</label>
+                <select class="form-select" name="eventProfessional" id="eventProfessional" required>
+                  <option value="1">profissional1</option>
+                  <option value="2">profissional2</option>
+                  <option value="3">profissional3</option>
+                </select>
               </div>
               <div class="mb-3">
-                <label for="eventEnd" class="form-label">Fim do Evento</label>
-                <input type="datetime-local" class="form-control" id="eventEnd" required>
+                <label for="eventHorario" class="form-label">Profissional</label>
+                <select class="form-select" name="eventHorario" id="eventHorario" required>
+                  <option value="1">Horario1</option>
+                  <option value="2">Horario2</option>
+                  <option value="3" name="eventHorario">Horario3</option>
+                </select>
               </div>
               <button type="submit" class="btn btn-primary">Criar Evento</button>
             </form>
@@ -101,51 +121,24 @@
             // Você pode adicionar aqui a lógica específica para o seu aplicativo
             console.log('Clicou no dia:', date.format());
           },
-          eventClick: function (event) {
-            const novoTitulo = prompt('Novo título:', event.title);
-            if (novoTitulo !== null) {
-              const dadosAtualizados = {
-                title: novoTitulo,
-                start: event.start.format(),
-                end: event.end ? event.end.format() : null
-              };
-
-              // Rota para atualizar um evento
-              $.ajax({
-                url: `/eventos/${event.id}`,
-                type: 'PUT',
-                data: JSON.stringify(dadosAtualizados),
-                contentType: 'application/json',
-                success: function () {
-                  alert('Evento atualizado com sucesso.');
-                  $('#calendario').fullCalendar('refetchEvents');
-                },
-                error: function () {
-                  alert('Erro ao atualizar evento.');
-                }
-              });
-            }
-          },
           dayClick: function (date) {
             // Abre o modal ao clicar em um dia
             $('#newEventModal').modal('show');
-
-            // Popula os campos do modal com a data clicada
-            $('#eventStart').val(date.format());
-            $('#eventEnd').val(moment(date).add(1, 'hour').format());
-
             // Submete o formulário ao criar um novo evento
-            $('#newEventForm').submit(function (e) {
+            $('#newEventForm').off('submit').on('submit', function (e) {
               e.preventDefault();
 
               const novoEvento = {
                 title: $('#eventTitle').val(),
                 start: $('#eventStart').val(),
-                end: $('#eventEnd').val()
+                end: $('eventEnd').val(),
+                service: $('#eventService').val(),
+                professional: $('#eventProfessional').val(),
+                horario: $('#eventHorario').val()
               };
 
-            // Rota para criar um novo evento
-            $.ajax({
+              // Rota para criar um novo evento
+              $.ajax({
                 url: '/eventos',
                 type: 'POST',
                 data: JSON.stringify(novoEvento),
@@ -161,7 +154,6 @@
               });
             });
           },
-          // ... (código posterior)
         });
       });
     </script>

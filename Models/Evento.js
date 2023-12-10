@@ -7,13 +7,23 @@ const Evento = sequelize.define('Evento', {
       type: Sequelize.STRING,
       allowNull: false
     },
-    start: {
-      type: Sequelize.DATE,
+    service: {
+      type: Sequelize.INTEGER,
       allowNull: false
     },
-    end: {
-      type: Sequelize.DATE,
+    professional: {
+      type: Sequelize.INTEGER,
       allowNull: false
+    },
+    horario:{
+      type: Sequelize.INTEGER,
+      allowNull:true
+    },
+    start:{
+      type:Sequelize.DATE
+    },
+    end:{
+      type:Sequelize.DATE
     }
   });
   

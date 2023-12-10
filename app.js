@@ -72,15 +72,15 @@ app.get('/eventos', async (req, res) => {
 });
 // Rota para criar um novo evento
 app.post('/eventos', async (req, res, next) => {
-    const { title, start, end } = req.body;
+    const { title, start, end, service, professional, horario } = req.body;
     try {
-        const novoEvento = await Evento.create({ title, start, end });
+        const novoEvento = await Evento.create({ title, start, end, service, professional, horario });
         res.json(novoEvento);
         next();
     } catch (error) {
-        console.error('Erro ao criar evento:', error);
+        console.error('Erro ao criar evento:', error); 
         res.status(500).json({ erro: 'Erro interno do servidor' });
-        return redirect('./');
+        return redirect('./'); // Assuming you have a route handler for redirect  
     }
 });
 
@@ -108,8 +108,6 @@ app.get('/relatorio-eventos', async (req, res) => {
       
         eventos.forEach(evento => {
           doc.fontSize(12).text(`Título: ${evento.title}`);
-          doc.fontSize(10).text(`Início: ${moment(evento.start).format('LLLL')}`);
-          doc.fontSize(10).text(`Fim: ${evento.end ? moment(evento.end).format('LLLL') : 'N/A'}`);
           doc.moveDown();
         });
       

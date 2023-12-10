@@ -56,7 +56,7 @@
         // Função para fazer a requisição AJAX
         async function carregarHorarios() {
           try {
-            const response = await fetch('/admin/horarios/hora');
+            const response = await fetch('/addHorario/hora');
             const { erro, dataHorario } = await response.json();
 
             const tabelaHorarios = document.getElementById('tabelaHorarios');

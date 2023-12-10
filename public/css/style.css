@@ -106,16 +106,4 @@ th {
     margin-bottom: 15px;
 }
 
-/*Calendario*/
-
-
-#calendario {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  #calendario table {
-    width: 100%;
-    border-collapse: collapse;
-  }
 
