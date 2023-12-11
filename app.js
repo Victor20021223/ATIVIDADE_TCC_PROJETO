@@ -166,6 +166,36 @@ app.get('/agendar', async (req, res) => {
     res.sendFile(__dirname + '/src/index.html')
 });
 
+app.get('/servicos', async (req, res) => {
+    try {
+      const servicos = await Servicos.findAll();
+      res.json(servicos);
+    } catch (error) {
+      console.error('Erro ao buscar serviços:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
+app.get('/profissional', async (req, res) => {
+    try {
+      const profissional = await Profissional.findAll();
+      res.json(profissional);
+    } catch (error) {
+      console.error('Erro ao buscar serviços:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
+app.get('/horarios', async (req, res) => {
+    try {
+      const horarios = await Horario.findAll();
+      res.json(horarios);
+    } catch (error) {
+      console.error('Erro ao buscar serviços:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
 //Rotas POST
 app.post('/add', async (req, res) => {
 
