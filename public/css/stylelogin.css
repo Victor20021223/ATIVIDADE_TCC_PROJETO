@@ -8,10 +8,15 @@
 }
 
 body {
-    margin: 0%;
     background-color: black;
-    text-align: center;
-    align-items: center;
+    margin: 40px 15px;
+    font-size: 14px;
+}
+
+header {
+    background-color: aquamarine;
+    box-shadow: 0px 3px 10px #660bb100;
+    color: black;
 }
 
 main {
@@ -74,8 +79,9 @@ td {
 
 .container-fluid{
     background-color: aquamarine;
-    padding: 15px;
+    padding: 10px;
     margin: 0 0;
+    margin-top: 1px;
 }
 
 #table-container {

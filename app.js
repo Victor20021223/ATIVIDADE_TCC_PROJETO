@@ -85,7 +85,7 @@ app.post('/eventos', async (req, res, next) => {
 });
 
 //Gera PDf
-app.get('/relatorio-eventos', async (req, res) => {
+app.get('/relatorioAgenda/list', async (req, res) => {
     // Crie um novo documento PDF
     const doc = new pdf();
 
@@ -108,9 +108,9 @@ app.get('/relatorio-eventos', async (req, res) => {
       
         eventos.forEach(evento => {
 
-            const servico = Servicos.findOne({ where: { ID: 1 } });
-            const professional = Profissional.findOne({ where: { ID: 1 } });
-            const horario = Horario.findOne({ where: { ID: 1 } });
+            const servico = Servicos.findOne({ where: { ID: evento.eventService } });
+            const professional = Profissional.findOne({ where: { ID: evento.eventProfessional } });
+            const horario = Horario.findOne({ where: { ID: evento.eventHorario } });
 
             doc.fontSize(12).text(`Título: ${evento.title}`);
             doc.fontSize(12).text(`Serviço: ${servico.DESCRICAO}`);  
@@ -227,6 +227,10 @@ app.get('/admin/addHorario', async (req, res) => {
 
 app.get('/admin/relatorio', async (req, res) => {
     res.sendFile(__dirname + '/src/Relatorios.html')
+});
+
+app.get('/relatorioAgenda', async (req, res) => {
+    res.sendFile(__dirname + '/src/agendaList.html')
 });
 
 app.get('/admin/profissional/list', async (req, res) => {

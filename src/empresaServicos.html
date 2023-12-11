@@ -12,34 +12,34 @@
 <body>
   <header>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/admin">ADMIN</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link " href="/admin">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/servicos">Serviços</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/profissional">Profissionais</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/horarios">Horarios</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/relatorio">Relátorios</a>
-            </li>
-          </ul>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin">ADMIN</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link " href="/admin">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/servicos">Serviços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/profissional">Profissionais</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/horarios">Horarios</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/admin/relatorio">Relatórios</a>
+                  </li>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
-  </header>
+</header>
   <main>
     <table border="1">
       <thead>
@@ -55,19 +55,19 @@
         <!-- Os dados serão exibidos aqui -->
       </tbody>
     </table>
-  
+
     <script>
       // Função para fazer a requisição AJAX
       async function carregarServicos() {
         try {
           const response = await fetch('/admin/servicos/list');
           const { erro, dataServicos } = await response.json();
-  
+
           const tabelaServicos = document.getElementById('tabelaServicos');
-  
+
           // Limpar tabela antes de adicionar novos dados
           tabelaServicos.innerHTML = '';
-  
+
           if (!erro && dataServicos.length > 0) {
             dataServicos.forEach(servico => {
               const newRow = tabelaServicos.insertRow();
@@ -87,7 +87,7 @@
           console.error('Erro ao carregar serviços:', error);
         }
       }
-  
+
       // Chame a função para carregar os serviços quando a página carregar
       window.onload = carregarServicos;
     </script>
