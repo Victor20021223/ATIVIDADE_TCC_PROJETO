@@ -85,47 +85,42 @@ app.post('/eventos', async (req, res, next) => {
 });
 
 //Gera PDf
-app.get('/relatorioAgenda/list', async (req, res) => {
+app.get('/relatorio-eventos', async (req, res) => {
     // Crie um novo documento PDF
     const doc = new pdf();
-
+  
     // Defina o nome do arquivo de saída
     const fileName = 'relatorio_eventos.pdf';
-
+  
     // Configuração do cabeçalho HTTP para o navegador entender que é um arquivo PDF
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-
+    res.setHeader('Content-Type', 'application/pdf');
+  
     // Pipe o conteúdo do documento PDF diretamente para a resposta HTTP
     doc.pipe(res);
-
+  
     // Adicione conteúdo ao documento PDF
     doc.fontSize(16).text('Relatório de Eventos', { align: 'center' });
     doc.moveDown();
-
+  
     try {
-        // Buscar eventos no banco de dados usando Sequelize
-        const eventos = await Evento.findAll();
-      
-        eventos.forEach(evento => {
-
-            const servico = Servicos.findOne({ where: { ID: evento.eventService } });
-            const professional = Profissional.findOne({ where: { ID: evento.eventProfessional } });
-            const horario = Horario.findOne({ where: { ID: evento.eventHorario } });
-
-            doc.fontSize(12).text(`Título: ${evento.title}`);
-            doc.fontSize(12).text(`Serviço: ${servico.DESCRICAO}`);  
-            doc.fontSize(12).text(`Profissional: ${professional.NOME}`);
-            doc.fontSize(12).text(`Horários: ${horario.HORA_LIVRE}`);
-            doc.moveDown();
-        });
-      
-        // Finalize o documento PDF
-        doc.end();
-      } catch (error) {
-        console.error('Erro ao buscar eventos:', error);
-        res.status(500).send('Erro interno do servidor'); 
-      }
-    });
+      // Buscar eventos no banco de dados usando Sequelize
+      const eventos = await Evento.findAll();
+      eventos.forEach(evento => {
+        doc.fontSize(12).text(`Título: ${evento.title}`);
+        doc.fontSize(12).text(`Serviço: ${evento.service}`);
+        doc.fontSize(12).text(`Profissional: ${evento.professional}`);
+        doc.fontSize(12).text(`Horários: ${evento.horario}`);
+        doc.moveDown();
+      });
+  
+      // Finalize o documento PDF
+      doc.end();
+    } catch (error) {
+      console.error('Erro ao buscar eventos:', error);
+      res.status(500).send('Erro interno do servidor');
+    }
+  });
 //Rotas USER
 
 //Rotas GET

@@ -47,10 +47,10 @@
     </nav>
 </header>
 <main>
-    <form id="newEventForm" method="post" action="/relatorioAgenda/list">
+    <form id="newEventForm">
         <div class="mb-3">
           <label for="eventService" class="form-label">Serviço</label>
-          <select class="form-select" id="eventService" required>
+          <select class="form-select" id="eventService" name="eventService" required>
             <option value="1">Service 1</option>
             <option value="2">Service 2</option>
           </select>
@@ -71,7 +71,7 @@
             <option value="3">Horario3</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary" href="/relatorioAgenda/list">Gerar Relatório</button>
+        <a href="/relatorio-eventos" style="text-decoration: none;">Gerar Relatórios</a>
       </form>
     
 </main>
