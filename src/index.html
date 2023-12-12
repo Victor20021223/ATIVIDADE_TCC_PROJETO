@@ -92,7 +92,7 @@
       // Recarrega a página a cada 5 segundos
       setInterval(function () {
         location.reload();
-      }, 50000);
+      }, 500000);
 
       document.addEventListener('DOMContentLoaded', function () {
         $('#calendario').fullCalendar({
@@ -171,7 +171,7 @@
             data.forEach(servico => {
               const option = document.createElement('option');
               option.value = servico.ID; // Substitua por seu campo de identificação do serviço
-              option.textContent = servico.DESCRICAO;
+              option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
               selectServico.appendChild(option);
             });
           })

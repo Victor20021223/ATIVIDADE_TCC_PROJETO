@@ -78,8 +78,8 @@ app.post('/eventos', async (req, res, next) => {
         res.json(novoEvento);
         next();
     } catch (error) {
-        console.error('Erro ao criar evento:', error); 
-        res.status(500).json({ erro: 'Erro interno do servidor' });   
+        console.error('Erro ao criar evento:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
         return redirect('./'); // Assuming you have a route handler for redirect  
     }
 });
@@ -88,39 +88,46 @@ app.post('/eventos', async (req, res, next) => {
 app.get('/relatorio-eventos', async (req, res) => {
     // Crie um novo documento PDF
     const doc = new pdf();
-  
+
     // Defina o nome do arquivo de saída
     const fileName = 'relatorio_eventos.pdf';
-  
+
     // Configuração do cabeçalho HTTP para o navegador entender que é um arquivo PDF
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
     res.setHeader('Content-Type', 'application/pdf');
-  
+
     // Pipe o conteúdo do documento PDF diretamente para a resposta HTTP
     doc.pipe(res);
-  
+
     // Adicione conteúdo ao documento PDF
     doc.fontSize(16).text('Relatório de Eventos', { align: 'center' });
     doc.moveDown();
-  
+
     try {
-      // Buscar eventos no banco de dados usando Sequelize
-      const eventos = await Evento.findAll();
-      eventos.forEach(evento => {
-        doc.fontSize(12).text(`Título: ${evento.title}`);
-        doc.fontSize(12).text(`Serviço: ${evento.service}`);
-        doc.fontSize(12).text(`Profissional: ${evento.professional}`);
-        doc.fontSize(12).text(`Horários: ${evento.horario}`);
-        doc.moveDown();
-      });
-  
-      // Finalize o documento PDF
-      doc.end();
+        // Buscar eventos no banco de dados usando Sequelize
+        const eventos = await Evento.findAll();
+        for (const evento of eventos) {
+            // Buscar dados do serviço associado ao evento
+            const service = await Servicos.findOne({ where: { ID: evento.service } });
+            const profissional = await Profissional.findOne({ where : {ID: evento.professional}});
+            const horario = await Horario.findOne({ where : {ID : evento.horario}});
+
+            doc.fontSize(12).text(`Título: ${evento.title}`);
+            doc.fontSize(12).text(`Serviço: ${service ? service.DESCRICAO : 'N/A'}`);
+            doc.fontSize(12).text(`Profissional: ${profissional ? profissional.NOME : 'N/A'}`);
+            doc.fontSize(12).text(`Horários: ${horario ? horario.HORA_LIVRE : 'N/A'}`);
+            doc.moveDown();
+        }
+
+        // Finalize o documento PDF
+        doc.end();
     } catch (error) {
-      console.error('Erro ao buscar eventos:', error);
-      res.status(500).send('Erro interno do servidor');
+        console.error('Erro ao buscar eventos:', error);
+        res.status(500).send('Erro interno do servidor');
     }
-  });
+});
+
+
 //Rotas USER
 
 //Rotas GET
@@ -168,31 +175,31 @@ app.get('/agendar', async (req, res) => {
 
 app.get('/servicos', async (req, res) => {
     try {
-      const servicos = await Servicos.findAll();
-      res.json(servicos);
+        const servicos = await Servicos.findAll();
+        res.json(servicos);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao buscar serviços:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
 
 app.get('/profissional', async (req, res) => {
     try {
-      const profissional = await Profissional.findAll();
-      res.json(profissional);
+        const profissional = await Profissional.findAll();
+        res.json(profissional);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao buscar serviços:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
 
 app.get('/horarios', async (req, res) => {
     try {
-      const horarios = await Horario.findAll();
-      res.json(horarios);
+        const horarios = await Horario.findAll();
+        res.json(horarios);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao buscar serviços:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
 
