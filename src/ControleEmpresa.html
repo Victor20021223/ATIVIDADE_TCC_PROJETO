@@ -90,7 +90,6 @@
 
             // Adiciona detalhes do evento ao modal
             modalBody.append('<h6>Título: ' + event.title + '</h6>');
-            modalBody.append('<p>Horário: ' + moment(event.start).format('LLLL') + '</p>');
 
             // Faz uma requisição para obter informações do eventService
             axios.get(`/servico/${event.service}`)
@@ -117,10 +116,8 @@
               })
               .catch(error => {
                 console.error('Erro ao obter informações do serviço:', error);
-                modalBody.append('<p>Horários: N/A</p>');
+                modalBody.append('<p>Horário: N/A</p>');
               });
-
-            modalBody.append('<p>Horário: ' + (event.horario || 'N/A') + '</p>');
 
             // Abre o modal ao clicar em um evento
             $('#eventInfoModal').modal('show');

@@ -85,7 +85,7 @@ app.post('/eventos', async (req, res, next) => {
 });
 
 //Calendar Admin
-app.get('/servicos/:id', async (req, res) => {
+app.get('/servico/:id', async (req, res) => {
     try {
         const servico = await Servicos.findOne({ where: { ID: req.params.id } });
         res.json(servico);
