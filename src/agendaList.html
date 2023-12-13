@@ -56,19 +56,17 @@
         </select>
       </div>
       <div class="mb-3">
-        <label for="eventProfessional" class="form-label">Profissional</label>
-        <select class="form-select" name="eventProfessional" id="eventProfessional" required>
-          <option value="1">profissional1</option>
-          <option value="2">profissional2</option>
-          <option value="3">profissional3</option>
+        <label for="eventProfessional" class="form-label">Profissionais</label>
+        <select class="form-select" id="eventProfessional" required>
+          <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
+          <option value="">Escolha um profissional</option>
         </select>
       </div>
       <div class="mb-3">
-        <label for="eventHorario" class="form-label">Horário</label>
-        <select class="form-select" name="eventHorario" id="eventHorario" required>
-          <option value="1">Horario1</option>
-          <option value="2">Horario2</option>
-          <option value="3">Horario3</option>
+        <label for="eventHorario" class="form-label">Horários</label>
+        <select class="form-select" id="eventHorario" required>
+          <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
+          <option value="">Escolha um horários</option>
         </select>
       </div>
       <a href="/relatorio-eventos" style="text-decoration: none;">Gerar Relatórios</a>
@@ -90,7 +88,49 @@
           data.forEach(servico => {
             const option = document.createElement('option');
             option.value = servico.ID; // Substitua por seu campo de identificação do serviço
-            option.textContent = servico.DESCRICAO;
+            option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
+            selectServico.appendChild(option);
+          });
+        })
+        .catch(error => console.error('Erro ao buscar serviços:', error));
+    });
+    //Profissionais agenda
+    document.addEventListener('DOMContentLoaded', function () {
+      const selectServico = document.getElementById('eventProfessional');
+
+      // Rota para buscar os serviços
+      const url = '/profissional';
+
+      // Use o fetch para buscar os dados da rota
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // Preencha o dropdown com os dados obtidos
+          data.forEach(servico => {
+            const option = document.createElement('option');
+            option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+            option.textContent = servico.NOME;
+            selectServico.appendChild(option);
+          });
+        })
+        .catch(error => console.error('Erro ao buscar serviços:', error));
+    });
+    //Horario agenda
+    document.addEventListener('DOMContentLoaded', function () {
+      const selectServico = document.getElementById('eventHorario');
+
+      // Rota para buscar os serviços
+      const url = '/horarios';
+
+      // Use o fetch para buscar os dados da rota
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // Preencha o dropdown com os dados obtidos
+          data.forEach(servico => {
+            const option = document.createElement('option');
+            option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+            option.textContent = servico.HORA_LIVRE;
             selectServico.appendChild(option);
           });
         })
