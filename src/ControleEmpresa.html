@@ -11,6 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/locale/pt-br.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <title>Controle Empresa</title>
 </head>
@@ -59,17 +60,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <h6>Título: <span id="eventTitle"></span></h6>
-            <p>Horário: <span id="eventHorario"></span></p>
-            <p>Serviço: <span id="eventService"></span></p>
-            <p>Profissional: <span id="eventProfessional"></span></p>
+            <div id="eventDetails"></div>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-
       // Recarrega a página a cada 5 segundos
       setInterval(function () {
         location.reload();
@@ -88,19 +85,49 @@
           events: '/eventos',
           eventClick: function (event) {
             // Preenche os campos do modal com os dados do evento clicado
-            $('#eventTitle').text(event.title);
-            $('#eventStart').text(moment(event.start).format('LLLL'));
-            $('#eventEnd').text(event.end ? moment(event.end).format('LLLL') : 'N/A');
-            $('#eventService').text(event.service || 'N/A');
-            $('#eventProfessional').text(event.professional || 'N/A');
-            $('#eventHorario').text(event.horario || 'N/A');
+            const modalBody = $('#eventDetails');
+            modalBody.empty();
+
+            // Adiciona detalhes do evento ao modal
+            modalBody.append('<h6>Título: ' + event.title + '</h6>');
+            modalBody.append('<p>Horário: ' + moment(event.start).format('LLLL') + '</p>');
+
+            // Faz uma requisição para obter informações do eventService
+            axios.get(`/servico/${event.service}`)
+              .then(response => {
+                modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
+              })
+              .catch(error => {
+                console.error('Erro ao obter informações do serviço:', error);
+                modalBody.append('<p>Serviço: N/A</p>');
+              });
+
+              axios.get(`/profissional/${event.professional}`)
+              .then(response => {
+                modalBody.append('<p>Profissional: ' + (response.data.NOME || 'N/A') + '</p>');
+              })
+              .catch(error => {
+                console.error('Erro ao obter informações do serviço:', error);
+                modalBody.append('<p>Profissional: N/A</p>');
+              });
+
+              axios.get(`/horario/${event.horario}`)
+              .then(response => {
+                modalBody.append('<p>Horário: ' + (response.data.HORA_LIVRE || 'N/A') + '</p>');
+              })
+              .catch(error => {
+                console.error('Erro ao obter informações do serviço:', error);
+                modalBody.append('<p>Horários: N/A</p>');
+              });
+
+            modalBody.append('<p>Horário: ' + (event.horario || 'N/A') + '</p>');
+
             // Abre o modal ao clicar em um evento
             $('#eventInfoModal').modal('show');
             console.log(event);
           },
         });
       });
-
     </script>
   </main>
 

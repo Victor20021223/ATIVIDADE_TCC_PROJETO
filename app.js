@@ -84,6 +84,37 @@ app.post('/eventos', async (req, res, next) => {
     }
 });
 
+//Calendar Admin
+app.get('/servicos/:id', async (req, res) => {
+    try {
+        const servico = await Servicos.findOne({ where: { ID: req.params.id } });
+        res.json(servico);
+    } catch (error) {
+        console.error('Erro ao obter informações do serviço:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
+app.get('/profissional/:id', async (req, res) => {
+    try {
+        const profissional = await Profissional.findOne({ where: { ID: req.params.id } });
+        res.json(profissional);
+    } catch (error) {
+        console.error('Erro ao obter informações do serviço:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
+app.get('/horario/:id', async (req, res) => {
+    try {
+        const horarios = await Horario.findOne({ where: { ID: req.params.id } });
+        res.json(horarios);
+    } catch (error) {
+        console.error('Erro ao obter informações do serviço:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
 //Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
     const doc = new pdf();
