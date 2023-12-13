@@ -105,10 +105,11 @@ app.get('/relatorio-eventos', async (req, res) => {
         const startY = doc.y;
         const columnWidth = 100;
 
-        doc.text('Título', 100, startY, { width: columnWidth, align: 'center' });
-        doc.text('Serviço', 200, startY, { width: columnWidth, align: 'center' });
-        doc.text('Profissional', 300, startY, { width: columnWidth, align: 'center' });
-        doc.text('Horários', 400, startY, { width: columnWidth, align: 'center' });
+        doc.text('Título', 75, startY, { width: columnWidth, align: 'center' });
+        doc.text('Serviço', 175, startY, { width: columnWidth, align: 'center' });
+        doc.text('Profissional', 275, startY, { width: columnWidth, align: 'center' });
+        doc.text('Horários', 375, startY, { width: columnWidth, align: 'center' });
+        doc.text('Data', 475, startY, { width: columnWidth, align: 'center' });
         doc.moveDown();
 
         // Adiciona dados à tabela
@@ -121,10 +122,11 @@ app.get('/relatorio-eventos', async (req, res) => {
 
             const rowY = doc.y;
             
-            doc.text(evento.title, 100, rowY, { width: columnWidth, align: 'center' });
-            doc.text(service ? service.DESCRICAO : 'N/A', 200, rowY, { width: columnWidth, align: 'center' });
-            doc.text(profissional ? profissional.NOME : 'N/A', 300, rowY, { width: columnWidth, align: 'center' });
-            doc.text(horario ? horario.HORA_LIVRE : 'N/A', 400, rowY, { width: columnWidth, align: 'center' });
+            doc.text(evento.title, 75, rowY, { width: columnWidth, align: 'center' });
+            doc.text(service ? service.DESCRICAO : 'N/A', 175, rowY, { width: columnWidth, align: 'center' });
+            doc.text(profissional ? profissional.NOME : 'N/A', 275, rowY, { width: columnWidth, align: 'center' });
+            doc.text(horario ? horario.HORA_LIVRE : 'N/A', 375, rowY, { width: columnWidth, align: 'center' });
+            doc.text(evento.start, 475, rowY, { width: columnWidth, align: 'center' });
 
             // Move para a próxima linha
             doc.moveDown();
