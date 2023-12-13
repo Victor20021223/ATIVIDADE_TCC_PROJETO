@@ -357,7 +357,7 @@ app.get('/addHorario/hora', async (req, res) => {
 });
 
 //Rotas POST
-app.post('/atualizarSituacao', async (req, res) => {
+app.post('/atualizar-situacao', async (req, res) => {
     const { id, situacao } = req.body;
   
     try {
