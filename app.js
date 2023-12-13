@@ -7,8 +7,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
-const pdf = require('pdfkit');
 const fs = require('fs');
+const pdf = require('pdfkit');
 const moment = require('moment');
 require("./config/auth")(passport);
 
@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//Conexão com Banco 
+//Conexão com Banco   
 const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
@@ -86,46 +86,62 @@ app.post('/eventos', async (req, res, next) => {
 
 //Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
-    // Crie um novo documento PDF
     const doc = new pdf();
 
-    // Defina o nome do arquivo de saída
     const fileName = 'relatorio_eventos.pdf';
-
-    // Configuração do cabeçalho HTTP para o navegador entender que é um arquivo PDF
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
     res.setHeader('Content-Type', 'application/pdf');
-
-    // Pipe o conteúdo do documento PDF diretamente para a resposta HTTP
     doc.pipe(res);
 
-    // Adicione conteúdo ao documento PDF
     doc.fontSize(16).text('Relatório de Eventos', { align: 'center' });
     doc.moveDown();
 
     try {
-        // Buscar eventos no banco de dados usando Sequelize
         const eventos = await Evento.findAll();
-        for (const evento of eventos) {
-            // Buscar dados do serviço associado ao evento
-            const service = await Servicos.findOne({ where: { ID: evento.service } });
-            const profissional = await Profissional.findOne({ where : {ID: evento.professional}});
-            const horario = await Horario.findOne({ where : {ID : evento.horario}});
 
-            doc.fontSize(12).text(`Título: ${evento.title}`);
-            doc.fontSize(12).text(`Serviço: ${service ? service.DESCRICAO : 'N/A'}`);
-            doc.fontSize(12).text(`Profissional: ${profissional ? profissional.NOME : 'N/A'}`);
-            doc.fontSize(12).text(`Horários: ${horario ? horario.HORA_LIVRE : 'N/A'}`);
+        // Adiciona cabeçalho à tabela
+        doc.font('Helvetica-Bold').fontSize(12);
+        
+        const startY = doc.y;
+        const columnWidth = 100;
+
+        doc.text('Título', 100, startY, { width: columnWidth, align: 'center' });
+        doc.text('Serviço', 200, startY, { width: columnWidth, align: 'center' });
+        doc.text('Profissional', 300, startY, { width: columnWidth, align: 'center' });
+        doc.text('Horários', 400, startY, { width: columnWidth, align: 'center' });
+        doc.moveDown();
+
+        // Adiciona dados à tabela
+        doc.font('Helvetica').fontSize(12);
+
+        for (const evento of eventos) {
+            const service = await Servicos.findOne({ where: { ID: evento.service } });
+            const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
+            const horario = await Horario.findOne({ where: { ID: evento.horario } });
+
+            const rowY = doc.y;
+            
+            doc.text(evento.title, 100, rowY, { width: columnWidth, align: 'center' });
+            doc.text(service ? service.DESCRICAO : 'N/A', 200, rowY, { width: columnWidth, align: 'center' });
+            doc.text(profissional ? profissional.NOME : 'N/A', 300, rowY, { width: columnWidth, align: 'center' });
+            doc.text(horario ? horario.HORA_LIVRE : 'N/A', 400, rowY, { width: columnWidth, align: 'center' });
+
+            // Move para a próxima linha
             doc.moveDown();
         }
 
-        // Finalize o documento PDF
+        // Finaliza o documento PDF
         doc.end();
     } catch (error) {
         console.error('Erro ao buscar eventos:', error);
         res.status(500).send('Erro interno do servidor');
     }
 });
+
+
+
+
+
 
 
 //Rotas USER
