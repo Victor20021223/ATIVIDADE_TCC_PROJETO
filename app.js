@@ -357,6 +357,24 @@ app.get('/addHorario/hora', async (req, res) => {
 });
 
 //Rotas POST
+app.post('/atualizarSituacao', async (req, res) => {
+    const { id, situacao } = req.body;
+  
+    try {
+      const horario = await Horario.findByPk(id);
+  
+      if (horario) {
+        horario.SITUACAO = situacao;
+        await horario.save();
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ success: false, message: 'Horário não encontrado' });
+      }
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Erro ao atualizar a situação do horário' });
+    }
+  });
+
 app.post('/addProfissional', async (req, res) => {
     await Profissional.create({
         NOME: req.body.NomeProfissional,

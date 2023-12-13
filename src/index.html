@@ -200,25 +200,55 @@
       });
       //Horario agenda
       document.addEventListener('DOMContentLoaded', function () {
-        const selectServico = document.getElementById('eventHorario');
+  const selectServico = document.getElementById('eventHorario');
+  const url = '/horarios';
 
-        // Rota para buscar os serviços
-        const url = '/horarios';
-
-        // Use o fetch para buscar os dados da rota
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            // Preencha o dropdown com os dados obtidos
-            data.forEach(servico => {
-              const option = document.createElement('option');
-              option.value = servico.ID; // Substitua por seu campo de identificação do serviço
-              option.textContent = servico.HORA_LIVRE;
-              selectServico.appendChild(option);
-            });
-          })
-          .catch(error => console.error('Erro ao buscar serviços:', error));
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(servico => {
+        const option = document.createElement('option');
+        option.value = servico.ID;
+        option.textContent = servico.HORA_LIVRE;
+        if (servico.SITUACAO == 'L') {
+          option.textContent = servico.HORA_LIVRE;
+        } else {
+          option.textContent = 'Indisponivel';
+        }
+        selectServico.appendChild(option);
       });
+
+      selectServico.addEventListener('change', function () {
+        const selectedOption = selectServico.options[selectServico.selectedIndex];
+        if (selectedOption && data.some(servico => servico.ID == selectedOption.value)) {
+          const selectedServico = data.find(servico => servico.ID == selectedOption.value);
+
+          // Atualiza a situação para 'I' no servidor
+          fetch('/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: selectedServico.ID,
+              situacao: 'I',
+atualizarSituacao            }),
+          })
+            .then(response => response.json())
+            .then(result => {
+              if (result.success) {
+                // Atualização bem-sucedida no servidor, pode adicionar lógica adicional aqui se necessário
+              } else {
+                console.error('Erro ao atualizar a situação do horário:', result.message);
+              }
+            })
+            .catch(error => console.error('Erro na requisição para atualizar a situação:', error));
+        }
+      });
+    })
+    .catch(error => console.error('Erro ao buscar serviços:', error));
+});
+
     </script>
 
   </main>

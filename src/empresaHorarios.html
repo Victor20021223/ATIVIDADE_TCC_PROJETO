@@ -47,6 +47,7 @@
         <thead>
           <tr>
             <th>Hora Livre</th>
+            <th>Situação</th>
           </tr>
         </thead>
         <tbody id="tabelaHorarios">
@@ -71,11 +72,12 @@
               dataHorario.forEach(horario => {
                 const newRow = tabelaHorarios.insertRow();
                 newRow.insertCell(0).innerText = horario.HORA_LIVRE;
+                newRow.insertCell(1).innerText = horario.SITUACAO;
               });
             } else {
               const newRow = tabelaHorarios.insertRow();
               const cell = newRow.insertCell(0);
-              cell.colSpan = 1; // Ajuste conforme o número de colunas
+              cell.colSpan = 2; // Ajuste conforme o número de colunas
               cell.innerText = 'Nenhum horário encontrado.';
             }
           } catch (error) {
