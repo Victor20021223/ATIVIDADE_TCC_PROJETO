@@ -16,30 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `planos`
+-- Table structure for table `eventos`
 --
 
-DROP TABLE IF EXISTS `planos`;
+DROP TABLE IF EXISTS `eventos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `planos` (
-  `ID` int NOT NULL,
-  `DESCRICAO` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `VALOR` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `DIAS_AGENDAMENTOS` datetime NOT NULL,
-  `INTERVALO_DIAS` int NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID_UNIQUE` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+CREATE TABLE `eventos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `service` int DEFAULT NULL,
+  `professional` int DEFAULT NULL,
+  `horario` int DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `start` date DEFAULT NULL,
+  `end` date DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `planos`
+-- Dumping data for table `eventos`
 --
 
-LOCK TABLES `planos` WRITE;
-/*!40000 ALTER TABLE `planos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `planos` ENABLE KEYS */;
+LOCK TABLES `eventos` WRITE;
+/*!40000 ALTER TABLE `eventos` DISABLE KEYS */;
+INSERT INTO `eventos` VALUES (17,'Teste',5,5,7,'2023-12-13 22:49:26','2023-12-13 22:49:26','2023-12-13','2023-12-13'),(18,'Teste',4,5,6,'2023-12-13 23:00:24','2023-12-13 23:00:24','2023-12-07','2023-12-07'),(19,'agora',5,5,8,'2023-12-13 23:01:15','2023-12-13 23:01:15','2023-12-07','2023-12-07'),(20,'armq',6,6,9,'2023-12-13 23:02:42','2023-12-13 23:02:42','2023-12-08','2023-12-08');
+/*!40000 ALTER TABLE `eventos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -51,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-14  7:46:56
+-- Dump completed on 2023-12-14  7:46:54

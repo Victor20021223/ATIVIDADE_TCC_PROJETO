@@ -16,35 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `agenda`
+-- Table structure for table `profissionais`
 --
 
-DROP TABLE IF EXISTS `agenda`;
+DROP TABLE IF EXISTS `profissionais`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `agenda` (
+CREATE TABLE `profissionais` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `EMPRESA_FK` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `USER_FK` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `DATA_MARCADA` date NOT NULL,
-  `HORARIO_MARCADO` timestamp(3) NOT NULL,
-  `REGISTRO` timestamp(6) NOT NULL,
-  `ID_HORARIO` time NOT NULL,
+  `NOME` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `FUNCAO` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `CONTATO` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `SITUACAO` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'A',
+  `createdAt` time NOT NULL,
+  `updatedAt` time NOT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID_UNIQUE` (`ID`),
-  CONSTRAINT `EMPRESA_FK` FOREIGN KEY (`ID`) REFERENCES `empresas` (`ID`),
-  CONSTRAINT `ID_HORARIO_USUARIO` FOREIGN KEY (`ID`) REFERENCES `horarios` (`ID`),
-  CONSTRAINT `USUARIO_FK` FOREIGN KEY (`ID`) REFERENCES `users` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  UNIQUE KEY `ID_UNIQUE` (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `agenda`
+-- Dumping data for table `profissionais`
 --
 
-LOCK TABLES `agenda` WRITE;
-/*!40000 ALTER TABLE `agenda` DISABLE KEYS */;
-/*!40000 ALTER TABLE `agenda` ENABLE KEYS */;
+LOCK TABLES `profissionais` WRITE;
+/*!40000 ALTER TABLE `profissionais` DISABLE KEYS */;
+INSERT INTO `profissionais` VALUES (5,'Joao','professor ','30156478','A','22:48:33','22:48:33'),(6,'jose','secretario','97468523','A','23:01:57','23:01:57');
+/*!40000 ALTER TABLE `profissionais` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -56,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-04 22:39:40
+-- Dump completed on 2023-12-14  7:46:55

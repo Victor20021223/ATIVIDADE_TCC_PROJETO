@@ -16,30 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `planos`
+-- Table structure for table `dias_semanas`
 --
 
-DROP TABLE IF EXISTS `planos`;
+DROP TABLE IF EXISTS `dias_semanas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `planos` (
-  `ID` int NOT NULL,
-  `DESCRICAO` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `VALOR` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `DIAS_AGENDAMENTOS` datetime NOT NULL,
-  `INTERVALO_DIAS` int NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID_UNIQUE` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+CREATE TABLE `dias_semanas` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `DIAS_SEMANAS` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `planos`
+-- Dumping data for table `dias_semanas`
 --
 
-LOCK TABLES `planos` WRITE;
-/*!40000 ALTER TABLE `planos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `planos` ENABLE KEYS */;
+LOCK TABLES `dias_semanas` WRITE;
+/*!40000 ALTER TABLE `dias_semanas` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dias_semanas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

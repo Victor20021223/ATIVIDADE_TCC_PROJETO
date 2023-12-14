@@ -16,30 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `planos`
+-- Table structure for table `servicos`
 --
 
-DROP TABLE IF EXISTS `planos`;
+DROP TABLE IF EXISTS `servicos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `planos` (
-  `ID` int NOT NULL,
-  `DESCRICAO` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `VALOR` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `DIAS_AGENDAMENTOS` datetime NOT NULL,
-  `INTERVALO_DIAS` int NOT NULL,
+CREATE TABLE `servicos` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `DESCRICAO` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `SOBRE` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `VALOR` float NOT NULL,
+  `SITUACAO` char(1) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `createdAt` time NOT NULL,
+  `updatedAt` time NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID_UNIQUE` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `planos`
+-- Dumping data for table `servicos`
 --
 
-LOCK TABLES `planos` WRITE;
-/*!40000 ALTER TABLE `planos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `planos` ENABLE KEYS */;
+LOCK TABLES `servicos` WRITE;
+/*!40000 ALTER TABLE `servicos` DISABLE KEYS */;
+INSERT INTO `servicos` VALUES (4,'Yoga','exercecios',100,'A','22:47:58','22:47:58'),(5,'Alogamento','teste',45,'A','22:48:11','22:48:11'),(6,'gerua','gter',200,'A','23:02:25','23:02:25');
+/*!40000 ALTER TABLE `servicos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -51,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-14  7:46:56
+-- Dump completed on 2023-12-14  7:46:54

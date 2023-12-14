@@ -25,19 +25,22 @@ DROP TABLE IF EXISTS `empresas`;
 CREATE TABLE `empresas` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `NOME` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `CNPJ` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `CNPJ` varchar(14) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `EMAIL` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
   `TELEFONE` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
   `LOGRADOURO` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `NUMERO` varchar(10) COLLATE utf8mb3_unicode_ci NOT NULL,
   `BAIRRO` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
   `IMAGEM` blob,
+  `SENHA` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `createdAt` datetime(3) NOT NULL,
+  `updatedAt` datetime(3) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID_UNIQUE` (`ID`),
   UNIQUE KEY `CNPJ_UNIQUE` (`CNPJ`),
   UNIQUE KEY `TELEFONE_UNIQUE` (`TELEFONE`),
   UNIQUE KEY `NUMERO_UNIQUE` (`NUMERO`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -58,4 +61,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-04 22:39:40
+-- Dump completed on 2023-12-14  7:46:56

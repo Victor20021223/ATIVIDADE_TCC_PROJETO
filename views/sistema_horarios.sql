@@ -23,14 +23,14 @@ DROP TABLE IF EXISTS `horarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `horarios` (
-  `ID` int NOT NULL,
-  `DIAS_DA_SEMANA` datetime NOT NULL,
-  `HORA_INICIO` time NOT NULL,
-  `HORA_FIM` time NOT NULL,
-  `INTERVALO` time DEFAULT NULL,
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `HORA_LIVRE` time NOT NULL,
+  `createdAt` time NOT NULL,
+  `updatedAt` time NOT NULL,
+  `SITUACAO` char(1) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci DEFAULT 'L',
   PRIMARY KEY (`ID`),
-  CONSTRAINT `ID_HORARIO_EMPRESA` FOREIGN KEY (`ID`) REFERENCES `empresas` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+  UNIQUE KEY `ID_UNIQUE` (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,6 +39,7 @@ CREATE TABLE `horarios` (
 
 LOCK TABLES `horarios` WRITE;
 /*!40000 ALTER TABLE `horarios` DISABLE KEYS */;
+INSERT INTO `horarios` VALUES (6,'09:00:00','22:48:43','22:48:43','L'),(7,'10:00:00','22:48:50','22:48:50','L'),(8,'11:00:00','22:48:56','22:48:56','L'),(9,'12:00:00','23:02:09','23:02:09','L');
 /*!40000 ALTER TABLE `horarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-04 22:39:40
+-- Dump completed on 2023-12-14  7:46:55

@@ -25,14 +25,16 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `NOME` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
-  `EMAIL` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
+  `EMAIL` varchar(255) COLLATE utf8mb3_unicode_ci NOT NULL,
   `SENHA` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
   `GENERO` varchar(45) COLLATE utf8mb3_unicode_ci NOT NULL,
   `CELULAR` varchar(45) COLLATE utf8mb3_unicode_ci DEFAULT NULL,
+  `createdAt` datetime(3) NOT NULL,
+  `updatedAt` datetime(3) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID_UNIQUE` (`ID`),
   UNIQUE KEY `EMAIL_UNIQUE` (`EMAIL`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +43,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (30,'VICTOR HUGO MACIEL DA SILVA','hugov3087@gmail.com','victor','M','44997322931','2023-12-09 23:00:13.000','2023-12-09 23:00:13.000'),(31,'VICTOR HUGO MACIEL DA SILVA','teste@gmail.com','123','1','44997322931','2023-12-09 23:48:10.000','2023-12-09 23:48:10.000'),(33,'VICTOR HUGO MACIEL DA SILVA','teste123@gmail.com','546','M','44997322931','2023-12-10 00:20:28.000','2023-12-10 00:20:28.000');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +56,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-04 22:39:40
+-- Dump completed on 2023-12-14  7:46:55
