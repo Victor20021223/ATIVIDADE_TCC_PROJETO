@@ -51,7 +51,6 @@
         </tr>
       </thead>
       <tbody id="tabelaProfissionais">
-        <!-- Os dados serão exibidos aqui -->
       </tbody>
     </table>
   
@@ -64,7 +63,7 @@
   
           const tabelaProfissionais = document.getElementById('tabelaProfissionais');
   
-          // Limpar tabela antes de adicionar novos dados
+
           tabelaProfissionais.innerHTML = '';
   
           if (!erro && dataProfissional.length > 0) {
@@ -86,7 +85,6 @@
         }
       }
   
-      // Chame a função para carregar os profissionais quando a página carregar
       window.onload = carregarProfissionais;
     </script>
     

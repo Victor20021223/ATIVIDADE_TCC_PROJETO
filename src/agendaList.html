@@ -51,21 +51,18 @@
       <div class="mb-3">
         <label for="eventService" class="form-label">Serviço</label>
         <select class="form-select" id="eventService" required>
-          <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
           <option value="">Escolha um serviço</option>
         </select>
       </div>
       <div class="mb-3">
         <label for="eventProfessional" class="form-label">Profissionais</label>
         <select class="form-select" id="eventProfessional" required>
-          <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
           <option value="">Escolha um profissional</option>
         </select>
       </div>
       <div class="mb-3">
         <label for="eventHorario" class="form-label">Horários</label>
         <select class="form-select" id="eventHorario" required>
-          <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
           <option value="">Escolha um horários</option>
         </select>
       </div>
@@ -77,17 +74,15 @@
     document.addEventListener('DOMContentLoaded', function () {
       const selectServico = document.getElementById('eventService');
 
-      // Rota para buscar os serviços
       const url = '/servicos';
 
       // Use o fetch para buscar os dados da rota
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          // Preencha o dropdown com os dados obtidos
           data.forEach(servico => {
             const option = document.createElement('option');
-            option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+            option.value = servico.ID;
             option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
             selectServico.appendChild(option);
           });
@@ -105,10 +100,9 @@
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          // Preencha o dropdown com os dados obtidos
           data.forEach(servico => {
             const option = document.createElement('option');
-            option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+            option.value = servico.ID;
             option.textContent = servico.NOME;
             selectServico.appendChild(option);
           });
@@ -126,10 +120,9 @@
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          // Preencha o dropdown com os dados obtidos
           data.forEach(servico => {
             const option = document.createElement('option');
-            option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+            option.value = servico.ID;
             option.textContent = servico.HORA_LIVRE;
             selectServico.appendChild(option);
           });

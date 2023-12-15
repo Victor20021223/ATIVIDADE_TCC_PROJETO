@@ -80,7 +80,7 @@ app.post('/eventos', async (req, res, next) => {
     } catch (error) {
         console.error('Erro ao criar evento:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
-        return redirect('./'); // Assuming you have a route handler for redirect  
+        return redirect('./');
     }
 });
 
@@ -159,7 +159,6 @@ app.get('/relatorio-eventos', async (req, res) => {
             doc.text(horario ? horario.HORA_LIVRE : 'N/A', 375, rowY, { width: columnWidth, align: 'center' });
             doc.text(evento.start, 475, rowY, { width: columnWidth, align: 'center' });
 
-            // Move para a próxima linha
             doc.moveDown();
         }
 

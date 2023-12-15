@@ -54,7 +54,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <!-- Formulário para criar um novo evento -->
             <form id="newEventForm" method="post" action="/eventos">
               <div class="mb-3">
                 <label for="eventTitle" class="form-label">Nome</label>
@@ -63,21 +62,18 @@
               <div class="mb-3">
                 <label for="eventService" class="form-label">Serviço</label>
                 <select class="form-select" id="eventService" required>
-                  <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
                   <option value="">Escolha um serviço</option>
                 </select>
               </div>
               <div class="mb-3">
                 <label for="eventProfessional" class="form-label">Profissionais</label>
                 <select class="form-select" id="eventProfessional" required>
-                  <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
                   <option value="">Escolha um profissional</option>
                 </select>
               </div>
               <div class="mb-3">
                 <label for="eventHorario" class="form-label">Horários</label>
                 <select class="form-select" id="eventHorario" required>
-                  <!-- A opção padrão sem valor para indicar que o usuário precisa escolher -->
                   <option value="">Escolha um horários</option>
                 </select>
               </div>
@@ -108,9 +104,7 @@
             }
           ],
           dayClick: function (date) {
-            // Abre o modal ao clicar em um dia
             $('#newEventModal').modal('show');
-            // Submete o formulário ao criar um novo evento
             $('#newEventForm').off('submit').on('submit', function (e) {
               e.preventDefault();
 
@@ -153,10 +147,9 @@
         fetch(url)
           .then(response => response.json())
           .then(data => {
-            // Preencha o dropdown com os dados obtidos
             data.forEach(servico => {
               const option = document.createElement('option');
-              option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+              option.value = servico.ID;
               option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
               selectServico.appendChild(option);
             });
@@ -174,10 +167,9 @@
         fetch(url)
           .then(response => response.json())
           .then(data => {
-            // Preencha o dropdown com os dados obtidos
             data.forEach(servico => {
               const option = document.createElement('option');
-              option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+              option.value = servico.ID; 
               option.textContent = servico.NOME;
               selectServico.appendChild(option);
             });
@@ -199,10 +191,9 @@
         fetch(url)
           .then(response => response.json())
           .then(data => {
-            // Preencha o dropdown com os dados obtidos
             data.forEach(servico => {
               const option = document.createElement('option');
-              option.value = servico.ID; // Substitua por seu campo de identificação do serviço
+              option.value = servico.ID;
               option.textContent = servico.HORA_LIVRE;
 
               if (servico.SITUACAO === 'L') {
@@ -214,19 +205,15 @@
               selectServico.appendChild(option);
             });
 
-            // Adiciona um evento de mudança ao elemento selectServico
             selectServico.addEventListener('change', function () {
-              // Obtém o horário e dia selecionados
               const selectedOption = selectServico.options[selectServico.selectedIndex];
               const selectedDia = selectDia.value;
 
-              // Verifica se o horário já foi selecionado para o mesmo dia
               if (selectedOption && selectedDia) {
                 if (horariosSelecionadosPorDia[selectedDia] && horariosSelecionadosPorDia[selectedDia].includes(selectedOption.value)) {
                   alert('Este horário já foi selecionado para este dia. Por favor, escolha outro horário.');
-                  selectServico.value = ''; // Limpa a seleção
+                  selectServico.value = ''; 
                 } else {
-                  // Atualiza os horários selecionados para o dia
                   if (!horariosSelecionadosPorDia[selectedDia]) {
                     horariosSelecionadosPorDia[selectedDia] = [];
                   }

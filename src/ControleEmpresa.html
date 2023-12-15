@@ -51,7 +51,6 @@
   <main>
     <div id="calendario"></div>
 
-    <!-- Modal para mostrar informações do evento -->
     <div class="modal fade" id="eventInfoModal" tabindex="-1" aria-labelledby="eventInfoModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -67,7 +66,6 @@
     </div>
 
     <script>
-      // Recarrega a página a cada 5 segundos
       setInterval(function () {
         location.reload();
       }, 500000);
@@ -84,14 +82,11 @@
           editable: true,
           events: '/eventos',
           eventClick: function (event) {
-            // Preenche os campos do modal com os dados do evento clicado
             const modalBody = $('#eventDetails');
             modalBody.empty();
 
-            // Adiciona detalhes do evento ao modal
             modalBody.append('<h6>Título: ' + event.title + '</h6>');
 
-            // Faz uma requisição para obter informações do eventService
             axios.get(`/servico/${event.service}`)
               .then(response => {
                 modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
@@ -119,7 +114,6 @@
                 modalBody.append('<p>Horário: N/A</p>');
               });
 
-            // Abre o modal ao clicar em um evento
             $('#eventInfoModal').modal('show');
             console.log(event);
           },

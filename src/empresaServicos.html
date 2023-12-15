@@ -52,12 +52,10 @@
         </tr>
       </thead>
       <tbody id="tabelaServicos">
-        <!-- Os dados serão exibidos aqui -->
       </tbody>
     </table>
 
     <script>
-      // Função para fazer a requisição AJAX
       async function carregarServicos() {
         try {
           const response = await fetch('/admin/servicos/list');
@@ -65,7 +63,6 @@
 
           const tabelaServicos = document.getElementById('tabelaServicos');
 
-          // Limpar tabela antes de adicionar novos dados
           tabelaServicos.innerHTML = '';
 
           if (!erro && dataServicos.length > 0) {
@@ -88,7 +85,6 @@
         }
       }
 
-      // Chame a função para carregar os serviços quando a página carregar
       window.onload = carregarServicos;
     </script>
 
