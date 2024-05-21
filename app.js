@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const pdf = require('pdfkit');
 const moment = require('moment');
-require("./config/auth")(passport);
+require('./config/auth')(passport);
 
 
 //Config
@@ -20,7 +20,7 @@ app.use(session({
     secret: "SistemaAgenda20231203",
     resave: true,
     saveUninitialized: true
-}))
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -28,6 +28,9 @@ app.use(flash());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+//Public
+app.use(express.static('public'));
 
 //Conexão com Banco   
 const db = require('./Models/db');
@@ -37,26 +40,21 @@ const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
 
-//Public
-app.use(express.static('public'));
-
-
-
 //Middleware
 app.use((req, res, next) => {
-    res.locals.sucess_msg = req.flash("sucess_msg")
-    res.locals.error_msg = req.flash("error_msg")
-    res.locals.error = req.flash("error")
-    next()
+    res.locals.sucess_msg = req.flash("sucess_msg");
+    res.locals.error_msg = req.flash("error_msg");
+    res.locals.error = req.flash("error");
+    next();
 });
 
-//Funcao
+// Função de Verificação de Autenticação
 function verificaAutenticacao(req, res, next) {
-    // Verificar se o usuário está autenticado
-    if (req.session && req.session.usuario) {
-        return next(); // O usuário está autenticado, continue
+    if (req.isAuthenticated()) {
+        return next();
     } else {
-        return res.redirect('/login'); // Redirecione para a página de login se não estiver autenticado
+        req.flash('error_msg', 'Por favor, faça login para acessar esta página');
+        res.redirect('/user/login');
     }
 }
 
@@ -191,26 +189,11 @@ app.get('/user/login', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_login.html")
 });
 
-app.post('/user/login/sync', async (req, res, next) => {
-    try {
-        passport.authenticate('local', (err, user, info) => {
-            if (err) {
-                return next(err); // handle errors
-            }
-            if (!user) {
-                return res.redirect('/user/login');
-            }
-            req.logIn(user, (err) => {
-                if (err) {
-                    return next(err);
-                }
-                return res.redirect(`/${user.username}`); 
-            });
-        })(req, res, next);
-    } catch (error) {
-        next(error);
-    }
-});
+app.post('/user/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/user/login',
+    failureFlash: true
+}));
 
 
 app.get('/user/login/add', async (req, res) => {
