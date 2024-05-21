@@ -1,3 +1,4 @@
+//Carregando Modulos
 const express = require('express');
 const app = express();
 const path = require("path");
@@ -9,16 +10,17 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const pdf = require('pdfkit');
 const moment = require('moment');
-require('./config/auth')(passport);
+require("./config/auth")(passport);
 
-// Configurações
 
-// Session
+//Config
+
+//Session
 app.use(session({
     secret: "SistemaAgenda20231203",
     resave: true,
     saveUninitialized: true
-}));
+}))
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -27,16 +29,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-function verificaAutenticacao(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    } else {
-        req.flash('error_msg', 'Por favor, faça login para acessar esta página');
-        res.redirect('/user/login');
-    }
-}
-
-// Conexão com Banco   
+//Conexão com Banco   
 const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
@@ -44,18 +37,30 @@ const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
 
-// Public
+//Public
 app.use(express.static('public'));
 
-// Middleware
+
+
+//Middleware
 app.use((req, res, next) => {
-    res.locals.sucess_msg = req.flash("sucess_msg");
-    res.locals.error_msg = req.flash("error_msg");
-    res.locals.error = req.flash("error");
-    next();
+    res.locals.sucess_msg = req.flash("sucess_msg")
+    res.locals.error_msg = req.flash("error_msg")
+    res.locals.error = req.flash("error")
+    next()
 });
 
-// Calendar
+//Funcao
+function verificaAutenticacao(req, res, next) {
+    // Verificar se o usuário está autenticado
+    if (req.session && req.session.usuario) {
+        return next(); // O usuário está autenticado, continue
+    } else {
+        return res.redirect('/login'); // Redirecione para a página de login se não estiver autenticado
+    }
+}
+
+//Calendar
 app.get('/eventos', async (req, res) => {
     try {
         const eventos = await Evento.findAll();
@@ -65,7 +70,7 @@ app.get('/eventos', async (req, res) => {
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
-
+// Rota para criar um novo evento
 app.post('/eventos', async (req, res, next) => {
     const { title, start, end, service, professional, horario } = req.body;
     try {
@@ -75,10 +80,11 @@ app.post('/eventos', async (req, res, next) => {
     } catch (error) {
         console.error('Erro ao criar evento:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
+        return redirect('./');
     }
 });
 
-// Calendar Admin
+//Calendar Admin
 app.get('/servico/:id', async (req, res) => {
     try {
         const servico = await Servicos.findOne({ where: { ID: req.params.id } });
@@ -109,7 +115,7 @@ app.get('/horario/:id', async (req, res) => {
     }
 });
 
-// Gera PDF
+//Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
     const doc = new pdf();
 
@@ -164,47 +170,68 @@ app.get('/relatorio-eventos', async (req, res) => {
     }
 });
 
-// Rotas USER
 
-// Rotas GET
+
+
+
+
+
+//Rotas USER
+
+//Rotas GET
 app.get('/', async (req, res) => {
-    res.sendFile(__dirname + "/src/index.html");
+    res.sendFile(__dirname + "/src/index.html")
 });
 
-app.get('/user', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + "/src/index.html");
+app.get('/user', async (req, res) => {
+    res.sendFile(__dirname + "/src/index.html")
 });
 
 app.get('/user/login', async (req, res) => {
-    res.sendFile(__dirname + "/src/cad_login.html");
+    res.sendFile(__dirname + "/src/cad_login.html")
 });
 
-app.post('/user/login/sync', (req, res, next) => {
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/user/login',
-        failureFlash: true
-    })(req, res, next);
+app.post('/user/login/sync', async (req, res, next) => {
+    try {
+        passport.authenticate('local', (err, user, info) => {
+            if (err) {
+                return next(err); // handle errors
+            }
+            if (!user) {
+                return res.redirect('/user/login');
+            }
+            req.logIn(user, (err) => {
+                if (err) {
+                    return next(err);
+                }
+                return res.redirect(`/${user.username}`); 
+            });
+        })(req, res, next);
+    } catch (error) {
+        next(error);
+    }
 });
+
 
 app.get('/user/login/add', async (req, res) => {
-    res.sendFile(__dirname + "/src/cad_CadastroUsuario.html");
+    res.sendFile(__dirname + "/src/cad_CadastroUsuario.html")
 });
 
-app.get('/user/meusplanos', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + "/src/MeusPlanos.html");
+app.get('/user/meusplanos', async (req, res) => {
+    res.sendFile(__dirname + "/src/MeusPlanos.html")
 });
 
 app.get('/user/sobrenos', async (req, res) => {
-    res.sendFile(__dirname + "/src/SobreNos.html");
+    res.sendFile(__dirname + "/src/SobreNos.html")
 });
 
-app.get('/addEmpresa', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_CadastroEmpresa.html');
+
+app.get('/addEmpresa', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_CadastroEmpresa.html')
 });
 
-app.get('/agendar', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/index.html');
+app.get('/agendar', async (req, res) => {
+    res.sendFile(__dirname + '/src/index.html')
 });
 
 app.get('/servicos', async (req, res) => {
@@ -237,168 +264,162 @@ app.get('/horarios', async (req, res) => {
     }
 });
 
-// Rotas POST
+//Rotas POST
 app.post('/add', async (req, res) => {
-    const { nomeUsuario, celularUsuario, emailUsuario, senhaUsuario, generoUsuario } = req.body;
-    let erros = [];
 
-    if (!emailUsuario) {
-        erros.push({ text: "E-mail inválido" });
+    var erros = []
+
+    if (!req.body.emailUsuario || typeof req.body.emailUsuario == undefined || req.body.emailUsuario == null) {
+        erros.push({ text: "Nome inválido" })
     }
 
-    if (!senhaUsuario) {
-        erros.push({ text: "Senha inválida" });
+    if (!req.body.emailUsuario || typeof req.body.emailUsuario == undefined || req.body.emailUsuario == null) {
+        erros.push({ text: "Senha inválida" })
     }
 
-    if (erros.length > 0) {
-        res.sendFile(__dirname + "/src/cad_CadastroUsuario.html", { erros });
-    } else {
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(senhaUsuario, salt);
-
-        await User.create({
-            NOME: nomeUsuario,
-            CELULAR: celularUsuario,
-            EMAIL: emailUsuario,
-            SENHA: hash,
-            GENERO: generoUsuario
-        });
-        res.sendFile(__dirname + "/src/index.html");
-    }
+    await User.create({
+        NOME: req.body.nomeUsuario,
+        CELULAR: req.body.celularUsuario,
+        EMAIL: req.body.emailUsuario,
+        SENHA: req.body.senhaUsuario,
+        GENERO: req.body.generoUsuario
+    })
+    res.sendFile(__dirname + "/src/index.html")
 });
 
-// Rotas ADMIN
+//Rotas ADMIN
 
-// Rotas GET
-app.get('/admin', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/ControleEmpresa.html');
+//Rotas Get
+app.get('/admin', async (req, res) => {
+    res.sendFile(__dirname + '/src/ControleEmpresa.html')
 });
 
-app.get('/admin/profissional', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/empresaProfissionais.html');
+app.get('/admin/profissional', async (req, res) => {
+    res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
 
-app.get('/admin/servicos', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/empresaServicos.html');
+app.get('/admin/servicos', async (req, res) => {
+    res.sendFile(__dirname + '/src/empresaServicos.html')
 });
 
-app.get('/admin/horarios', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/empresaHorarios.html');
+app.get('/admin/horarios', async (req, res) => {
+    res.sendFile(__dirname + '/src/empresaHorarios.html')
+})
+
+app.get('/admin/addServico', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_cadastroServico.html')
 });
 
-app.get('/admin/addServico', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_cadastroServico.html');
+app.get('/admin/addProfissional', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_cadastroProfissional.html')
 });
 
-app.get('/admin/addProfissional', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_cadastroProfissional.html');
+app.get('/admin/addHorario', async (req, res) => {
+    res.sendFile(__dirname + '/src/cad_cadastroHorario.html')
 });
 
-app.get('/admin/addHorario', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_cadastroHorario.html');
+app.get('/admin/relatorio', async (req, res) => {
+    res.sendFile(__dirname + '/src/Relatorios.html')
 });
 
-app.get('/admin/relatorio', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/Relatorios.html');
+app.get('/relatorioAgenda', async (req, res) => {
+    res.sendFile(__dirname + '/src/agendaList.html')
 });
 
-app.get('/relatorioAgenda', verificaAutenticacao, async (req, res) => {
-    res.sendFile(__dirname + '/src/agendaList.html');
-});
-
-app.get('/admin/profissional/list', verificaAutenticacao, async (req, res) => {
-    try {
-        const dataProfissional = await Profissional.findAll();
-        res.json({
+app.get('/admin/profissional/list', async (req, res) => {
+    await Profissional.findAll().then((dataProfissional) => {
+        return res.json({
             erro: false,
             dataProfissional
         });
-    } catch {
-        res.status(400).json({
+    }).catch(() => {
+        return res.status(400).json({
             erro: true,
             mensagem: "Erro: Nenhum valor encontrado para pagina"
-        });
-    }
+        })
+    })
 });
 
-app.get('/admin/servicos/list', verificaAutenticacao, async (req, res) => {
-    try {
-        const dataServicos = await Servicos.findAll();
-        res.json({
+app.get('/admin/servicos/list', async (req, res) => {
+    await Servicos.findAll().then((dataServicos) => {
+        return res.json({
             erro: false,
             dataServicos
         });
-    } catch {
-        res.status(400).json({
+    }).catch(() => {
+        return res.status(400).json({
             erro: true,
             mensagem: "Erro: Nenhum valor encontrado para pagina"
-        });
-    }
+        })
+    })
 });
 
-app.get('/addHorario/hora', verificaAutenticacao, async (req, res) => {
-    try {
-        const dataHorario = await Horario.findAll();
-        res.json({
+app.get('/addHorario/hora', async (req, res) => {
+    await Horario.findAll().then((dataHorario) => {
+        return res.json({
             erro: false,
             dataHorario
         });
-    } catch {
-        res.status(400).json({
+    }).catch(() => {
+        return res.status(400).json({
             erro: true,
             mensagem: "Erro: Nenhum valor encontrado para pagina"
-        });
-    }
+        })
+    })
 });
 
-// Rotas POST
-app.post('/atualizar-situacao', verificaAutenticacao, async (req, res) => {
+//Rotas POST
+app.post('/atualizar-situacao', async (req, res) => {
     const { id, situacao } = req.body;
-
+  
     try {
-        const horario = await Horario.findByPk(id);
-
-        if (horario) {
-            horario.SITUACAO = situacao;
-            await horario.save();
-            res.json({ success: true });
-        } else {
-            res.status(404).json({ success: false, message: 'Horário não encontrado' });
-        }
+      const horario = await Horario.findByPk(id);
+  
+      if (horario) {
+        horario.SITUACAO = situacao;
+        await horario.save();
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ success: false, message: 'Horário não encontrado' });
+      }
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Erro ao atualizar a situação do horário' });
+      res.status(500).json({ success: false, message: 'Erro ao atualizar a situação do horário' });
     }
-});
+  });
 
-app.post('/addProfissional', verificaAutenticacao, async (req, res) => {
+app.post('/addProfissional', async (req, res) => {
     await Profissional.create({
         NOME: req.body.NomeProfissional,
         FUNCAO: req.body.Funcao,
         CONTATO: req.body.Contato,
         SITUACAO: 'A'
-    });
-    res.sendFile(__dirname + '/src/empresaProfissionais.html');
+    })
+    res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
 
-app.post('/addServico', verificaAutenticacao, async (req, res) => {
+app.post('/addServico', async (req, res) => {
     await Servicos.create({
         DESCRICAO: req.body.descricao,
         SOBRE: req.body.Sobre,
         VALOR: req.body.valor,
         SITUACAO: 'A'
-    });
-    res.sendFile(__dirname + '/src/empresaServicos.html');
+    })
+    res.sendFile(__dirname + '/src/empresaServicos.html')
 });
 
-app.post('/addHorario/hora', verificaAutenticacao, async (req, res) => {
+app.post('/addHorario/hora', async (req, res) => {
     await Horario.create({
         HORA_LIVRE: req.body.HorariosDiponiveis,
-    });
-    res.sendFile(__dirname + '/src/empresaHorarios.html');
+    })
+    res.sendFile(__dirname + '/src/empresaHorarios.html')
+
 });
 
-// Outros
-const PORT = 8080;
+//Outros
+const PORT = 8080
 app.listen(PORT, () => {
-    console.log("Servidor Rodando!!!");
+    console.log("Servidor Rodando!!!")
 });
+
+//Query
+
