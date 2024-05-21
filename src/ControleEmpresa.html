@@ -59,66 +59,84 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div id="eventDetails"></div>
+            <div id="eventDetails">
+              <div class="spinner-border text-primary" role="status" id="loadingSpinner">
+                <span class="visually-hidden">Carregando...</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    
 
     <script>
-      setInterval(function () {
-        location.reload();
-      }, 500000);
 
       document.addEventListener('DOMContentLoaded', function () {
-        $('#calendario').fullCalendar({
-          header: {
-            left: 'prev,next today',
-            locale: 'pt-br',
-            center: 'title',
-            right: 'month'
-          },
-          defaultView: 'month',
-          editable: true,
-          events: '/eventos',
-          eventClick: function (event) {
-            const modalBody = $('#eventDetails');
-            modalBody.empty();
+  $('#calendario').fullCalendar({
+    header: {
+      left: 'prev,next today',
+      locale: 'pt-br',
+      center: 'title',
+      right: 'month'
+    },
+    defaultView: 'month',
+    editable: true,
+    events: '/eventos',
+    eventClick: function (event) {
+      const modalBody = $('#eventDetails');
+      modalBody.empty();
 
+      // Mostrar o spinner de carregamento
+      modalBody.append('<div class="spinner-border text-primary" role="status" id="loadingSpinner"><span class="visually-hidden">Carregando...</span></div>');
+
+      const promises = [];
+
+      promises.push(
+        axios.get(`/servico/${event.service}`)
+          .then(response => {
             modalBody.append('<h6>Título: ' + event.title + '</h6>');
+            modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
+          })
+          .catch(error => {
+            console.error('Erro ao obter informações do serviço:', error);
+            modalBody.append('<p>Serviço: N/A</p>');
+          })
+      );
 
-            axios.get(`/servico/${event.service}`)
-              .then(response => {
-                modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
-              })
-              .catch(error => {
-                console.error('Erro ao obter informações do serviço:', error);
-                modalBody.append('<p>Serviço: N/A</p>');
-              });
+      promises.push(
+        axios.get(`/profissional/${event.professional}`)
+          .then(response => {
+            modalBody.append('<p>Profissional: ' + (response.data.NOME || 'N/A') + '</p>');
+          })
+          .catch(error => {
+            console.error('Erro ao obter informações do profissional:', error);
+            modalBody.append('<p>Profissional: N/A</p>');
+          })
+      );
 
-              axios.get(`/profissional/${event.professional}`)
-              .then(response => {
-                modalBody.append('<p>Profissional: ' + (response.data.NOME || 'N/A') + '</p>');
-              })
-              .catch(error => {
-                console.error('Erro ao obter informações do serviço:', error);
-                modalBody.append('<p>Profissional: N/A</p>');
-              });
+      promises.push(
+        axios.get(`/horario/${event.horario}`)
+          .then(response => {
+            modalBody.append('<p>Horário: ' + (response.data.HORA_LIVRE || 'N/A') + '</p>');
+          })
+          .catch(error => {
+            console.error('Erro ao obter informações do horário:', error);
+            modalBody.append('<p>Horário: N/A</p>');
+          })
+      );
 
-              axios.get(`/horario/${event.horario}`)
-              .then(response => {
-                modalBody.append('<p>Horário: ' + (response.data.HORA_LIVRE || 'N/A') + '</p>');
-              })
-              .catch(error => {
-                console.error('Erro ao obter informações do serviço:', error);
-                modalBody.append('<p>Horário: N/A</p>');
-              });
-
-            $('#eventInfoModal').modal('show');
-            console.log(event);
-          },
-        });
+      // Ocultar o spinner de carregamento quando todas as requisições estiverem concluídas
+      Promise.all(promises).then(() => {
+        $('#loadingSpinner').remove();
       });
+
+      $('#eventInfoModal').modal('show');
+      console.log(event);
+    },
+  });
+});
+
     </script>
   </main>
 

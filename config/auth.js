@@ -1,37 +1,36 @@
-const localStrategy = require("passport-local").Strategy;
-const sequelize = require("../Models/db");
-const db = require("../Models/db");
+const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
+const User = require('../Models/User');
 
-//Model de User
-require("../Models/User")
-const User = db.model('users');
-
-module.exports = function(passport){
-    passport.use(new localStrategy({usernameField: 'EMAIL', passwordField: 'SENHA'}, (EMAIL, SENHA, done) =>{
-
-        User.findOne({EMAIL: EMAIL}).then((User) =>{
-            if(User){
-                return done(null, false, {message: "Essa conta não existe"})
+module.exports = function(passport) {
+    passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+        try {
+            const user = await User.findOne({ where: { EMAIL: email } });
+            if (!user) {
+                return done(null, false, { message: 'Usuário não encontrado' });
             }
 
-            bcrypt.compare(SENHA, User.SENHA, (erro, batem) =>{
-                if(batem){
-                    return done(null, User)
-                }else{
-                    return done(null, false, {message:"Senha Incorreta"})
-                }
-            })
-        })
-    }))
+            const isMatch = await bcrypt.compare(password, user.SENHA);
+            if (!isMatch) {
+                return done(null, false, { message: 'Senha incorreta' });
+            }
 
-    passport.serializeUser((User, done) =>{
-        done(null, User.ID)
-    })
+            return done(null, user);
+        } catch (err) {
+            return done(err);
+        }
+    }));
 
-    passport.deserializeUser((ID, done) =>{
-        User.findById(ID,(err, User) =>{
-            done(err, User)
-        })
-    })
-}
+    passport.serializeUser((user, done) => {
+        done(null, user.ID);
+    });
+
+    passport.deserializeUser(async (id, done) => {
+        try {
+            const user = await User.findByPk(id);
+            done(null, user);
+        } catch (err) {
+            done(err, null);
+        }
+    });
+};

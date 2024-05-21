@@ -19,7 +19,7 @@
   <header>
     <nav class="navbar navbar-expand-lg" id="Barra">
       <div class="container-fluid p-2" style="background-color: aquamarine;">
-        <a class="navbar-brand" href="/user">Sistema Agenda</a>
+        <a class="navbar-brand" href="/">Sistema Agenda</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
           aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -27,7 +27,7 @@
         <div class="collapse navbar-collapse" id="navbarText">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/user">Home</a>
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/user/sobrenos">Sobre Nós</a>
@@ -54,7 +54,14 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="newEventForm" method="post" action="/eventos">
+            <!-- Spinner de carregamento -->
+            <div id="loadingSpinner" class="text-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Carregando...</span>
+              </div>
+            </div>
+
+            <form id="newEventForm" method="post" action="/eventos" style="display: none;">
               <div class="mb-3">
                 <label for="eventTitle" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="eventTitle" placeholder="Informe seu nome" required>
@@ -74,7 +81,7 @@
               <div class="mb-3">
                 <label for="eventHorario" class="form-label">Horários</label>
                 <select class="form-select" id="eventHorario" required>
-                  <option value="">Escolha um horários</option>
+                  <option value="">Escolha um horário</option>
                 </select>
               </div>
               <button type="submit" class="btn btn-primary">Criar Evento</button>
@@ -84,6 +91,7 @@
       </div>
     </div>
     <script>
+
       document.addEventListener('DOMContentLoaded', function () {
         $('#calendario').fullCalendar({
           header: {
@@ -94,7 +102,6 @@
           },
           defaultView: 'month',
           eventSources: [
-            // Rota para obter eventos
             {
               url: '/eventos',
               method: 'GET',
@@ -105,6 +112,55 @@
           ],
           dayClick: function (date) {
             $('#newEventModal').modal('show');
+            $('#newEventForm').hide();
+            $('#loadingSpinner').show();
+
+            const carregarDados = async () => {
+              try {
+                const [servicos, profissionais, horarios] = await Promise.all([
+                  fetch('/servicos').then(res => res.json()),
+                  fetch('/profissional').then(res => res.json()),
+                  fetch('/horarios').then(res => res.json()),
+                ]);
+
+                const selectServico = document.getElementById('eventService');
+                selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
+                servicos.forEach(servico => {
+                  const option = document.createElement('option');
+                  option.value = servico.ID;
+                  option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
+                  selectServico.appendChild(option);
+                });
+
+                const selectProfissional = document.getElementById('eventProfessional');
+                selectProfissional.innerHTML = '<option value="">Escolha um profissional</option>';
+                profissionais.forEach(profissional => {
+                  const option = document.createElement('option');
+                  option.value = profissional.ID;
+                  option.textContent = profissional.NOME;
+                  selectProfissional.appendChild(option);
+                });
+
+                const selectHorario = document.getElementById('eventHorario');
+                selectHorario.innerHTML = '<option value="">Escolha um horário</option>';
+                horarios.forEach(horario => {
+                  const option = document.createElement('option');
+                  option.value = horario.ID;
+                  option.textContent = horario.SITUACAO === 'L' ? horario.HORA_LIVRE : 'Indisponível';
+                  selectHorario.appendChild(option);
+                });
+
+                $('#loadingSpinner').hide();
+                $('#newEventForm').show();
+              } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                alert('Erro ao carregar dados.');
+                $('#newEventModal').modal('hide');
+              }
+            };
+
+            carregarDados();
+
             $('#newEventForm').off('submit').on('submit', function (e) {
               e.preventDefault();
 
@@ -117,7 +173,6 @@
                 end: moment().add(1, 'hour').format(date.format())
               };
 
-              // Rota para criar um novo evento
               $.ajax({
                 url: '/eventos',
                 type: 'POST',
@@ -136,95 +191,6 @@
           },
         });
       });
-      //Servicos agenda
-      document.addEventListener('DOMContentLoaded', function () {
-        const selectServico = document.getElementById('eventService');
-
-        // Rota para buscar os serviços
-        const url = '/servicos';
-
-        // Use o fetch para buscar os dados da rota
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            data.forEach(servico => {
-              const option = document.createElement('option');
-              option.value = servico.ID;
-              option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
-              selectServico.appendChild(option);
-            });
-          })
-          .catch(error => console.error('Erro ao buscar serviços:', error));
-      });
-      //Profissionais agenda
-      document.addEventListener('DOMContentLoaded', function () {
-        const selectServico = document.getElementById('eventProfessional');
-
-        // Rota para buscar os serviços
-        const url = '/profissional';
-
-        // Use o fetch para buscar os dados da rota
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            data.forEach(servico => {
-              const option = document.createElement('option');
-              option.value = servico.ID; 
-              option.textContent = servico.NOME;
-              selectServico.appendChild(option);
-            });
-          })
-          .catch(error => console.error('Erro ao buscar serviços:', error));
-      });
-      //Horario agenda
-      document.addEventListener('DOMContentLoaded', function () {
-        const selectServico = document.getElementById('eventHorario');
-        const selectDia = document.getElementById('eventDia'); // Adicione um elemento para representar o dia
-
-        // Rota para buscar os serviços
-        const url = '/horarios';
-
-        // Armazena os horários já selecionados para cada dia
-        const horariosSelecionadosPorDia = {};
-
-        // Use o fetch para buscar os dados da rota
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            data.forEach(servico => {
-              const option = document.createElement('option');
-              option.value = servico.ID;
-              option.textContent = servico.HORA_LIVRE;
-
-              if (servico.SITUACAO === 'L') {
-                option.textContent = servico.HORA_LIVRE;
-              } else {
-                option.textContent = 'Indisponível';
-              }
-
-              selectServico.appendChild(option);
-            });
-
-            selectServico.addEventListener('change', function () {
-              const selectedOption = selectServico.options[selectServico.selectedIndex];
-              const selectedDia = selectDia.value;
-
-              if (selectedOption && selectedDia) {
-                if (horariosSelecionadosPorDia[selectedDia] && horariosSelecionadosPorDia[selectedDia].includes(selectedOption.value)) {
-                  alert('Este horário já foi selecionado para este dia. Por favor, escolha outro horário.');
-                  selectServico.value = ''; 
-                } else {
-                  if (!horariosSelecionadosPorDia[selectedDia]) {
-                    horariosSelecionadosPorDia[selectedDia] = [];
-                  }
-                  horariosSelecionadosPorDia[selectedDia].push(selectedOption.value);
-                }
-              }
-            });
-          })
-          .catch(error => console.error('Erro ao buscar serviços:', error));
-      });
-
     </script>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
