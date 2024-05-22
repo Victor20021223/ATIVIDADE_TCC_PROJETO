@@ -263,7 +263,7 @@ app.get('/user/:nome', async (req, res) => {
     // Verifique se o usuário atual é o mesmo do nome na URL
     if (req.user && req.user.NOME === nomeUsuario) {
         // Se sim, envie o arquivo HTML
-        res.sendFile(__dirname + "/src/index.html");
+        res.sendFile(__dirname + "/src/tela_indexSession.html");
     } else {
         // Se não, redirecione para uma página de acesso não autorizado
         res.status(403).send("Acesso não autorizado");

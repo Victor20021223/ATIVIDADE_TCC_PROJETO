@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.10.2/dist/locale/pt-br.js"></script>
+
+  <title>Tcc</title>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg" id="Barra">
+      <div class="container-fluid p-2" style="background-color: aquamarine;">
+        <a class="navbar-brand" href="/">Sistema Agenda</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+          aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/sobrenos">Sobre Nós</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main>
+
+    <div id="calendario"></div>
+
+    <!-- Modal para opções do dia -->
+    <div class="modal fade" id="newEventModal" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true"
+      style="background-color: transparent;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newEventModalLabel">Novo Agendamento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Spinner de carregamento -->
+            <div id="loadingSpinner" class="text-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Carregando...</span>
+              </div>
+            </div>
+
+            <form id="newEventForm" method="post" action="/eventos" style="display: none;">
+              <div class="mb-3">
+                <label for="eventTitle" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="eventTitle" placeholder="Informe seu nome" required>
+              </div>
+              <div class="mb-3">
+                <label for="eventService" class="form-label">Serviço</label>
+                <select class="form-select" id="eventService" required>
+                  <option value="">Escolha um serviço</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="eventProfessional" class="form-label">Profissionais</label>
+                <select class="form-select" id="eventProfessional" required>
+                  <option value="">Escolha um profissional</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="eventHorario" class="form-label">Horários</label>
+                <select class="form-select" id="eventHorario" required>
+                  <option value="">Escolha um horário</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Criar Evento</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function () {
+        $('#calendario').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            locale: 'pt-br',
+            center: 'title',
+            right: 'month'
+          },
+          defaultView: 'month',
+          eventSources: [
+            {
+              url: '/eventos',
+              method: 'GET',
+              failure: function () {
+                alert('Erro ao carregar eventos.');
+              }
+            }
+          ],
+          dayClick: function (date) {
+            $('#newEventModal').modal('show');
+            $('#newEventForm').hide();
+            $('#loadingSpinner').show();
+
+            const carregarDados = async () => {
+              try {
+                const [servicos, profissionais, horarios] = await Promise.all([
+                  fetch('/servicos').then(res => res.json()),
+                  fetch('/profissional').then(res => res.json()),
+                  fetch('/horarios').then(res => res.json()),
+                ]);
+
+                const selectServico = document.getElementById('eventService');
+                selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
+                servicos.forEach(servico => {
+                  const option = document.createElement('option');
+                  option.value = servico.ID;
+                  option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
+                  selectServico.appendChild(option);
+                });
+
+                const selectProfissional = document.getElementById('eventProfessional');
+                selectProfissional.innerHTML = '<option value="">Escolha um profissional</option>';
+                profissionais.forEach(profissional => {
+                  const option = document.createElement('option');
+                  option.value = profissional.ID;
+                  option.textContent = profissional.NOME;
+                  selectProfissional.appendChild(option);
+                });
+
+                const selectHorario = document.getElementById('eventHorario');
+                selectHorario.innerHTML = '<option value="">Escolha um horário</option>';
+                horarios.forEach(horario => {
+                  const option = document.createElement('option');
+                  option.value = horario.ID;
+                  option.textContent = horario.SITUACAO === 'L' ? horario.HORA_LIVRE : 'Indisponível';
+                  selectHorario.appendChild(option);
+                });
+
+                $('#loadingSpinner').hide();
+                $('#newEventForm').show();
+              } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                alert('Erro ao carregar dados.');
+                $('#newEventModal').modal('hide');
+              }
+            };
+
+            carregarDados();
+
+            $('#newEventForm').off('submit').on('submit', function (e) {
+              e.preventDefault();
+
+              const novoEvento = {
+                title: $('#eventTitle').val(),
+                service: $('#eventService').val(),
+                professional: $('#eventProfessional').val(),
+                horario: $('#eventHorario').val(),
+                start: moment().format(date.format()),
+                end: moment().add(1, 'hour').format(date.format())
+              };
+
+              $.ajax({
+                url: '/eventos',
+                type: 'POST',
+                data: JSON.stringify(novoEvento),
+                contentType: 'application/json',
+                success: function (response) {
+                  alert('Novo evento criado com sucesso. ID: ' + response.id);
+                  $('#calendario').fullCalendar('refetchEvents');
+                  $('#newEventModal').modal('hide');
+                },
+                error: function () {
+                  alert('Erro ao criar novo evento.');
+                }
+              });
+            });
+          },
+        });
+      });
+    </script>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
