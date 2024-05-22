@@ -1,16 +1,16 @@
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs'); // Certifique-se de ter o bcrypt instalado e configurado
+const bcrypt = require('bcryptjs');
 
-const User = require('../Models/User'); // Atualize o caminho conforme necessário
+const User = require('../Models/User');
 
 module.exports = function(passport) {
     passport.use(new LocalStrategy({
-        usernameField: 'email', // Nome do campo do formulário para o nome de usuário (ou email, como preferir)
-        passwordField: 'password' // Nome do campo do formulário para a senha
+        usernameField: 'EMAIL',
+        passwordField: 'SENHA'
     }, async (email, password, done) => {
         try {
             // Encontrar usuário por email
-            const user = await User.findOne({ where: { email: email } });
+            const user = await User.findOne({ where: { EMAIL: email } });
             if (!user) {
                 return done(null, false, { message: 'Endereço de email não registrado' });
             }

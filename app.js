@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const pdf = require('pdfkit');
 const moment = require('moment');
-require('./config/auth')(passport);
+const LocalStrategy = require('passport-local').Strategy;
 
 
 //Config
@@ -47,6 +47,40 @@ app.use((req, res, next) => {
     res.locals.error = req.flash("error");
     next();
 });
+
+//Passport
+passport.use(new LocalStrategy({ 
+    usernameField: 'emailConfirma', // Campo do formulário para o email
+    passwordField: 'senhaConfirma' // Campo do formulário para a senha
+}, async (email, senha, done) => {
+    try {
+        // Encontre o usuário pelo email
+        const user = await User.findOne({ where: { EMAIL: email } });
+
+        // Se o usuário não existir, retorne false
+        if (!user) {
+            return done(null, false, { message: 'Email ou senha incorretos' });
+        }
+
+        console.log('Senha fornecida:', senha);
+        console.log('Senha armazenada no banco de dados:', user.SENHA);
+
+        // Compare a senha fornecida com a senha armazenada no banco de dados
+        const isMatch = await bcrypt.compare(senha, user.SENHA);
+        console.log('Resultado da comparação de senha:', isMatch);
+
+        // Se as senhas não corresponderem, retorne false
+        if (!isMatch) {
+            return done(null, false, { message: 'Email ou senha incorretos' });
+        }
+
+        // Se tudo estiver correto, retorne o usuário
+        return done(null, user);
+    } catch (error) {
+        return done(error);
+    }
+}));
+
 
 // Função de Verificação de Autenticação
 function verificaAutenticacao(req, res, next) {
@@ -189,11 +223,13 @@ app.get('/user/login', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_login.html")
 });
 
-app.post('/user/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/user/login',
-    failureFlash: true
-}));
+app.post('/user/login', 
+    passport.authenticate('local', {
+        successRedirect: '/user', // Redirecionar em caso de sucesso
+        failureRedirect: '/user/login', // Redirecionar em caso de falha
+        failureFlash: true // Ativar mensagens flash em caso de falha
+    })
+);
 
 
 app.get('/user/login/add', async (req, res) => {
@@ -248,8 +284,10 @@ app.get('/horarios', async (req, res) => {
 });
 
 //Rotas POST
+
 app.post('/add', async (req, res) => {
 
+    const hashedPassword = await bcrypt.hash(req.body.senhaUsuario, 10);
     var erros = []
 
     if (!req.body.emailUsuario || typeof req.body.emailUsuario == undefined || req.body.emailUsuario == null) {
@@ -264,7 +302,7 @@ app.post('/add', async (req, res) => {
         NOME: req.body.nomeUsuario,
         CELULAR: req.body.celularUsuario,
         EMAIL: req.body.emailUsuario,
-        SENHA: req.body.senhaUsuario,
+        SENHA: hashedPassword,
         GENERO: req.body.generoUsuario
     })
     res.sendFile(__dirname + "/src/index.html")

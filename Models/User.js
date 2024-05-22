@@ -27,7 +27,7 @@ const User = db.define( 'users',{
         unique:true
     },
     SENHA:{
-        type: Sequelize.STRING(45),
+        type: Sequelize.STRING(255),
         allowNull:false,
         required:true,
     },
