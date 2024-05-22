@@ -228,12 +228,6 @@ app.get('/relatorio-eventos', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
 //Rotas USER
 
 //Rotas GET
