@@ -81,13 +81,39 @@ passport.use(new LocalStrategy({
     }
 }));
 
+passport.serializeUser((user, done) => {
+    done(null, user.ID); // Use um identificador único do usuário, como o ID do banco de dados
+});
 
-// Função de Verificação de Autenticação
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findByPk(id); // Recupere o usuário do banco de dados usando o ID
+        if (!user) {
+            return done(new Error('Usuário não encontrado'));
+        }
+        // Se o usuário for encontrado, passe-o para a função de retorno de chamada do Passport
+        done(null, user);
+    } catch (err) {
+        done(err); // Se houver algum erro ao recuperar o usuário, passe-o para a função de retorno de chamada
+    }
+});
+
+app.post('/user/login', passport.authenticate('local', {
+    failureRedirect: '/user/login', // Redireciona de volta para a página de login em caso de falha no login
+    failureFlash: true // Permite flash messages para mostrar erros de autenticação
+}), (req, res) => {
+    res.redirect('/user/' + req.user.NOME);
+});
+
+
+// Middleware para verificar se o usuário está autenticado
 function verificaAutenticacao(req, res, next) {
+    // Verifique se o usuário está autenticado
     if (req.isAuthenticated()) {
+        // Se estiver autenticado, passe para o próximo middleware
         return next();
     } else {
-        req.flash('error_msg', 'Por favor, faça login para acessar esta página');
+        // Se não estiver autenticado, redirecione para a página de login
         res.redirect('/user/login');
     }
 }
@@ -211,6 +237,15 @@ app.get('/relatorio-eventos', async (req, res) => {
 //Rotas USER
 
 //Rotas GET
+
+app.get('/perfil', verificaAutenticacao, (req, res) => {
+    // Recupere os dados do usuário da sessão
+    const user = req.user;
+
+    // Agora você pode usar os dados do usuário para personalizar a página
+    res.send(`Bem-vindo ao seu perfil, ${user.nome}!`);
+});
+
 app.get('/', async (req, res) => {
     res.sendFile(__dirname + "/src/index.html")
 });
@@ -223,14 +258,17 @@ app.get('/user/login', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_login.html")
 });
 
-app.post('/user/login', 
-    passport.authenticate('local', {
-        successRedirect: '/user', // Redirecionar em caso de sucesso
-        failureRedirect: '/user/login', // Redirecionar em caso de falha
-        failureFlash: true // Ativar mensagens flash em caso de falha
-    })
-);
-
+app.get('/user/:nome', async (req, res) => {
+    const nomeUsuario = req.params.nome;
+    // Verifique se o usuário atual é o mesmo do nome na URL
+    if (req.user && req.user.NOME === nomeUsuario) {
+        // Se sim, envie o arquivo HTML
+        res.sendFile(__dirname + "/src/index.html");
+    } else {
+        // Se não, redirecione para uma página de acesso não autorizado
+        res.status(403).send("Acesso não autorizado");
+    }
+});
 
 app.get('/user/login/add', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_CadastroUsuario.html")
