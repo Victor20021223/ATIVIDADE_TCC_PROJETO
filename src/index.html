@@ -63,10 +63,6 @@
 
             <form id="newEventForm" method="post" action="/eventos" style="display: none;">
               <div class="mb-3">
-                <label for="eventTitle" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="eventTitle" placeholder="Informe seu nome" required>
-              </div>
-              <div class="mb-3">
                 <label for="eventService" class="form-label">Serviço</label>
                 <select class="form-select" id="eventService" required>
                   <option value="">Escolha um serviço</option>
@@ -165,7 +161,6 @@
               e.preventDefault();
 
               const novoEvento = {
-                title: $('#eventTitle').val(),
                 service: $('#eventService').val(),
                 professional: $('#eventProfessional').val(),
                 horario: $('#eventHorario').val(),

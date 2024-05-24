@@ -5,7 +5,7 @@ const sequelize = require('./db');
 const Evento = sequelize.define('Evento', {
     title: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     },
     service: {
       type: Sequelize.INTEGER,

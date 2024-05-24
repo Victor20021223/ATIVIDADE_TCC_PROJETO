@@ -60,10 +60,6 @@
 
             <form id="newEventForm" method="post" action="/eventos" style="display: none;">
               <div class="mb-3">
-                <label for="eventTitle" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="eventTitle" placeholder="Informe seu nome" required>
-              </div>
-              <div class="mb-3">
                 <label for="eventService" class="form-label">Serviço</label>
                 <select class="form-select" id="eventService" required>
                   <option value="">Escolha um serviço</option>
@@ -118,7 +114,7 @@
                   fetch('/servicos').then(res => res.json()),
                   fetch('/profissional').then(res => res.json()),
                   fetch('/horarios').then(res => res.json()),
-                ]);
+                  ]);
 
                 const selectServico = document.getElementById('eventService');
                 selectServico.innerHTML = '<option value="">Escolha um serviço</option>';

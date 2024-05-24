@@ -108,13 +108,10 @@ app.post('/user/login', passport.authenticate('local', {
 
 // Middleware para verificar se o usuário está autenticado
 function verificaAutenticacao(req, res, next) {
-    // Verifique se o usuário está autenticado
     if (req.isAuthenticated()) {
-        // Se estiver autenticado, passe para o próximo middleware
-        return next();
+      return next();
     } else {
-        // Se não estiver autenticado, redirecione para a página de login
-        res.redirect('/user/login');
+      res.status(401).json({ error: 'Não autenticado' });
     }
 }
 
@@ -130,12 +127,19 @@ app.get('/eventos', async (req, res) => {
 });
 // Rota para criar um novo evento
 app.post('/eventos', async (req, res, next) => {
-    const { title, start, end, service, professional, horario } = req.body;
+    const { start, end, service, professional, horario } = req.body;
     try {
-        const novoEvento = await Evento.create({ title, start, end, service, professional, horario });
+        const userDetailsResponse = await fetch('/user/details');
+        const userDetails = await userDetailsResponse.json();
+        
+        const { ID } = userDetails;
+        
+        // Criando o evento com o nome do usuário
+        const novoEvento = await Evento.create({ title: ID, start, end, service, professional, horario });
+        
         res.json(novoEvento);
         next();
-    } catch (error) {
+    } catch (error) { 
         console.error('Erro ao criar evento:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
         return redirect('./');
@@ -232,9 +236,35 @@ app.get('/relatorio-eventos', async (req, res) => {
 
 //Rotas GET
 
+// Rota para obter os detalhes do usuário logado
+app.get('/user/details', async (req, res) => {
+    try {
+        console.log('req.user:', req.user);
+
+        const userId = req.user ? req.user.ID : null; // Adicionado null check
+
+        if (userId) {
+            res.json({ id: userId });
+        } else {
+            // Se o ID do usuário não estiver presente, envie uma mensagem de erro
+            res.status(400).json({ error: 'ID do usuário não encontrado' });
+        }
+    } catch (error) {
+        // Em caso de erro, envie uma resposta de erro
+        console.error('Erro ao processar a solicitação:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
+  
+  // Iniciar o servidor (adapte a porta conforme necessário)
+  app.listen(3000, () => {
+    console.log('Servidor rodando na porta 3000');
+});
+
 app.get('/perfil', verificaAutenticacao, (req, res) => {
     // Recupere os dados do usuário da sessão
-    const user = req.user;
+    const user = req.user; 
 
     // Agora você pode usar os dados do usuário para personalizar a página
     res.send(`Bem-vindo ao seu perfil, ${user.nome}!`);
@@ -258,9 +288,6 @@ app.get('/user/:nome', async (req, res) => {
     if (req.user && req.user.NOME === nomeUsuario) {
         // Se sim, envie o arquivo HTML
         res.sendFile(__dirname + "/src/tela_indexSession.html");
-    } else {
-        // Se não, redirecione para uma página de acesso não autorizado
-        res.status(403).send("Acesso não autorizado");
     }
 });
 
