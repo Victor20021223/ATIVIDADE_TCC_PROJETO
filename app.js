@@ -129,6 +129,7 @@ app.get('/eventos', async (req, res) => {
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
+
 // Rota para criar um novo evento
 app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
     // Verifique se o usuário está autenticado e o ID do usuário está disponível na sessão
