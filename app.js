@@ -76,8 +76,8 @@ passport.use(new LocalStrategy({
 
         // Se tudo estiver correto, retorne o usuário
         return done(null, user);
-    } catch (error) {
-        return done(error);
+    } catch (err) {
+        return done(err);
     }
 }));
 
@@ -102,8 +102,12 @@ app.post('/user/login', passport.authenticate('local', {
     failureRedirect: '/user/login', // Redireciona de volta para a página de login em caso de falha no login
     failureFlash: true // Permite flash messages para mostrar erros de autenticação
 }), (req, res) => {
+    // Após o login bem-sucedido, armazene o ID do usuário na sessão
+    req.session.userID = req.user.ID; // Supondo que o ID do usuário está disponível em req.user.ID
+    
     res.redirect('/user/' + req.user.NOME);
 });
+
 
 
 // Middleware para verificar se o usuário está autenticado
@@ -126,23 +130,23 @@ app.get('/eventos', async (req, res) => {
     }
 });
 // Rota para criar um novo evento
-app.post('/eventos', async (req, res, next) => {
+app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
+    // Verifique se o usuário está autenticado e o ID do usuário está disponível na sessão
+    if (!req.session.userID) {
+        return res.status(401).json({ erro: 'Usuário não autenticado' });
+    }
+    
     const { start, end, service, professional, horario } = req.body;
     try {
-        const userDetailsResponse = await fetch('/user/details');
-        const userDetails = await userDetailsResponse.json();
+        const userID = req.session.userID; // Obtenha o ID do usuário da sessão
         
-        const { ID } = userDetails;
-        
-        // Criando o evento com o nome do usuário
-        const novoEvento = await Evento.create({ title: ID, start, end, service, professional, horario });
+        // Criando o evento com o ID do usuário
+        const novoEvento = await Evento.create({ idUser: userID, start, end, service, professional, horario });
         
         res.json(novoEvento);
-        next();
     } catch (error) { 
         console.error('Erro ao criar evento:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
-        return redirect('./');
     }
 });
 
@@ -228,12 +232,12 @@ app.get('/relatorio-eventos', async (req, res) => {
         doc.end();
     } catch (error) {
         console.error('Erro ao buscar eventos:', error);
-        res.status(500).send('Erro interno do servidor');
+        res.status(500).send('Erro interno do servidor'); 
     }
 });
 
 //Rotas USER
-
+ 
 //Rotas GET
 
 // Rota para obter os detalhes do usuário logado
@@ -254,12 +258,6 @@ app.get('/user/details', async (req, res) => {
         console.error('Erro ao processar a solicitação:', error);
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
-});
-
-  
-  // Iniciar o servidor (adapte a porta conforme necessário)
-  app.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000');
 });
 
 app.get('/perfil', verificaAutenticacao, (req, res) => {
@@ -502,4 +500,3 @@ app.listen(PORT, () => {
 });
 
 //Query
-

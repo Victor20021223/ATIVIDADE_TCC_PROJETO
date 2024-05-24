@@ -3,8 +3,8 @@ const db = require('./db');
 const sequelize = require('./db');
 
 const Evento = sequelize.define('Evento', {
-    title: {
-      type: Sequelize.STRING,
+    idUser: {
+      type: Sequelize.INTEGER,
       allowNull: true
     },
     service: {
