@@ -102,9 +102,6 @@ app.post('/user/login', passport.authenticate('local', {
     failureRedirect: '/user/login', // Redireciona de volta para a página de login em caso de falha no login
     failureFlash: true // Permite flash messages para mostrar erros de autenticação
 }), (req, res) => {
-    // Após o login bem-sucedido, armazene o ID do usuário na sessão
-    req.session.userID = req.user.ID; // Supondo que o ID do usuário está disponível em req.user.ID
-    
     res.redirect('/user/' + req.user.NOME);
 });
 
