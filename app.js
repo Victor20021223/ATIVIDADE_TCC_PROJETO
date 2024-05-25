@@ -152,6 +152,16 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
 });
 
 //Calendar Admin
+app.get('/users/:id', async (req, res) => {
+    try {
+        const user = await User.findOne({ where: { ID: req.params.id } });
+        res.json(user);
+    } catch (error) {
+        console.error('Erro ao obter informações do serviço:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
 app.get('/servico/:id', async (req, res) => {
     try {
         const servico = await Servicos.findOne({ where: { ID: req.params.id } });

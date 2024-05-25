@@ -93,9 +93,19 @@
       const promises = [];
 
       promises.push(
+            axios.get(`/users/${event.idUser}`)
+              .then(response => {
+                modalBody.append('<h6>Nome: ' + (response.data.NOME || 'N/A') + '</h6>'); // Exibe o nome do usuário, ou 'N/A' se não houver nome
+              })
+              .catch(error => {
+                console.error('Erro ao obter informações do usuário:', error);
+                modalBody.append('<p>Nome do Usuário: N/A</p>');
+              })
+          );
+
+      promises.push(
         axios.get(`/servico/${event.service}`)
           .then(response => {
-            modalBody.append('<h6>Título: ' + event.title + '</h6>');
             modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
           })
           .catch(error => {
