@@ -29,10 +29,10 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//Public
+// Public
 app.use(express.static('public'));
 
-//Conexão com Banco   
+// Conexão com Banco   
 const db = require('./Models/db');
 const User = require('./Models/User');
 const Profissional = require('./Models/Profissional');
@@ -40,7 +40,7 @@ const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
 
-//Middleware
+// Middleware para mensagens flash
 app.use((req, res, next) => {
     res.locals.sucess_msg = req.flash("sucess_msg");
     res.locals.error_msg = req.flash("error_msg");
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
     next();
 });
 
-//Passport
+// Configuração do Passport
 passport.use(new LocalStrategy({ 
     usernameField: 'emailConfirma', // Campo do formulário para o email
     passwordField: 'senhaConfirma' // Campo do formulário para a senha
@@ -85,9 +85,9 @@ passport.serializeUser((user, done) => {
     done(null, user.ID); // Use um identificador único do usuário, como o ID do banco de dados
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (ID, done) => {
     try {
-        const user = await User.findByPk(id); // Recupere o usuário do banco de dados usando o ID
+        const user = await User.findByPk(ID); // Recupere o usuário do banco de dados usando o ID
         if (!user) {
             return done(new Error('Usuário não encontrado'));
         }
@@ -98,14 +98,13 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
+// Rota de login
 app.post('/user/login', passport.authenticate('local', {
     failureRedirect: '/user/login', // Redireciona de volta para a página de login em caso de falha no login
     failureFlash: true // Permite flash messages para mostrar erros de autenticação
 }), (req, res) => {
     res.redirect('/user/' + req.user.NOME);
 });
-
-
 
 // Middleware para verificar se o usuário está autenticado
 function verificaAutenticacao(req, res, next) {
@@ -115,6 +114,17 @@ function verificaAutenticacao(req, res, next) {
       res.status(401).json({ error: 'Não autenticado' });
     }
 }
+
+// Rota protegida como exemplo
+app.get('/user/protected', verificaAutenticacao, (req, res) => {
+    res.send('Esta é uma área protegida.');
+});
+
+// Inicializar o servidor
+const PORTSession = 3000;
+app.listen(PORTSession, () => {
+    console.log(`Servidor rodando na porta ${PORTSession}`);
+});
 
 //Calendar
 app.get('/eventos', async (req, res) => {
@@ -129,14 +139,14 @@ app.get('/eventos', async (req, res) => {
 
 // Rota para criar um novo evento
 app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
-    // Verifique se o usuário está autenticado e o ID do usuário está disponível na sessão
-    if (!req.session.userID) {
+    // Verifique se o usuário está autenticado e o ID do usuário está disponível no Passport
+    if (!req.user || !req.user.ID) {
         return res.status(401).json({ erro: 'Usuário não autenticado' });
     }
     
     const { start, end, service, professional, horario } = req.body;
     try {
-        const userID = req.session.userID; // Obtenha o ID do usuário da sessão
+        const userID = req.user.ID; // Obtenha o ID do usuário autenticado
         
         // Criando o evento com o ID do usuário
         const novoEvento = await Evento.create({ idUser: userID, start, end, service, professional, horario });
@@ -147,6 +157,7 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
+
 
 //Calendar Admin
 app.get('/users/:id', async (req, res) => {
@@ -249,7 +260,7 @@ app.get('/relatorio-eventos', async (req, res) => {
 //Rotas GET
 
 // Rota para obter os detalhes do usuário logado
-app.get('/user/details', async (req, res) => {
+app.get('/user/details', verificaAutenticacao, async (req, res) => {
     try {
         console.log('req.user:', req.user);
 
