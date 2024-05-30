@@ -39,6 +39,7 @@ const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
+const empresas = require('./Models/Empresa');
 
 // Middleware para mensagens flash
 app.use((req, res, next) => {
@@ -61,7 +62,6 @@ passport.use(new LocalStrategy({
         if (!user) {
             return done(null, false, { message: 'Email ou senha incorretos' });
         }
-
         console.log('Senha fornecida:', senha);
         console.log('Senha armazenada no banco de dados:', user.SENHA);
 
@@ -316,8 +316,8 @@ app.get('/user/meusplanos', async (req, res) => {
     res.sendFile(__dirname + "/src/MeusPlanos.html")
 });
 
-app.get('/user/sobrenos', async (req, res) => {
-    res.sendFile(__dirname + "/src/SobreNos.html")
+app.get('/user/Sobrenos', async (req, res) => {
+    res.sendFile(__dirname + "sobrenos.html");
 });
 
 
