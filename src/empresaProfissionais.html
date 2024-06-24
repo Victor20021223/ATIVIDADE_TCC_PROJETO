@@ -40,21 +40,30 @@
       </div>
     </nav>
   </header>
-  <main>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Função</th>
-          <th>Contato</th>
-          <th>Situação</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="tabelaProfissionais">
-        <!-- Aqui serão inseridas as linhas dinamicamente -->
-      </tbody>
-    </table>
+  <main class="container">
+    <div class="row">
+      <div class="col">
+        <h1 class="my-4">Lista de Profissionais</h1>
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Função</th>
+              <th>Contato</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaProfissionais">
+            <!-- Aqui serão inseridas as linhas dinamicamente -->
+          </tbody>
+        </table>
+        <div class="cadastro">
+          <a href="/admin/addProfissional" class="btn btn-primary">Cadastrar Profissional</a>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal de Edição -->
     <div class="modal fade" id="editarProfissionalModal" tabindex="-1" aria-labelledby="editarProfissionalModalLabel"
@@ -63,7 +72,6 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="editarProfissionalModalLabel">Editar Profissional</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form id="editarProfissionalForm">
@@ -90,15 +98,23 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <a href="/admin/profissional" class="btn btn-primary">Fechar</a>
             <button type="button" class="btn btn-primary" onclick="salvarEdicao()">Salvar Alterações</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="cadastro">
-      <a href="/admin/addProfissional" style="text-decoration: none;">Cadastrar Profissional</a>
+    <!-- Toast de Sucesso -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            Alterações salvas com sucesso!
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -107,6 +123,10 @@
     async function carregarProfissionais() {
       try {
         const response = await fetch('/admin/profissional/list');
+        if (!response.ok) {
+          throw new Error('Erro ao carregar profissionais.');
+        }
+
         const { erro, dataProfissional } = await response.json();
 
         const tabelaProfissionais = document.getElementById('tabelaProfissionais');
@@ -115,10 +135,11 @@
         if (!erro && dataProfissional.length > 0) {
           dataProfissional.forEach(profissional => {
             const newRow = tabelaProfissionais.insertRow();
-            newRow.insertCell(0).innerText = profissional.NOME;
-            newRow.insertCell(1).innerText = profissional.FUNCAO;
-            newRow.insertCell(2).innerText = profissional.CONTATO;
-            newRow.insertCell(3).innerText = profissional.SITUACAO;
+            newRow.insertCell(0).innerText = profissional.ID;
+            newRow.insertCell(1).innerText = profissional.NOME;
+            newRow.insertCell(2).innerText = profissional.FUNCAO;
+            newRow.insertCell(3).innerText = profissional.CONTATO;
+            newRow.insertCell(4).innerText = profissional.SITUACAO;
 
             // Botão Editar
             const editButton = document.createElement('button');
@@ -127,12 +148,12 @@
             editButton.setAttribute('data-bs-toggle', 'modal');
             editButton.setAttribute('data-bs-target', '#editarProfissionalModal');
             editButton.addEventListener('click', () => preencherFormularioEditar(profissional));
-            newRow.insertCell(4).appendChild(editButton);
+            newRow.insertCell(5).appendChild(editButton);
           });
         } else {
           const newRow = tabelaProfissionais.insertRow();
           const cell = newRow.insertCell(0);
-          cell.colSpan = 5;
+          cell.colSpan = 6;
           cell.innerText = 'Nenhum profissional encontrado.';
         }
       } catch (error) {
@@ -179,17 +200,23 @@
         for (let i = 1; i < rows.length; i++) {
           const cells = rows[i].getElementsByTagName('td');
           if (cells[0].innerText === id) {
-            cells[0].innerText = nome;
-            cells[1].innerText = funcao;
-            cells[2].innerText = contato;
-            cells[3].innerText = situacao;
+            cells[1].innerText = nome;
+            cells[2].innerText = funcao;
+            cells[3].innerText = contato;
+            cells[4].innerText = situacao;
             break;
           }
         }
 
+        // Exibe o Toast de sucesso
+        const toastElement = document.getElementById('successToast');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+
         // Fechar o modal após salvar
-        const modal = new bootstrap.Modal(document.getElementById('editarProfissionalModal'));
-        modal.hide();
+        const modalElement = document.getElementById('editarProfissionalModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance.hide();
       } catch (error) {
         console.error('Erro ao salvar alterações:', error);
       }
@@ -200,3 +227,4 @@
 </body>
 
 </html>
+

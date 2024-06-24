@@ -482,6 +482,22 @@ app.get('/relatorioAgenda', async (req, res) => {
     res.sendFile(__dirname + '/src/agendaList.html')
 });
 
+app.get('/admin/horarios/list', async (req, res) => {
+    try {
+      const dataHorario = await Horario.findAll();
+      return res.json({
+        erro: false,
+        dataHorario
+      });
+    } catch (error) {
+      console.error('Erro ao buscar horários:', error);
+      return res.status(400).json({
+        erro: true,
+        mensagem: 'Erro ao buscar horários'
+      });
+    }
+  });
+
 app.get('/admin/profissional/list', async (req, res) => {
     await Profissional.findAll().then((dataProfissional) => {
         return res.json({
@@ -627,6 +643,33 @@ app.put('/admin/servicos/:id', async (req, res) => {
     } catch (error) {
       console.error('Erro ao atualizar profissional:', error);
       res.status(500).json({ erro: 'Erro interno do servidor ao atualizar profissional' });
+    }
+  });
+
+  app.put('/admin/horarios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { horaLivre, situacao } = req.body;
+  
+    try {
+      // Verifique se o horário com o ID especificado existe no banco de dados
+      const horario = await Horario.findByPk(id);
+  
+      if (!horario) {
+        return res.status(404).json({ erro: 'Horário não encontrado' });
+      }
+  
+      // Atualize os campos do horário com os novos dados
+      horario.HORA_LIVRE = horaLivre;
+      horario.SITUACAO = situacao;
+  
+      // Salve as alterações no banco de dados
+      await horario.save();
+  
+      // Responda com uma mensagem de sucesso
+      res.json({ sucesso: true, mensagem: 'Horário atualizado com sucesso' });
+    } catch (error) {
+      console.error('Erro ao atualizar horário:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor ao atualizar horário' });
     }
   });
   

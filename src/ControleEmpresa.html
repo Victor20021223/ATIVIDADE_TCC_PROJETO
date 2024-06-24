@@ -37,7 +37,7 @@
               <a class="nav-link" href="/admin/profissional">Profissionais</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/admin/horarios">Horarios</a>
+              <a class="nav-link" href="/admin/horarios">Horários</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/admin/relatorio">Relatórios</a>
@@ -68,85 +68,82 @@
         </div>
       </div>
     </div>
-    
 
     <script>
-
       document.addEventListener('DOMContentLoaded', function () {
-  $('#calendario').fullCalendar({
-    header: {
-      left: 'prev,next today',
-      locale: 'pt-br',
-      center: 'title',
-      right: 'month'
-    },
-    defaultView: 'month',
-    editable: true,
-    events: '/eventos',
-    eventClick: function (event) {
-      const modalBody = $('#eventDetails');
-      modalBody.empty();
+        $('#calendario').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            locale: 'pt-br',
+            center: 'title',
+            right: 'month'
+          },
+          defaultView: 'month',
+          editable: true,
+          events: '/eventos',
+          eventClick: function (event) {
+            const modalBody = $('#eventDetails');
+            modalBody.empty();
 
-      // Mostrar o spinner de carregamento
-      modalBody.append('<div class="spinner-border text-primary" role="status" id="loadingSpinner"><span class="visually-hidden">Carregando...</span></div>');
+            // Mostrar o spinner de carregamento
+            modalBody.append('<div class="spinner-border text-primary" role="status" id="loadingSpinner"><span class="visually-hidden">Carregando...</span></div>');
 
-      const promises = [];
+            const promises = [];
 
-      promises.push(
-            axios.get(`/users/${event.idUser}`)
-              .then(response => {
-                modalBody.append('<h6>Nome: ' + (response.data.NOME || 'N/A') + '</h6>'); // Exibe o nome do usuário, ou 'N/A' se não houver nome
-              })
-              .catch(error => {
-                console.error('Erro ao obter informações do usuário:', error);
-                modalBody.append('<p>Nome do Usuário: N/A</p>');
-              })
-          );
+            promises.push(
+              axios.get(`/users/${event.idUser}`)
+                .then(response => {
+                  modalBody.append('<h6>Nome: ' + (response.data.NOME || 'N/A') + '</h6>'); // Exibe o nome do usuário, ou 'N/A' se não houver nome
+                })
+                .catch(error => {
+                  console.error('Erro ao obter informações do usuário:', error);
+                  modalBody.append('<h6>Nome do Usuário: N/A</h6>');
+                })
+            );
 
-      promises.push(
-        axios.get(`/servico/${event.service}`)
-          .then(response => {
-            modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
-          })
-          .catch(error => {
-            console.error('Erro ao obter informações do serviço:', error);
-            modalBody.append('<p>Serviço: N/A</p>');
-          })
-      );
+            promises.push(
+              axios.get(`/servico/${event.service}`)
+                .then(response => {
+                  modalBody.append('<p>Serviço: ' + (response.data.DESCRICAO || 'N/A') + '</p>');
+                })
+                .catch(error => {
+                  console.error('Erro ao obter informações do serviço:', error);
+                  modalBody.append('<p>Serviço: N/A</p>');
+                })
+            );
 
-      promises.push(
-        axios.get(`/profissional/${event.professional}`)
-          .then(response => {
-            modalBody.append('<p>Profissional: ' + (response.data.NOME || 'N/A') + '</p>');
-          })
-          .catch(error => {
-            console.error('Erro ao obter informações do profissional:', error);
-            modalBody.append('<p>Profissional: N/A</p>');
-          })
-      );
+            promises.push(
+              axios.get(`/profissional/${event.professional}`)
+                .then(response => {
+                  modalBody.append('<p>Profissional: ' + (response.data.NOME || 'N/A') + '</p>');
+                })
+                .catch(error => {
+                  console.error('Erro ao obter informações do profissional:', error);
+                  modalBody.append('<p>Profissional: N/A</p>');
+                })
+            );
 
-      promises.push(
-        axios.get(`/horario/${event.horario}`)
-          .then(response => {
-            modalBody.append('<p>Horário: ' + (response.data.HORA_LIVRE || 'N/A') + '</p>');
-          })
-          .catch(error => {
-            console.error('Erro ao obter informações do horário:', error);
-            modalBody.append('<p>Horário: N/A</p>');
-          })
-      );
+            promises.push(
+              axios.get(`/horario/${event.horario}`)
+                .then(response => {
+                  modalBody.append('<p>Horário: ' + (response.data.HORA_LIVRE || 'N/A') + '</p>');
+                })
+                .catch(error => {
+                  console.error('Erro ao obter informações do horário:', error);
+                  modalBody.append('<p>Horário: N/A</p>');
+                })
+            );
 
-      // Ocultar o spinner de carregamento quando todas as requisições estiverem concluídas
-      Promise.all(promises).then(() => {
-        $('#loadingSpinner').remove();
+            // Ocultar o spinner de carregamento quando todas as requisições estiverem concluídas
+            Promise.all(promises).then(() => {
+              $('#loadingSpinner').remove();
+            });
+
+            $('#eventInfoModal').modal('show');
+            console.log(event);
+          },
+        });
       });
-
-      $('#eventInfoModal').modal('show');
-      console.log(event);
-    },
-  });
-});
-
     </script>
   </main>
 
