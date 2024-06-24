@@ -140,7 +140,7 @@
                 horarios.forEach(horario => {
                   const option = document.createElement('option');
                   option.value = horario.ID;
-                  option.textContent = horario.SITUACAO === 'L' ? horario.HORA_LIVRE : 'Indisponível';
+                  option.textContent = horario.SITUACAO === 'A' ? horario.HORA_LIVRE : 'Indisponível';
                   selectHorario.appendChild(option);
                 });
 

@@ -5,96 +5,198 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/stylelogin.css">
-  <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <title>Profissionais</title>
 </head>
 
 <body>
   <header>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/admin">ADMIN</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link " href="/admin">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/servicos">Serviços</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/profissional">Profissionais</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/horarios">Horarios</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="/admin/relatorio">Relatórios</a>
-                  </li>
-                </ul>
-            </div>
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/admin">ADMIN</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link " href="/admin">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/servicos">Serviços</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/profissional">Profissionais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/horarios">Horários</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/relatorio">Relatórios</a>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
-</header>
+  </header>
   <main>
-    <table border="1" class="table">
+    <table class="table">
       <thead>
         <tr>
           <th>Nome</th>
           <th>Função</th>
           <th>Contato</th>
           <th>Situação</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody id="tabelaProfissionais">
+        <!-- Aqui serão inseridas as linhas dinamicamente -->
       </tbody>
     </table>
-  
-    <script>
-      // Função para fazer a requisição AJAX
-      async function carregarProfissionais() {
-        try {
-          const response = await fetch('/admin/profissional/list');
-          const { erro, dataProfissional } = await response.json();
-  
-          const tabelaProfissionais = document.getElementById('tabelaProfissionais');
-  
 
-          tabelaProfissionais.innerHTML = '';
-  
-          if (!erro && dataProfissional.length > 0) {
-            dataProfissional.forEach(profissional => {
-              const newRow = tabelaProfissionais.insertRow();
-              newRow.insertCell(0).innerText = profissional.NOME;
-              newRow.insertCell(1).innerText = profissional.FUNCAO;
-              newRow.insertCell(2).innerText = profissional.CONTATO;
-              newRow.insertCell(3).innerText = profissional.SITUACAO;
-            });
-          } else {
-            const newRow = tabelaProfissionais.insertRow();
-            const cell = newRow.insertCell(0);
-            cell.colSpan = 7; // Ajuste conforme o número de colunas
-            cell.innerText = 'Nenhum profissional encontrado.';
-          }
-        } catch (error) {
-          console.error('Erro ao carregar profissionais:', error);
-        }
-      }
-  
-      window.onload = carregarProfissionais;
-    </script>
-    
-
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="editarProfissionalModal" tabindex="-1" aria-labelledby="editarProfissionalModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarProfissionalModalLabel">Editar Profissional</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editarProfissionalForm">
+              <input type="hidden" id="editID">
+              <div class="mb-3">
+                <label for="editNome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="editNome" required>
+              </div>
+              <div class="mb-3">
+                <label for="editFuncao" class="form-label">Função</label>
+                <input type="text" class="form-control" id="editFuncao" required>
+              </div>
+              <div class="mb-3">
+                <label for="editContato" class="form-label">Contato</label>
+                <input type="text" class="form-control" id="editContato" required>
+              </div>
+              <div class="mb-3">
+                <label for="editSituacao" class="form-label">Situação</label>
+                <select class="form-select" id="editSituacao" required>
+                  <option value="I">Inativo</option>
+                  <option value="A">Ativo</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" onclick="salvarEdicao()">Salvar Alterações</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="cadastro">
       <a href="/admin/addProfissional" style="text-decoration: none;">Cadastrar Profissional</a>
     </div>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    async function carregarProfissionais() {
+      try {
+        const response = await fetch('/admin/profissional/list');
+        const { erro, dataProfissional } = await response.json();
+
+        const tabelaProfissionais = document.getElementById('tabelaProfissionais');
+        tabelaProfissionais.innerHTML = '';
+
+        if (!erro && dataProfissional.length > 0) {
+          dataProfissional.forEach(profissional => {
+            const newRow = tabelaProfissionais.insertRow();
+            newRow.insertCell(0).innerText = profissional.NOME;
+            newRow.insertCell(1).innerText = profissional.FUNCAO;
+            newRow.insertCell(2).innerText = profissional.CONTATO;
+            newRow.insertCell(3).innerText = profissional.SITUACAO;
+
+            // Botão Editar
+            const editButton = document.createElement('button');
+            editButton.innerText = 'Editar';
+            editButton.classList.add('btn', 'btn-primary', 'btn-sm');
+            editButton.setAttribute('data-bs-toggle', 'modal');
+            editButton.setAttribute('data-bs-target', '#editarProfissionalModal');
+            editButton.addEventListener('click', () => preencherFormularioEditar(profissional));
+            newRow.insertCell(4).appendChild(editButton);
+          });
+        } else {
+          const newRow = tabelaProfissionais.insertRow();
+          const cell = newRow.insertCell(0);
+          cell.colSpan = 5;
+          cell.innerText = 'Nenhum profissional encontrado.';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar profissionais:', error);
+      }
+    }
+
+    function preencherFormularioEditar(profissional) {
+      document.getElementById('editID').value = profissional.ID;
+      document.getElementById('editNome').value = profissional.NOME;
+      document.getElementById('editFuncao').value = profissional.FUNCAO;
+      document.getElementById('editContato').value = profissional.CONTATO;
+      document.getElementById('editSituacao').value = profissional.SITUACAO;
+    }
+
+    async function salvarEdicao() {
+      const id = document.getElementById('editID').value;
+      const nome = document.getElementById('editNome').value.trim();
+      const funcao = document.getElementById('editFuncao').value.trim();
+      const contato = document.getElementById('editContato').value.trim();
+      const situacao = document.getElementById('editSituacao').value.trim();
+
+      try {
+        const response = await fetch(`/admin/profissional/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nome,
+            funcao,
+            contato,
+            situacao
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao atualizar profissional.');
+        }
+
+        // Atualiza localmente na tabela (simulado)
+        const tabelaProfissionais = document.getElementById('tabelaProfissionais');
+        const rows = tabelaProfissionais.getElementsByTagName('tr');
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName('td');
+          if (cells[0].innerText === id) {
+            cells[0].innerText = nome;
+            cells[1].innerText = funcao;
+            cells[2].innerText = contato;
+            cells[3].innerText = situacao;
+            break;
+          }
+        }
+
+        // Fechar o modal após salvar
+        const modal = new bootstrap.Modal(document.getElementById('editarProfissionalModal'));
+        modal.hide();
+      } catch (error) {
+        console.error('Erro ao salvar alterações:', error);
+      }
+    }
+
+    window.onload = carregarProfissionais;
+  </script>
 </body>
 
 </html>

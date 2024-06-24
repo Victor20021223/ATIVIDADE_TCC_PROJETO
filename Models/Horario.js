@@ -17,7 +17,7 @@ const Horario = db.define('horarios',{
     },
     SITUACAO:{
         type: Sequelize.CHAR,
-        defaultValue: 'L'
+        defaultValue: 'A'
     }
 });
 

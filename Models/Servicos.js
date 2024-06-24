@@ -28,7 +28,8 @@ const Servicos = db.define('servicos',{
     SITUACAO:{
         type:Sequelize.CHAR,
         allowNull:false,
-        required:true
+        required:true,
+        defaultValue: 'A'
     }
 
 });

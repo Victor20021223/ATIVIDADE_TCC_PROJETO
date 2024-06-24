@@ -5,94 +5,204 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/stylelogin.css">
-  <link rel="stylesheet" href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <title>Serviços</title>
 </head>
 
 <body>
   <header>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/admin">ADMIN</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link " href="/admin">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/servicos">Serviços</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/profissional">Profissionais</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/horarios">Horarios</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="/admin/relatorio">Relatórios</a>
-                  </li>
-                </ul>
-            </div>
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/admin">ADMIN</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link " href="/admin">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/servicos">Serviços</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/profissional">Profissionais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/horarios">Horários</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/relatorio">Relatórios</a>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
-</header>
-  <main>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Descrição</th>
-          <th>Sobre</th>
-          <th>Valor</th>
-          <th>Situação</th>
-        </tr>
-      </thead>
-      <tbody id="tabelaServicos">
-      </tbody>
-    </table>
+  </header>
+  <main class="container">
+    <div class="row">
+      <div class="col">
+        <h1 class="my-4">Lista de Serviços</h1>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Descrição</th>
+              <th>Sobre</th>
+              <th>Valor</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaServicos">
+            <!-- Aqui serão inseridas as linhas dinamicamente -->
+          </tbody>
+        </table>
+        <div class="cadastro">
+          <a href="/admin/addServico" class="btn btn-primary">Cadastrar Serviço</a>
+        </div>
+      </div>
+    </div>
 
-    <script>
-      async function carregarServicos() {
-        try {
-          const response = await fetch('/admin/servicos/list');
-          const { erro, dataServicos } = await response.json();
-
-          const tabelaServicos = document.getElementById('tabelaServicos');
-
-          tabelaServicos.innerHTML = '';
-
-          if (!erro && dataServicos.length > 0) {
-            dataServicos.forEach(servico => {
-              const newRow = tabelaServicos.insertRow();
-              newRow.insertCell(0).innerText = servico.ID;
-              newRow.insertCell(1).innerText = servico.DESCRICAO;
-              newRow.insertCell(2).innerText = servico.SOBRE;
-              newRow.insertCell(3).innerText = servico.VALOR;
-              newRow.insertCell(4).innerText = servico.SITUACAO;
-            });
-          } else {
-            const newRow = tabelaServicos.insertRow();
-            const cell = newRow.insertCell(0);
-            cell.colSpan = 7; // Ajuste conforme o número de colunas
-            cell.innerText = 'Nenhum serviço encontrado.';
-          }
-        } catch (error) {
-          console.error('Erro ao carregar serviços:', error);
-        }
-      }
-
-      window.onload = carregarServicos;
-    </script>
-
-    <div class="cadastro">
-      <a href="/admin/addServico" style="text-decoration: none;">Cadastrar Serviço</a>
+    <!-- Modal de Edição -->
+    <div class="modal fade" id="editarServicoModal" tabindex="-1" aria-labelledby="editarServicoModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarServicoModalLabel">Editar Serviço</h5>
+          </div>
+          <div class="modal-body">
+            <form id="editarServicoForm">
+              <input type="hidden" id="editID">
+              <div class="mb-3">
+                <label for="editDescricao" class="form-label">Descrição</label>
+                <input type="text" class="form-control" id="editDescricao" required>
+              </div>
+              <div class="mb-3">
+                <label for="editSobre" class="form-label">Sobre</label>
+                <textarea class="form-control" id="editSobre" rows="3" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="editValor" class="form-label">Valor</label>
+                <input type="text" class="form-control" id="editValor" required>
+              </div>
+              <div class="mb-3">
+                <label for="editSituacao" class="form-label">Situação</label>
+                <select class="form-select" id="editSituacao" required>
+                  <option value="I">Inativo</option>
+                  <option value="A">Ativo</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <a href="/admin/servicos" class="btn btn-primary">Cancelar</a>
+            <button type="button" class="btn btn-primary" onclick="salvarEdicao()">Salvar Alterações</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    async function carregarServicos() {
+      try {
+        const response = await fetch('/admin/servicos/list');
+        const { erro, dataServicos } = await response.json();
+
+        const tabelaServicos = document.getElementById('tabelaServicos');
+
+        tabelaServicos.innerHTML = '';
+
+        if (!erro && dataServicos.length > 0) {
+          dataServicos.forEach(servico => {
+            const newRow = tabelaServicos.insertRow();
+            newRow.insertCell(0).innerText = servico.ID;
+            newRow.insertCell(1).innerText = servico.DESCRICAO;
+            newRow.insertCell(2).innerText = servico.SOBRE;
+            newRow.insertCell(3).innerText = servico.VALOR;
+            newRow.insertCell(4).innerText = servico.SITUACAO;
+
+            // Botão Editar
+            const editButton = document.createElement('button');
+            editButton.innerText = 'Editar';
+            editButton.classList.add('btn', 'btn-primary', 'btn-sm');
+            editButton.setAttribute('data-bs-toggle', 'modal');
+            editButton.setAttribute('data-bs-target', '#editarServicoModal');
+            editButton.addEventListener('click', () => preencherFormularioEditar(servico));
+            newRow.insertCell(5).appendChild(editButton);
+          });
+        } else {
+          const newRow = tabelaServicos.insertRow();
+          const cell = newRow.insertCell(0);
+          cell.colSpan = 6;
+          cell.innerText = 'Nenhum serviço encontrado.';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar serviços:', error);
+      }
+    }
+
+    function preencherFormularioEditar(servico) {
+      document.getElementById('editID').value = servico.ID;
+      document.getElementById('editDescricao').value = servico.DESCRICAO;
+      document.getElementById('editSobre').value = servico.SOBRE;
+      document.getElementById('editValor').value = servico.VALOR;
+      document.getElementById('editSituacao').value = servico.SITUACAO;
+    }
+
+    async function salvarEdicao() {
+      const id = document.getElementById('editID').value;
+      const descricao = document.getElementById('editDescricao').value.trim();
+      const sobre = document.getElementById('editSobre').value.trim();
+      const valor = document.getElementById('editValor').value.trim();
+      const situacao = document.getElementById('editSituacao').value.trim();
+
+      try {
+        const response = await fetch(`/admin/servicos/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            descricao,
+            sobre,
+            valor,
+            situacao
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao atualizar serviço.');
+        }
+
+        // Atualiza localmente na tabela (simulado)
+        const tabelaServicos = document.getElementById('tabelaServicos');
+        const rows = tabelaServicos.getElementsByTagName('tr');
+        for (let i = 1; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName('td');
+          if (cells[0].innerText === id) {
+            cells[1].innerText = descricao;
+            cells[2].innerText = sobre;
+            cells[3].innerText = valor;
+            cells[4].innerText = situacao;
+            break;
+          }
+        }
+
+        // Fechar o modal após salvar
+        const modal = new bootstrap.Modal(document.getElementById('editarServicoModal'));
+        modal.hide();
+      } catch (error) {
+        console.error('Erro ao salvar alterações:', error);
+      }
+    }
+
+    window.onload = carregarServicos;
+  </script>
 </body>
 
 </html>

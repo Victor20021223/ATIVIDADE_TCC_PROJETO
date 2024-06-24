@@ -28,7 +28,8 @@ const Profissional = db.define('profissionais',{
     SITUACAO:{
         type:Sequelize.CHAR,
         allowNull:false,
-        required:true
+        required:true,
+        defaultValue: 'A'
     }
 })
 

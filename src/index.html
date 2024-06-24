@@ -46,45 +46,77 @@
     <div id="calendario"></div>
 
     <!-- Modal para opções do dia -->
-    <div class="modal fade" id="newEventModal" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true"
-  style="background-color: transparent;">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <h5 class="modal-title" id="newEventModalLabel">Novo Agendamento</h5>
-        <!-- Exibir o nome do usuário -->
-        <p>Nome do usuário: <span id="userName"></span></p>
-        <form id="newEventForm" method="post" action="/eventos">
-          <div class="mb-3">
-            <label for="eventService" class="form-label">Serviço</label>
-            <select class="form-select" id="eventService" required>
-              <option value="">Escolha um serviço</option>
-            </select>
+    <div class="modal fade" id="newEventModal" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newEventModalLabel">Novo Agendamento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="mb-3">
-            <label for="eventProfessional" class="form-label">Profissionais</label>
-            <select class="form-select" id="eventProfessional" required>
-              <option value="">Escolha um profissional</option>
-            </select>
+          <div class="modal-body">
+            <!-- Exibir o nome do usuário -->
+            <p>Nome do usuário: <span id="userName"></span></p>
+            <form id="newEventForm" method="post" action="/eventos">
+              <div class="mb-3">
+                <label for="eventService" class="form-label">Serviço</label>
+                <select class="form-select" id="eventService" required>
+                  <option value="">Escolha um serviço</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="eventProfessional" class="form-label">Profissionais</label>
+                <select class="form-select" id="eventProfessional" required>
+                  <option value="">Escolha um profissional</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="eventHorario" class="form-label">Horários</label>
+                <select class="form-select" id="eventHorario" required>
+                  <option value="">Escolha um horário</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Criar Evento</button>
+            </form>
           </div>
-          <div class="mb-3">
-            <label for="eventHorario" class="form-label">Horários</label>
-            <select class="form-select" id="eventHorario" required>
-              <option value="">Escolha um horário</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary">Criar Evento</button>
-        </form>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-    <script>
 
+    <!-- Modal de Alerta de Login -->
+    <div class="modal fade" id="loginAlertModal" tabindex="-1" aria-labelledby="loginAlertModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loginAlertModalLabel">Atenção</h5>
+          </div>
+          <div class="modal-body">
+            Você precisa fazer o login primeiro!
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-primary" href="/user">Fechar</a>
+            <button type="button" class="btn btn-primary" id="loginRedirectButton">Login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
       document.addEventListener('DOMContentLoaded', function () {
+        // Redirecionar para a página de login ao clicar em qualquer lugar da tela,
+        // exceto quando clicar nos links de navegação
+        document.addEventListener('click', function (event) {
+          const target = event.target;
+          if (!target.closest('nav') && !target.closest('a')) {
+            const loginAlertModal = new bootstrap.Modal(document.getElementById('loginAlertModal'));
+            loginAlertModal.show();
+          }
+        });
+
+        // Redirecionar para a página de login ao clicar no botão "Login" do modal
+        document.getElementById('loginRedirectButton').addEventListener('click', function () {
+          window.location.href = '/user/login';
+        });
+
         $('#calendario').fullCalendar({
           header: {
             left: 'prev,next today',
@@ -102,35 +134,6 @@
               }
             }
           ],
-          dayClick: function (date) {
-
-            $('#newEventForm').off('submit').on('submit', function (e) {
-              e.preventDefault();
-
-              const novoEvento = {
-                service: $('#eventService').val(),
-                professional: $('#eventProfessional').val(),
-                horario: $('#eventHorario').val(),
-                start: moment().format(date.format()),
-                end: moment().add(1, 'hour').format(date.format())
-              };
-
-              $.ajax({
-                url: '/eventos',
-                type: 'POST',
-                data: JSON.stringify(novoEvento),
-                contentType: 'application/json',
-                success: function (response) {
-                  alert('Novo evento criado com sucesso. ID: ' + response.id);
-                  $('#calendario').fullCalendar('refetchEvents');
-                  $('#newEventModal').modal('hide');
-                },
-                error: function () {
-                  alert('Erro ao criar novo evento.');
-                }
-              });
-            });
-          },
         });
       });
     </script>
