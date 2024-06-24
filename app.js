@@ -176,61 +176,78 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
 
 //Calendar Admin
 app.get('/users/:id', async (req, res) => {
+    const userId = req.params.id;
     try {
-        const user = await User.findOne({ where: { ID: req.params.id } });
-        res.json(user);
+      // Busca o usuário pelo ID no banco de dados
+      const user = await User.findOne({ where: { ID: userId } });
+  
+      if (!user) {
+        return res.status(404).json({ erro: 'Usuário não encontrado' });
+      }
+  
+      // Retorna os dados do usuário encontrados
+      res.json(user);
     } catch (error) {
-        console.error('Erro ao obter informações do serviço:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao obter informações do usuário:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
-app.get('/servico/:id', async (req, res) => {
+  app.get('/servico/:id', async (req, res) => {
+    const servicoId = req.params.id;
     try {
-        const servicos = await Servicos.findAll({
-            where: {
-                ID: req.params.id,
-                SITUACAO: 'A'
-            }
-        });
-        res.json(servicos);
+      // Busca o serviço pelo ID no banco de dados
+      const servico = await Servicos.findOne({ where: { ID: servicoId } });
+  
+      if (!servico) {
+        return res.status(404).json({ erro: 'Serviço não encontrado' });
+      }
+  
+      // Retorna os dados do serviço encontrados
+      res.json(servico);
     } catch (error) {
-        console.error('Erro ao obter informações do serviço:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao obter informações do serviço:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
 
-app.get('/profissional/:id', async (req, res) => {
+  app.get('/profissional/:id', async (req, res) => {
+    const profissionalId = req.params.id;
     try {
-        const profissionais = await Profissional.findAll({
-            where: {
-                ID: req.params.id,
-                SITUACAO: 'A'
-            }
-        });
-        res.json(profissionais);
+      // Busca o profissional pelo ID no banco de dados
+      const profissional = await Profissional.findOne({ where: { ID: profissionalId } });
+  
+      if (!profissional) {
+        return res.status(404).json({ erro: 'Profissional não encontrado' });
+      }
+  
+      // Retorna os dados do profissional encontrados
+      res.json(profissional);
     } catch (error) {
-        console.error('Erro ao obter informações do profissional:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao obter informações do profissional:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
 
-app.get('/horario/:id', async (req, res) => {
+  app.get('/horario/:id', async (req, res) => {
+    const horarioId = req.params.id;
     try {
-        const horarios = await Horario.findAll({
-            where: {
-                ID: req.params.id,
-                SITUACAO: 'A'
-            }
-        });
-        res.json(horarios);
+      // Busca o horário pelo ID no banco de dados
+      const horario = await Horario.findOne({ where: { ID: horarioId } });
+  
+      if (!horario) {
+        return res.status(404).json({ erro: 'Horário não encontrado' });
+      }
+  
+      // Retorna os dados do horário encontrados
+      res.json(horario);
     } catch (error) {
-        console.error('Erro ao obter informações do horário:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao obter informações do horário:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
 //Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
