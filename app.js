@@ -39,6 +39,8 @@ const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
+const { model } = require('mongoose');
+const { start } = require('repl');
 
 // Middleware para mensagens flash
 app.use((req, res, next) => {
@@ -118,8 +120,32 @@ function verificaAutenticacao(req, res, next) {
 //Calendar
 app.get('/eventos', async (req, res) => {
     try {
-        const eventos = await Evento.findAll();
-        res.json(eventos);
+        const eventos = await Evento.findAll({
+            include: [
+                {
+                    model: User,
+                    attributes: ['ID', 'NOME'],
+                    as: 'usuario'
+                },
+                {
+                    model: Horario,
+                    attributes: ['ID', 'HORA_LIVRE'],
+                    as: 'horarios'
+                }
+            ]
+        });
+
+        // Transformar os eventos para incluir o nome do usuário como título e o horário como start
+        const eventosComTitulo = eventos.map(evento => {
+            return {
+                ...evento.toJSON(),
+                title: evento.usuario.NOME,
+                startStr: evento.horarios.HORA_LIVRE,
+                endStr: evento.horarios.HORA_LIVRE,
+            };
+        });
+
+        res.json(eventosComTitulo);
     } catch (error) {
         console.error('Erro ao obter eventos:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
@@ -142,7 +168,7 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
         
         res.json(novoEvento);
     } catch (error) { 
-        console.error('Erro ao criar evento:', error);
+        console.error('Erro ao criar evento:', error);  
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
@@ -161,37 +187,55 @@ app.get('/users/:id', async (req, res) => {
 
 app.get('/servico/:id', async (req, res) => {
     try {
-        const servico = await Servicos.findOne({ where: { ID: req.params.id } });
-        res.json(servico);
+        const servicos = await Servicos.findAll({
+            where: {
+                ID: req.params.id,
+                SITUACAO: 'A'
+            }
+        });
+        res.json(servicos);
     } catch (error) {
         console.error('Erro ao obter informações do serviço:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
+
 
 app.get('/profissional/:id', async (req, res) => {
     try {
-        const profissional = await Profissional.findOne({ where: { ID: req.params.id } });
-        res.json(profissional);
+        const profissionais = await Profissional.findAll({
+            where: {
+                ID: req.params.id,
+                SITUACAO: 'A'
+            }
+        });
+        res.json(profissionais);
     } catch (error) {
-        console.error('Erro ao obter informações do serviço:', error);
+        console.error('Erro ao obter informações do profissional:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
 
+
 app.get('/horario/:id', async (req, res) => {
     try {
-        const horarios = await Horario.findOne({ where: { ID: req.params.id } });
+        const horarios = await Horario.findAll({
+            where: {
+                ID: req.params.id,
+                SITUACAO: 'A'
+            }
+        });
         res.json(horarios);
     } catch (error) {
-        console.error('Erro ao obter informações do serviço:', error);
+        console.error('Erro ao obter informações do horário:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
 
 //Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
-    const doc = new pdf();
+    const PDFDocument = require('pdfkit');
+    const doc = new PDFDocument();
 
     const fileName = 'relatorio_eventos.pdf';
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
@@ -204,35 +248,39 @@ app.get('/relatorio-eventos', async (req, res) => {
     try {
         const eventos = await Evento.findAll();
 
-        // Adiciona cabeçalho à tabela
-        doc.font('Helvetica-Bold').fontSize(12);
-        
-        const startY = doc.y;
-        const columnWidth = 100;
+        // Agrupar eventos por data
+        const eventosPorData = eventos.reduce((acc, evento) => {
+            const data = evento.start.split(' ')[0]; // Considera apenas a data
+            if (!acc[data]) acc[data] = [];
+            acc[data].push(evento);
+            return acc;
+        }, {});
 
-        doc.text('Título', 75, startY, { width: columnWidth, align: 'center' });
-        doc.text('Serviço', 175, startY, { width: columnWidth, align: 'center' });
-        doc.text('Profissional', 275, startY, { width: columnWidth, align: 'center' });
-        doc.text('Horários', 375, startY, { width: columnWidth, align: 'center' });
-        doc.text('Data', 475, startY, { width: columnWidth, align: 'center' });
-        doc.moveDown();
-
-        // Adiciona dados à tabela
         doc.font('Helvetica').fontSize(12);
 
-        for (const evento of eventos) {
-            const service = await Servicos.findOne({ where: { ID: evento.service } });
-            const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
-            const horario = await Horario.findOne({ where: { ID: evento.horario } });
+        for (const [data, eventos] of Object.entries(eventosPorData)) {
+            // Adiciona cabeçalho da data
+            doc.fontSize(14).font('Helvetica-Bold').text(`Data: ${data}`, { align: 'left' });
+            doc.moveDown();
 
-            const rowY = doc.y;
-            
-            doc.text(evento.title, 75, rowY, { width: columnWidth, align: 'center' });
-            doc.text(service ? service.DESCRICAO : 'N/A', 175, rowY, { width: columnWidth, align: 'center' });
-            doc.text(profissional ? profissional.NOME : 'N/A', 275, rowY, { width: columnWidth, align: 'center' });
-            doc.text(horario ? horario.HORA_LIVRE : 'N/A', 375, rowY, { width: columnWidth, align: 'center' });
-            doc.text(evento.start, 475, rowY, { width: columnWidth, align: 'center' });
+            // Adiciona eventos
+            doc.fontSize(12).font('Helvetica');
+            for (const evento of eventos) {
+                const user = await User.findOne({ where : {ID: evento.idUser}});
+                const service = await Servicos.findOne({ where: { ID: evento.service } });
+                const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
+                const horario = await Horario.findOne({ where: { ID: evento.horario } });
 
+                doc.text(`Nome: ${user.NOME}`, { continued: true });
+                doc.text(` | Serviço: ${service ? service.DESCRICAO : 'N/A'}`, { continued: true });
+                doc.text(` | Profissional: ${profissional ? profissional.NOME : 'N/A'}`, { continued: true });
+                doc.text(` | Horário: ${horario ? horario.HORA_LIVRE : 'N/A'}`, { continued: true });
+                doc.text(` | Data: ${evento.start}`);
+
+                doc.moveDown();
+            }
+
+            // Adiciona um espaço entre diferentes datas
             doc.moveDown();
         }
 
@@ -243,6 +291,7 @@ app.get('/relatorio-eventos', async (req, res) => {
         res.status(500).send('Erro interno do servidor'); 
     }
 });
+
 
 //Rotas USER
  
@@ -305,7 +354,7 @@ app.get('/user/meusplanos', async (req, res) => {
     res.sendFile(__dirname + "/src/MeusPlanos.html")
 });
 
-app.get('/user/Sobrenos', async (req, res) => {
+app.get('/user/sobrenos', async (req, res) => {
     res.sendFile(__dirname + "sobrenos.html");
 });
 
@@ -320,33 +369,45 @@ app.get('/agendar', async (req, res) => {
 
 app.get('/servicos', async (req, res) => {
     try {
-        const servicos = await Servicos.findAll();
-        res.json(servicos);
+      const servicos = await Servicos.findAll({
+        where: {
+          SITUACAO: 'A'
+        }
+      });
+      res.json(servicos);
     } catch (error) {
-        console.error('Erro ao buscar serviços:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao buscar serviços:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
-app.get('/profissional', async (req, res) => {
+  app.get('/profissional', async (req, res) => {
     try {
-        const profissional = await Profissional.findAll();
-        res.json(profissional);
+      const profissionais = await Profissional.findAll({
+        where: {
+          SITUACAO: 'A'
+        }
+      });
+      res.json(profissionais);
     } catch (error) {
-        console.error('Erro ao buscar serviços:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao buscar profissionais:', error); 
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
-app.get('/horarios', async (req, res) => {
+  app.get('/horarios', async (req, res) => {
     try {
-        const horarios = await Horario.findAll();
-        res.json(horarios);
+      const horarios = await Horario.findAll({
+        where: {
+          SITUACAO: 'A'
+        }
+      });
+      res.json(horarios);
     } catch (error) {
-        console.error('Erro ao buscar serviços:', error);
-        res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao buscar horários:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-});
+  });
 
 //Rotas POST
 
@@ -376,6 +437,15 @@ app.post('/add', async (req, res) => {
 //Rotas ADMIN
 
 //Rotas Get
+
+app.get('/admin/login/add', async (req, res) => {
+    res.sendFile(__dirname + "/src/cad_CadastroEmpresa.html")
+});
+
+app.get('/admin/login', async (req, res) => {
+    res.sendFile(__dirname + "/src/cad_loginEmpresa.html")
+});
+
 app.get('/admin', async (req, res) => {
     res.sendFile(__dirname + '/src/ControleEmpresa.html')
 });
@@ -430,7 +500,7 @@ app.get('/admin/servicos/list', async (req, res) => {
     await Servicos.findAll().then((dataServicos) => {
         return res.json({
             erro: false,
-            dataServicos
+            dataServicos 
         });
     }).catch(() => {
         return res.status(400).json({
@@ -483,9 +553,9 @@ app.post('/addProfissional', async (req, res) => {
     res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
 
-app.post('/addServico', async (req, res) => {
+app.post('/addServico', async (req, res) => { 
     await Servicos.create({
-        DESCRICAO: req.body.descricao,
+        DESCRICAO: req.body.descricao, 
         SOBRE: req.body.Sobre,
         VALOR: req.body.valor,
         SITUACAO: 'A'
@@ -501,6 +571,66 @@ app.post('/addHorario/hora', async (req, res) => {
 
 });
 
+// Rota para atualizar um serviço por ID
+app.put('/admin/servicos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { descricao, sobre, valor, situacao } = req.body;
+  
+    try {
+      // Verifique se o serviço com o ID especificado existe no banco de dados
+      const servico = await Servicos.findByPk(id);
+  
+      if (!servico) {
+        return res.status(404).json({ erro: 'Serviço não encontrado' });
+      }
+  
+      // Atualize os campos do serviço com os novos dados
+      servico.DESCRICAO = descricao;
+      servico.SOBRE = sobre;
+      servico.VALOR = valor;
+      servico.SITUACAO = situacao;
+  
+      // Salve as alterações no banco de dados
+      await servico.save();
+  
+      // Responda com uma mensagem de sucesso
+      res.json({ sucesso: true, mensagem: 'Serviço atualizado com sucesso' });
+    } catch (error) {
+      console.error('Erro ao atualizar serviço:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor ao atualizar serviço' }); 
+    }
+  });
+
+  app.put('/admin/profissional/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome, funcao, contato, situacao } = req.body;
+  
+    try {
+      // Verifique se o profissional com o ID especificado existe no banco de dados
+      const profissional = await Profissional.findByPk(id);
+  
+      if (!profissional) {
+        return res.status(404).json({ erro: 'Profissional não encontrado' });
+      }
+  
+      // Atualize os campos do profissional com os novos dados
+      profissional.NOME = nome;
+      profissional.FUNCAO = funcao;
+      profissional.CONTATO = contato;
+      profissional.SITUACAO = situacao;
+  
+      // Salve as alterações no banco de dados
+      await profissional.save();
+  
+      // Responda com uma mensagem de sucesso
+      res.json({ sucesso: true, mensagem: 'Profissional atualizado com sucesso' });
+    } catch (error) {
+      console.error('Erro ao atualizar profissional:', error);
+      res.status(500).json({ erro: 'Erro interno do servidor ao atualizar profissional' });
+    }
+  });
+  
+  
 //Outros
 const PORT = 8080
 app.listen(PORT, () => {
