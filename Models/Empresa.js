@@ -38,12 +38,6 @@ const empresa = sequelize.define('empresas', {
     SENHA:{
         type: Sequelize.STRING,
         allowNull:true
-    },
-    start:{
-      type:Sequelize.DATE
-    },
-    end:{
-      type:Sequelize.DATE
     }
   });
   

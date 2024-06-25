@@ -2,6 +2,8 @@ const Sequelize = require('sequelize');
 const sequelize = require('./db'); // Importe corretamente sua instância do Sequelize
 const User = require('./User');
 const Horario = require('./Horario');
+const Servicos = require('./Servicos');
+const Profissional = require('./Profissional');
 
 const Evento = sequelize.define('Evento', {
     idUser: {
@@ -15,17 +17,25 @@ const Evento = sequelize.define('Evento', {
     service: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+            model: 'servico',
+            key: 'ID'
+        }
     },
     professional: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'horarios',
+            key: 'id'
+        }
     },
     horario: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-            model: 'horarios',
-            key: 'ID'
+            model: 'profissional',
+            key: 'id'
         }
     },
     start: {
@@ -43,6 +53,8 @@ const Evento = sequelize.define('Evento', {
 
 // Defina a associação
 Evento.belongsTo(User, { foreignKey: 'idUser', as: 'usuario' });
+Evento.belongsTo(Servicos, { foreignKey: 'service', as: 'servico' });
+Evento.belongsTo(Profissional, { foreignKey: 'professional', as: 'profissional' });
 Evento.belongsTo(Horario, { foreignKey: 'horario', as: 'horarios' });
 
 sequelize.sync();

@@ -40,6 +40,7 @@ const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
 const Cancelamento = require('./Models/Cancelamento_Evento');
+const Empresa = require('./Models/Empresa');
 const { model } = require('mongoose');
 const { start } = require('repl');
 const { DATE } = require('sequelize');
@@ -103,8 +104,8 @@ passport.deserializeUser(async (ID, done) => {
 
 // Rota de login
 app.post('/user/login', passport.authenticate('local', {
-    failureRedirect: '/user/login', // Redireciona de volta para a página de login em caso de falha no login
-    failureFlash: true // Permite flash messages para mostrar erros de autenticação
+    failureRedirect: '/user/login',
+    failureFlash: true
 }), (req, res) => {
     res.redirect('/user/' + req.user.NOME);
 });
@@ -457,11 +458,6 @@ app.get('/user/sobrenos', async (req, res) => {
     res.sendFile(__dirname + "sobrenos.html");
 });
 
-
-app.get('/addEmpresa', async (req, res) => {
-    res.sendFile(__dirname + '/src/cad_CadastroEmpresa.html')
-});
-
 app.get('/agendar', async (req, res) => {
     res.sendFile(__dirname + '/src/index.html')
 });
@@ -534,6 +530,49 @@ app.post('/add', async (req, res) => {
 });
 
 //Rotas ADMIN
+
+// Rota para processar o login
+app.post('/admin/login', async (req, res) => {
+    const { emailConfirma, senhaConfirma } = req.body;
+  
+    try {
+      const empresa = await Empresa.findOne({
+        where: {
+          EMAIL: emailConfirma,
+          SENHA: senhaConfirma
+        }
+      });
+  
+      if (!empresa) {
+        return res.redirect('/admin/login?error=true');
+      }
+  
+      res.redirect('/admin');
+    } catch (error) {
+      console.error('Erro ao realizar login:', error);
+      res.redirect('/admin/login?error=true');
+    }
+  });
+
+app.post('/addEmpresa', async (req, res) => {
+    const { NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA, start, end } = req.body;
+
+    try {
+        // Verifica se o CNPJ já existe
+        const empresaExistente = await Empresa.findOne({ where: { CNPJ } });
+        if (empresaExistente) {
+            return res.status(400).json({ error: 'Empresa com este CNPJ já existe.' });
+        }
+
+        // Cria a nova empresa no banco de dados
+        const novaEmpresa = await Empresa.create({ NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA});
+
+        res.status(201).json(novaEmpresa);
+    } catch (error) {
+        console.error('Erro ao salvar empresa:', error);  
+        res.status(500).json({ error: 'Erro ao salvar empresa.' });
+    }
+});
 
 //Rotas Get
 
@@ -779,11 +818,15 @@ app.get('/eventos-agendados/:userId', async (req, res) => {
     try {
         const eventos = await Evento.findAll({
             where: { 
-              idUser: userId,
-              situacao: 'A'
-            }
-          });
-
+                idUser: userId,
+                situacao: 'A'
+            },
+            include: [
+                { model: Servicos, as: 'servico' },
+                { model: Profissional, as: 'profissional' },
+                { model: Horario, as: 'horarios' }
+            ]
+        });
         res.json(eventos); // Retorna os eventos encontrados em formato JSON
     } catch (error) {
         console.error('Erro ao buscar eventos agendados:', error);
@@ -792,10 +835,9 @@ app.get('/eventos-agendados/:userId', async (req, res) => {
 });
 
 
+
 //Outros
 const PORT = 8080
 app.listen(PORT, () => {
     console.log("Servidor Rodando!!!")
 });
-
-//Query

@@ -247,7 +247,9 @@
                 listItem.className = 'list-group-item';
 
                 // Conteúdo do item da lista
-                const itemContent = `Serviço: ${evento.service}, Profissional: ${evento.professional}, Horário: ${evento.horario}, Data: ${evento.start}, Situação: ${evento.situacao}`;
+                const itemContent = `Serviço: ${evento.servico.DESCRICAO}, Profissional: ${evento.profissional.NOME}, Horário: ${evento.horarios.HORA_LIVRE}, Data: ${evento.start}`;
+
+
 
                 // Criando um elemento de parágrafo para o conteúdo
                 const itemContentElement = document.createElement('p');
