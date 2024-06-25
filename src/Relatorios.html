@@ -53,12 +53,19 @@
             <div style="width: 70%;">
                 <canvas id="chartDesempenhoEventos" width="800" height="400"></canvas>
             </div>
-            <div style="width: 25%; display: flex; flex-direction: column; align-items: center; margin-top: 100px; justify-content: center; margin-right: 50px;">
+            <div
+                style="width: 25%; display: flex; flex-direction: column; align-items: center; margin-top: 100px; justify-content: center; margin-right: 50px;">
                 <div class="cadastro">
-                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalDados">Agendas Completa</a>
+                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalDados">Agendas
+                        Completa</a>
                 </div>
                 <div class="cadastro">
-                    <a href="#" class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#modalDadosCancelados">Agendas Canceladas</a>
+                    <a href="#" class="btn btn-danger mb-3" data-bs-toggle="modal"
+                        data-bs-target="#modalDadosCancelados">Agendas Canceladas</a>
+                </div>
+                <div class="cadastro">
+                    <a href="#" class="btn btn-info mb-3" data-bs-toggle="modal"
+                        data-bs-target="#modalDadosProfissional">Agendas por Profissional</a>
                 </div>
             </div>
         </div>
@@ -98,7 +105,91 @@
         </div>
     </div>
 
+    <!-- Modal para exibir dados detalhados de Agendas por Profissional -->
+    <div class="modal fade" id="modalDadosProfissional" tabindex="-1" aria-labelledby="modalDadosProfissionalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDadosProfissionalLabel">Agendas por Profissional</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Campos de filtro de pesquisa -->
+                    <form id="filtroProfissionalForm">
+                        <div class="mb-3">
+                            <label for="idProfissional" class="form-label">ID do Profissional</label>
+                            <input type="text" class="form-control" id="idProfissional">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataInicioProfissional" class="form-label">Data de Início</label>
+                            <input type="date" class="form-control" id="dataInicioProfissional">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFimProfissional" class="form-label">Data de Fim</label>
+                            <input type="date" class="form-control" id="dataFimProfissional">
+                        </div>
+                    </form>
+                    <!-- Conteúdo dinâmico do modal -->
+                    <div id="conteudoModalProfissional">
+                        <!--<p>Resultados do filtro...</p>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-info" onclick="baixarPDFProfissional()">Salvar em PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+
+        function baixarPDFProfissional() {
+            // Fazer uma requisição AJAX para o servidor para obter o PDF de agendas por profissional
+            $.ajax({
+                url: '/relatorio-eventos-profissional',
+                method: 'GET',
+                data: {
+                    idProfissional: $('#idProfissional').val(),
+                    dataInicio: $('#dataInicioProfissional').val(),
+                    dataFim: $('#dataFimProfissional').val()
+                },
+                xhrFields: {
+                    responseType: 'blob' // Importante: definir responseType como blob para receber um objeto Blob
+                },
+                success: function (data) {
+                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'relatorio_eventos_profissional.pdf'); // Nome do arquivo para download
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao baixar PDF de eventos por profissional:', error);
+                    alert('Erro ao baixar PDF de eventos por profissional. Por favor, tente novamente mais tarde.');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Função para atualizar o modal de eventos por profissional com dados filtrados ao mudar as datas
+            $('#idProfissional, #dataInicioProfissional, #dataFimProfissional').change(function () {
+                const idProfissional = $('#idProfissional').val();
+                const dataInicio = $('#dataInicioProfissional').val();
+                const dataFim = $('#dataFimProfissional').val();
+
+                // Fazer uma requisição AJAX para buscar os dados filtrados de eventos por profissional
+                $.get('/relatorio-eventos-profissional', { idProfissional: idProfissional, dataInicio: dataInicio, dataFim: dataFim }, function (data) {
+                    // Atualizar o conteúdo do modal de eventos por profissional com os dados filtrados
+                    //$('#conteudoModalProfissional').html(data);
+                }).fail(function () {
+                    //$('#conteudoModalProfissional').html('<p>Erro ao carregar dados do relatório de eventos por profissional.</p>');
+                });
+            });
+        });
+
         function baixarPDFCancelados() {
             // Fazer uma requisição AJAX para o servidor para obter o PDF de agendas canceladas
             $.ajax({

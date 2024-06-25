@@ -443,6 +443,86 @@ app.get('/relatorio-eventos-cancelados', async (req, res) => {
     }
 });
 
+app.get('/relatorio-eventos-profissional', async (req, res) => {
+    try {
+        const { idProfissional, dataInicio, dataFim } = req.query;
+
+        // Validar se os parâmetros necessários foram fornecidos
+        if (!idProfissional || !dataInicio || !dataFim) {
+            return res.status(400).send('ID do profissional, data de início e data de fim são obrigatórios.');
+        }
+
+        // Converter as datas para o formato correto (considerando que são no formato YYYY-MM-DD)
+        const dataInicioFormatted = new Date(dataInicio);
+        const dataFimFormatted = new Date(dataFim);
+
+        // Consultar eventos filtrados por profissional e data
+        const eventos = await Evento.findAll({
+            where: {
+                professional: idProfissional,
+                start: {
+                    [Op.between]: [dataInicioFormatted, dataFimFormatted]
+                }
+            }
+        });
+
+        // Início da criação do documento PDF
+        const doc = new PDFDocument();
+        const fileName = 'relatorio_eventos_profissional.pdf';
+
+        // Configuração do cabeçalho para fazer o navegador baixar o PDF
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        // Adicione o conteúdo ao documento PDF
+        doc.fontSize(16).text(`Relatório de Eventos do Profissional ID ${idProfissional}`, { align: 'center' });
+        doc.moveDown();
+
+        // Agrupar eventos por data
+        const eventosPorData = eventos.reduce((acc, evento) => {
+            const data = evento.start.split(' ')[0]; // Considera apenas a data
+            if (!acc[data]) acc[data] = [];
+            acc[data].push(evento);
+            return acc;
+        }, {});
+
+        doc.font('Helvetica').fontSize(12);
+
+        for (const [data, eventos] of Object.entries(eventosPorData)) {
+            // Adiciona cabeçalho da data
+            doc.fontSize(14).font('Helvetica-Bold').text(`Data: ${data}`, { align: 'left' });
+            doc.moveDown();
+
+            // Adiciona eventos
+            doc.fontSize(12).font('Helvetica');
+            for (const evento of eventos) {
+                const user = await User.findOne({ where: { ID: evento.idUser } });
+                const service = await Servicos.findOne({ where: { ID: evento.service } });
+                const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
+                const horario = await Horario.findOne({ where: { ID: evento.horario } });
+
+                doc.text(`Nome: ${user.NOME}`, { continued: true });
+                doc.text(` | Serviço: ${service ? service.DESCRICAO : 'N/A'}`, { continued: true });
+                doc.text(` | Profissional: ${profissional ? profissional.NOME : 'N/A'}`, { continued: true });
+                doc.text(` | Horário: ${horario ? horario.HORA_LIVRE : 'N/A'}`, { continued: true });
+                doc.text(` | Data: ${evento.start}`);
+
+                doc.moveDown();
+            }
+
+            // Adiciona um espaço entre diferentes datas
+            doc.moveDown();
+        }
+
+        // Finaliza o documento PDF
+        doc.end();
+    } catch (error) {
+        console.error('Erro ao buscar eventos por profissional:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
 // Rota para buscar eventos registrados
 app.get('/api/eventos-registrados', async (req, res) => {
     try {
@@ -618,25 +698,25 @@ app.post('/add', async (req, res) => {
 // Rota para processar o login
 app.post('/admin/login', async (req, res) => {
     const { emailConfirma, senhaConfirma } = req.body;
-  
+
     try {
-      const empresa = await Empresa.findOne({
-        where: {
-          EMAIL: emailConfirma,
-          SENHA: senhaConfirma
+        const empresa = await Empresa.findOne({
+            where: {
+                EMAIL: emailConfirma,
+                SENHA: senhaConfirma
+            }
+        });
+
+        if (!empresa) {
+            return res.redirect('/admin/login?error=true');
         }
-      });
-  
-      if (!empresa) {
-        return res.redirect('/admin/login?error=true');
-      }
-  
-      res.redirect('/admin');
+
+        res.redirect('/admin');
     } catch (error) {
-      console.error('Erro ao realizar login:', error);
-      res.redirect('/admin/login?error=true');
+        console.error('Erro ao realizar login:', error);
+        res.redirect('/admin/login?error=true');
     }
-  });
+});
 
 app.post('/addEmpresa', async (req, res) => {
     const { NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA, start, end } = req.body;
@@ -649,11 +729,11 @@ app.post('/addEmpresa', async (req, res) => {
         }
 
         // Cria a nova empresa no banco de dados
-        const novaEmpresa = await Empresa.create({ NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA});
+        const novaEmpresa = await Empresa.create({ NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA });
 
         res.status(201).json(novaEmpresa);
     } catch (error) {
-        console.error('Erro ao salvar empresa:', error);  
+        console.error('Erro ao salvar empresa:', error);
         res.status(500).json({ error: 'Erro ao salvar empresa.' });
     }
 });
@@ -901,7 +981,7 @@ app.get('/eventos-agendados/:userId', async (req, res) => {
 
     try {
         const eventos = await Evento.findAll({
-            where: { 
+            where: {
                 idUser: userId,
                 situacao: 'A'
             },
