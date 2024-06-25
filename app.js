@@ -8,9 +8,10 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
-const pdf = require('pdfkit');
+const PDFDocument = require('pdfkit');
 const moment = require('moment');
 const LocalStrategy = require('passport-local').Strategy;
+const { Op } = require('sequelize');
 
 
 //Config
@@ -41,6 +42,7 @@ const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
 const Cancelamento = require('./Models/Cancelamento_Evento');
 const Empresa = require('./Models/Empresa');
+const { Sequelize } = require('sequelize');
 
 // Middleware para mensagens flash
 app.use((req, res, next) => {
@@ -283,19 +285,39 @@ app.get('/horario/:id', async (req, res) => {
 
 //Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
-    const PDFDocument = require('pdfkit');
-    const doc = new PDFDocument();
-
-    const fileName = 'relatorio_eventos.pdf';
-    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-    res.setHeader('Content-Type', 'application/pdf');
-    doc.pipe(res);
-
-    doc.fontSize(16).text('Relatório de Eventos', { align: 'center' });
-    doc.moveDown();
-
     try {
-        const eventos = await Evento.findAll();
+        const { dataInicio, dataFim } = req.query;
+
+        // Validar se as datas foram fornecidas corretamente
+        if (!dataInicio || !dataFim) {
+            return res.status(400).send('As datas de início e fim são obrigatórias.');
+        }
+
+        // Converter as datas para o formato correto (considerando que são no formato YYYY-MM-DD)
+        const dataInicioFormatted = new Date(dataInicio);
+        const dataFimFormatted = new Date(dataFim);
+
+        // Consultar eventos filtrados por data
+        const eventos = await Evento.findAll({
+            where: {
+                start: {
+                    [Op.between]: [dataInicioFormatted, dataFimFormatted]
+                }
+            }
+        });
+
+        // Início da criação do documento PDF
+        const doc = new PDFDocument();
+        const fileName = 'relatorio_eventos.pdf';
+
+        // Configuração do cabeçalho para fazer o navegador baixar o PDF
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        // Adicione o conteúdo ao documento PDF
+        doc.fontSize(16).text('Relatório de Eventos', { align: 'center' });
+        doc.moveDown();
 
         // Agrupar eventos por data
         const eventosPorData = eventos.reduce((acc, evento) => {
@@ -341,39 +363,112 @@ app.get('/relatorio-eventos', async (req, res) => {
     }
 });
 
-// Rota para buscar eventos cancelados
-app.get('/api/eventos-cancelados', async (req, res) => {
+app.get('/relatorio-eventos-cancelados', async (req, res) => {
     try {
-        const totalEventosCancelados = await Evento.count({
+        const { dataInicio, dataFim } = req.query;
+
+        // Validar se as datas foram fornecidas corretamente
+        if (!dataInicio || !dataFim) {
+            return res.status(400).send('As datas de início e fim são obrigatórias.');
+        }
+
+        // Converter as datas para o formato correto (considerando que são no formato YYYY-MM-DD)
+        const dataInicioFormatted = new Date(dataInicio);
+        const dataFimFormatted = new Date(dataFim);
+
+        // Consultar eventos cancelados filtrados por data
+        const eventosCancelados = await Evento.findAll({
             where: {
-                situacao: 'C'
+                start: {
+                    [Op.between]: [dataInicioFormatted, dataFimFormatted]
+                },
+                situacao: 'C' // Filtrar por eventos cancelados
             }
         });
 
-        const userCancelados = await User.findAll();
-        const labels = userCancelados.map(user => user.NOME);
-        const data = userCancelados.map(() => totalEventosCancelados);
+        // Início da criação do documento PDF
+        const doc = new PDFDocument();
+        const fileName = 'relatorio_eventos_cancelados.pdf';
 
-        res.json({ labels, data });
+        // Configuração do cabeçalho para fazer o navegador baixar o PDF
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        // Adicione o conteúdo ao documento PDF
+        doc.fontSize(16).text('Relatório de Eventos Cancelados', { align: 'center' });
+        doc.moveDown();
+
+        // Agrupar eventos cancelados por data
+        const eventosPorData = eventosCancelados.reduce((acc, evento) => {
+            const data = evento.start.split(' ')[0]; // Considera apenas a data
+            if (!acc[data]) acc[data] = [];
+            acc[data].push(evento);
+            return acc;
+        }, {});
+
+        doc.font('Helvetica').fontSize(12);
+
+        for (const [data, eventos] of Object.entries(eventosPorData)) {
+            // Adiciona cabeçalho da data
+            doc.fontSize(14).font('Helvetica-Bold').text(`Data: ${data}`, { align: 'left' });
+            doc.moveDown();
+
+            // Adiciona eventos cancelados
+            doc.fontSize(12).font('Helvetica');
+            for (const evento of eventos) {
+                const user = await User.findOne({ where: { ID: evento.idUser } });
+                const service = await Servicos.findOne({ where: { ID: evento.service } });
+                const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
+                const horario = await Horario.findOne({ where: { ID: evento.horario } });
+
+                doc.text(`Nome: ${user.NOME}`, { continued: true });
+                doc.text(` | Serviço: ${service ? service.DESCRICAO : 'N/A'}`, { continued: true });
+                doc.text(` | Profissional: ${profissional ? profissional.NOME : 'N/A'}`, { continued: true });
+                doc.text(` | Horário: ${horario ? horario.HORA_LIVRE : 'N/A'}`, { continued: true });
+                doc.text(` | Data: ${evento.start}`);
+
+                doc.moveDown();
+            }
+
+            // Adiciona um espaço entre diferentes datas
+            doc.moveDown();
+        }
+
+        // Finaliza o documento PDF
+        doc.end();
     } catch (error) {
         console.error('Erro ao buscar eventos cancelados:', error);
-        res.status(500).json({ error: 'Erro ao buscar eventos cancelados.' });
+        res.status(500).send('Erro interno do servidor');
     }
 });
-
 
 // Rota para buscar eventos registrados
 app.get('/api/eventos-registrados', async (req, res) => {
     try {
-        const totalEventosRegistrados = await Evento.count({
+        // Consulta para contar eventos registrados e obter a data de início (start)
+        const eventosRegistrados = await Evento.findAll({
+            attributes: [
+                [Sequelize.fn('MONTH', Sequelize.col('start')), 'month'],
+                [Sequelize.fn('COUNT', Sequelize.col('*')), 'total']
+            ],
             where: {
-                situacao: 'A'
-            }
+                situacao: 'A' // Condição para contar apenas eventos com situação 'A'
+            },
+            group: [Sequelize.fn('MONTH', Sequelize.col('start'))],
+            raw: true
         });
 
-        const userRegistrados = await User.findAll();
-        const labels = userRegistrados.map(user => user.NOME);
-        const data = userRegistrados.map(() => totalEventosRegistrados);
+        // Mapear os dados para obter labels (meses) e total de eventos registrados por mês
+        const labels = eventosRegistrados.map(evento => {
+            // Traduzir número do mês para nome do mês (opcional)
+            const monthNames = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            return monthNames[evento.month - 1]; // -1 porque o array de monthNames é baseado em zero
+        });
+        const data = eventosRegistrados.map(evento => evento.total); // Total de eventos registrados por mês
 
         res.json({ labels, data });
     } catch (error) {
@@ -381,10 +476,6 @@ app.get('/api/eventos-registrados', async (req, res) => {
         res.status(500).json({ error: 'Erro ao buscar eventos registrados.' });
     }
 });
-
-
-
-
 
 //Rotas USER
 
