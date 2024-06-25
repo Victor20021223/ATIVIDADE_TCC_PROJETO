@@ -57,10 +57,37 @@
   <div style="position: fixed; bottom: 10px; right: 10px; opacity: 0.5;">
     <button type="button" class="btn btn-secondary" id="adminButton">Login Empresa</button>
   </div>
-  
+
+  <!-- Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Erro de Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Email ou senha incorretos. Por favor, tente novamente.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.getElementById('adminButton').addEventListener('click', function() {
       window.location.href = '/admin/login';
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error');
+      if (error) {
+        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+      }
     });
   </script>
 

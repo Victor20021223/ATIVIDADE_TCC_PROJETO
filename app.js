@@ -41,9 +41,6 @@ const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
 const Cancelamento = require('./Models/Cancelamento_Evento');
 const Empresa = require('./Models/Empresa');
-const { model } = require('mongoose');
-const { start } = require('repl');
-const { DATE } = require('sequelize');
 
 // Middleware para mensagens flash
 app.use((req, res, next) => {
@@ -67,12 +64,8 @@ passport.use(new LocalStrategy({
             return done(null, false, { message: 'Email ou senha incorretos' });
         }
 
-        console.log('Senha fornecida:', senha);
-        console.log('Senha armazenada no banco de dados:', user.SENHA);
-
         // Compare a senha fornecida com a senha armazenada no banco de dados
         const isMatch = await bcrypt.compare(senha, user.SENHA);
-        console.log('Resultado da comparação de senha:', isMatch);
 
         // Se as senhas não corresponderem, retorne false
         if (!isMatch) {
@@ -104,7 +97,7 @@ passport.deserializeUser(async (ID, done) => {
 
 // Rota de login
 app.post('/user/login', passport.authenticate('local', {
-    failureRedirect: '/user/login',
+    failureRedirect: '/user/login?error=true',
     failureFlash: true
 }), (req, res) => {
     res.redirect('/user/' + req.user.NOME);
