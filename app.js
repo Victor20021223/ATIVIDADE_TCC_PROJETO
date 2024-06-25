@@ -39,6 +39,7 @@ const Profissional = require('./Models/Profissional');
 const Servicos = require('./Models/Servicos');
 const Horario = require('./Models/Horario');
 const Evento = require('./Models/Evento');
+const Cancelamento = require('./Models/Cancelamento_Evento');
 const { model } = require('mongoose');
 const { start } = require('repl');
 
@@ -51,7 +52,7 @@ app.use((req, res, next) => {
 });
 
 // Configuração do Passport
-passport.use(new LocalStrategy({ 
+passport.use(new LocalStrategy({
     usernameField: 'emailConfirma', // Campo do formulário para o email
     passwordField: 'senhaConfirma' // Campo do formulário para a senha
 }, async (email, senha, done) => {
@@ -89,14 +90,13 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (ID, done) => {
     try {
-        const user = await User.findByPk(ID); // Recupere o usuário do banco de dados usando o ID
+        const user = await User.findByPk(ID);
         if (!user) {
             return done(new Error('Usuário não encontrado'));
         }
-        // Se o usuário for encontrado, passe-o para a função de retorno de chamada do Passport
         done(null, user);
     } catch (err) {
-        done(err); // Se houver algum erro ao recuperar o usuário, passe-o para a função de retorno de chamada
+        done(err);
     }
 });
 
@@ -111,9 +111,9 @@ app.post('/user/login', passport.authenticate('local', {
 // Middleware para verificar se o usuário está autenticado
 function verificaAutenticacao(req, res, next) {
     if (req.isAuthenticated()) {
-      return next();
+        return next();
     } else {
-      res.status(401).json({ error: 'Não autenticado' });
+        res.status(401).json({ error: 'Não autenticado' });
     }
 }
 
@@ -158,17 +158,17 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
     if (!req.user || !req.user.ID) {
         return res.status(401).json({ erro: 'Usuário não autenticado' });
     }
-    
+
     const { start, end, service, professional, horario } = req.body;
     try {
         const userID = req.user.ID; // Obtenha o ID do usuário autenticado
-        
+
         // Criando o evento com o ID do usuário
         const novoEvento = await Evento.create({ idUser: userID, start, end, service, professional, horario });
-        
+
         res.json(novoEvento);
-    } catch (error) { 
-        console.error('Erro ao criar evento:', error);  
+    } catch (error) {
+        console.error('Erro ao criar evento:', error);
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
@@ -178,76 +178,103 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
 app.get('/users/:id', async (req, res) => {
     const userId = req.params.id;
     try {
-      // Busca o usuário pelo ID no banco de dados
-      const user = await User.findOne({ where: { ID: userId } });
+        // Busca o usuário pelo ID no banco de dados
+        const user = await User.findOne({ where: { ID: userId } });
+
+        if (!user) {
+            return res.status(404).json({ erro: 'Usuário não encontrado' });
+        }
+
+        // Retorna os dados do usuário encontrados
+        res.json(user);
+    } catch (error) {
+        console.error('Erro ao obter informações do usuário:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
+    }
+});
+
+//Rota para cancelar evento no CALENDAR
+app.post('/cancelar-evento/:eventoId', async (req, res) => {
+    const eventoId = parseInt(req.params.eventoId);
   
-      if (!user) {
-        return res.status(404).json({ erro: 'Usuário não encontrado' });
+    try {
+      // Encontrar o evento pelo ID
+      const evento = eventos.find(evento => evento.id === eventoId);
+  
+      if (!evento) {
+        return res.status(404).json({ error: `Evento com ID ${eventoId} não encontrado.` });
       }
   
-      // Retorna os dados do usuário encontrados
-      res.json(user);
+      // Criar uma entrada na tabela de cancelamento_evento
+      const cancelamentoEvento = {
+        eventoId: evento.id,
+        idUser: evento.idUser,
+        motivo: req.body.motivo // Motivo do cancelamento enviado no corpo da requisição POST
+      };
+  
+      // Retornar uma mensagem de sucesso
+      res.json({ message: `Evento com ID ${eventoId} cancelado com sucesso.`, cancelamento: cancelamentoEvento });
     } catch (error) {
-      console.error('Erro ao obter informações do usuário:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+      console.error('Erro ao cancelar evento:', error);
+      res.status(500).json({ error: 'Erro ao cancelar evento.' });
     }
   });
 
-  app.get('/servico/:id', async (req, res) => {
+app.get('/servico/:id', async (req, res) => {
     const servicoId = req.params.id;
     try {
-      // Busca o serviço pelo ID no banco de dados
-      const servico = await Servicos.findOne({ where: { ID: servicoId } });
-  
-      if (!servico) {
-        return res.status(404).json({ erro: 'Serviço não encontrado' });
-      }
-  
-      // Retorna os dados do serviço encontrados
-      res.json(servico);
+        // Busca o serviço pelo ID no banco de dados
+        const servico = await Servicos.findOne({ where: { ID: servicoId } });
+
+        if (!servico) {
+            return res.status(404).json({ erro: 'Serviço não encontrado' });
+        }
+
+        // Retorna os dados do serviço encontrados
+        res.json(servico);
     } catch (error) {
-      console.error('Erro ao obter informações do serviço:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao obter informações do serviço:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-  });
+});
 
 
-  app.get('/profissional/:id', async (req, res) => {
+app.get('/profissional/:id', async (req, res) => {
     const profissionalId = req.params.id;
     try {
-      // Busca o profissional pelo ID no banco de dados
-      const profissional = await Profissional.findOne({ where: { ID: profissionalId } });
-  
-      if (!profissional) {
-        return res.status(404).json({ erro: 'Profissional não encontrado' });
-      }
-  
-      // Retorna os dados do profissional encontrados
-      res.json(profissional);
+        // Busca o profissional pelo ID no banco de dados
+        const profissional = await Profissional.findOne({ where: { ID: profissionalId } });
+
+        if (!profissional) {
+            return res.status(404).json({ erro: 'Profissional não encontrado' });
+        }
+
+        // Retorna os dados do profissional encontrados
+        res.json(profissional);
     } catch (error) {
-      console.error('Erro ao obter informações do profissional:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao obter informações do profissional:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-  });
+});
 
 
-  app.get('/horario/:id', async (req, res) => {
+app.get('/horario/:id', async (req, res) => {
     const horarioId = req.params.id;
     try {
-      // Busca o horário pelo ID no banco de dados
-      const horario = await Horario.findOne({ where: { ID: horarioId } });
-  
-      if (!horario) {
-        return res.status(404).json({ erro: 'Horário não encontrado' });
-      }
-  
-      // Retorna os dados do horário encontrados
-      res.json(horario);
+        // Busca o horário pelo ID no banco de dados
+        const horario = await Horario.findOne({ where: { ID: horarioId } });
+
+        if (!horario) {
+            return res.status(404).json({ erro: 'Horário não encontrado' });
+        }
+
+        // Retorna os dados do horário encontrados
+        res.json(horario);
     } catch (error) {
-      console.error('Erro ao obter informações do horário:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao obter informações do horário:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-  });
+});
 
 //Gera PDf
 app.get('/relatorio-eventos', async (req, res) => {
@@ -283,7 +310,7 @@ app.get('/relatorio-eventos', async (req, res) => {
             // Adiciona eventos
             doc.fontSize(12).font('Helvetica');
             for (const evento of eventos) {
-                const user = await User.findOne({ where : {ID: evento.idUser}});
+                const user = await User.findOne({ where: { ID: evento.idUser } });
                 const service = await Servicos.findOne({ where: { ID: evento.service } });
                 const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
                 const horario = await Horario.findOne({ where: { ID: evento.horario } });
@@ -305,13 +332,13 @@ app.get('/relatorio-eventos', async (req, res) => {
         doc.end();
     } catch (error) {
         console.error('Erro ao buscar eventos:', error);
-        res.status(500).send('Erro interno do servidor'); 
+        res.status(500).send('Erro interno do servidor');
     }
 });
 
 
 //Rotas USER
- 
+
 //Rotas GET
 
 // Rota para obter os detalhes do usuário logado
@@ -336,7 +363,7 @@ app.get('/user/details', verificaAutenticacao, async (req, res) => {
 
 app.get('/perfil', verificaAutenticacao, (req, res) => {
     // Recupere os dados do usuário da sessão
-    const user = req.user; 
+    const user = req.user;
 
     // Agora você pode usar os dados do usuário para personalizar a página
     res.send(`Bem-vindo ao seu perfil, ${user.nome}!`);
@@ -386,45 +413,45 @@ app.get('/agendar', async (req, res) => {
 
 app.get('/servicos', async (req, res) => {
     try {
-      const servicos = await Servicos.findAll({
-        where: {
-          SITUACAO: 'A'
-        }
-      });
-      res.json(servicos);
+        const servicos = await Servicos.findAll({
+            where: {
+                SITUACAO: 'A'
+            }
+        });
+        res.json(servicos);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao buscar serviços:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-  });
+});
 
-  app.get('/profissional', async (req, res) => {
+app.get('/profissional', async (req, res) => {
     try {
-      const profissionais = await Profissional.findAll({
-        where: {
-          SITUACAO: 'A'
-        }
-      });
-      res.json(profissionais);
+        const profissionais = await Profissional.findAll({
+            where: {
+                SITUACAO: 'A'
+            }
+        });
+        res.json(profissionais);
     } catch (error) {
-      console.error('Erro ao buscar profissionais:', error); 
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao buscar profissionais:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-  });
+});
 
-  app.get('/horarios', async (req, res) => {
+app.get('/horarios', async (req, res) => {
     try {
-      const horarios = await Horario.findAll({
-        where: {
-          SITUACAO: 'A'
-        }
-      });
-      res.json(horarios);
+        const horarios = await Horario.findAll({
+            where: {
+                SITUACAO: 'A'
+            }
+        });
+        res.json(horarios);
     } catch (error) {
-      console.error('Erro ao buscar horários:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor' });
+        console.error('Erro ao buscar horários:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor' });
     }
-  });
+});
 
 //Rotas POST
 
@@ -501,19 +528,19 @@ app.get('/relatorioAgenda', async (req, res) => {
 
 app.get('/admin/horarios/list', async (req, res) => {
     try {
-      const dataHorario = await Horario.findAll();
-      return res.json({
-        erro: false,
-        dataHorario
-      });
+        const dataHorario = await Horario.findAll();
+        return res.json({
+            erro: false,
+            dataHorario
+        });
     } catch (error) {
-      console.error('Erro ao buscar horários:', error);
-      return res.status(400).json({
-        erro: true,
-        mensagem: 'Erro ao buscar horários'
-      });
+        console.error('Erro ao buscar horários:', error);
+        return res.status(400).json({
+            erro: true,
+            mensagem: 'Erro ao buscar horários'
+        });
     }
-  });
+});
 
 app.get('/admin/profissional/list', async (req, res) => {
     await Profissional.findAll().then((dataProfissional) => {
@@ -533,7 +560,7 @@ app.get('/admin/servicos/list', async (req, res) => {
     await Servicos.findAll().then((dataServicos) => {
         return res.json({
             erro: false,
-            dataServicos 
+            dataServicos
         });
     }).catch(() => {
         return res.status(400).json({
@@ -560,21 +587,21 @@ app.get('/addHorario/hora', async (req, res) => {
 //Rotas POST
 app.post('/atualizar-situacao', async (req, res) => {
     const { id, situacao } = req.body;
-  
+
     try {
-      const horario = await Horario.findByPk(id);
-  
-      if (horario) {
-        horario.SITUACAO = situacao;
-        await horario.save();
-        res.json({ success: true });
-      } else {
-        res.status(404).json({ success: false, message: 'Horário não encontrado' });
-      }
+        const horario = await Horario.findByPk(id);
+
+        if (horario) {
+            horario.SITUACAO = situacao;
+            await horario.save();
+            res.json({ success: true });
+        } else {
+            res.status(404).json({ success: false, message: 'Horário não encontrado' });
+        }
     } catch (error) {
-      res.status(500).json({ success: false, message: 'Erro ao atualizar a situação do horário' });
+        res.status(500).json({ success: false, message: 'Erro ao atualizar a situação do horário' });
     }
-  });
+});
 
 app.post('/addProfissional', async (req, res) => {
     await Profissional.create({
@@ -586,9 +613,9 @@ app.post('/addProfissional', async (req, res) => {
     res.sendFile(__dirname + '/src/empresaProfissionais.html')
 });
 
-app.post('/addServico', async (req, res) => { 
+app.post('/addServico', async (req, res) => {
     await Servicos.create({
-        DESCRICAO: req.body.descricao, 
+        DESCRICAO: req.body.descricao,
         SOBRE: req.body.Sobre,
         VALOR: req.body.valor,
         SITUACAO: 'A'
@@ -608,92 +635,108 @@ app.post('/addHorario/hora', async (req, res) => {
 app.put('/admin/servicos/:id', async (req, res) => {
     const { id } = req.params;
     const { descricao, sobre, valor, situacao } = req.body;
-  
-    try {
-      // Verifique se o serviço com o ID especificado existe no banco de dados
-      const servico = await Servicos.findByPk(id);
-  
-      if (!servico) {
-        return res.status(404).json({ erro: 'Serviço não encontrado' });
-      }
-  
-      // Atualize os campos do serviço com os novos dados
-      servico.DESCRICAO = descricao;
-      servico.SOBRE = sobre;
-      servico.VALOR = valor;
-      servico.SITUACAO = situacao;
-  
-      // Salve as alterações no banco de dados
-      await servico.save();
-  
-      // Responda com uma mensagem de sucesso
-      res.json({ sucesso: true, mensagem: 'Serviço atualizado com sucesso' });
-    } catch (error) {
-      console.error('Erro ao atualizar serviço:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor ao atualizar serviço' }); 
-    }
-  });
 
-  app.put('/admin/profissional/:id', async (req, res) => {
+    try {
+        // Verifique se o serviço com o ID especificado existe no banco de dados
+        const servico = await Servicos.findByPk(id);
+
+        if (!servico) {
+            return res.status(404).json({ erro: 'Serviço não encontrado' });
+        }
+
+        // Atualize os campos do serviço com os novos dados
+        servico.DESCRICAO = descricao;
+        servico.SOBRE = sobre;
+        servico.VALOR = valor;
+        servico.SITUACAO = situacao;
+
+        // Salve as alterações no banco de dados
+        await servico.save();
+
+        // Responda com uma mensagem de sucesso
+        res.json({ sucesso: true, mensagem: 'Serviço atualizado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao atualizar serviço:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor ao atualizar serviço' });
+    }
+});
+
+app.put('/admin/profissional/:id', async (req, res) => {
     const { id } = req.params;
     const { nome, funcao, contato, situacao } = req.body;
-  
-    try {
-      // Verifique se o profissional com o ID especificado existe no banco de dados
-      const profissional = await Profissional.findByPk(id);
-  
-      if (!profissional) {
-        return res.status(404).json({ erro: 'Profissional não encontrado' });
-      }
-  
-      // Atualize os campos do profissional com os novos dados
-      profissional.NOME = nome;
-      profissional.FUNCAO = funcao;
-      profissional.CONTATO = contato;
-      profissional.SITUACAO = situacao;
-  
-      // Salve as alterações no banco de dados
-      await profissional.save();
-  
-      // Responda com uma mensagem de sucesso
-      res.json({ sucesso: true, mensagem: 'Profissional atualizado com sucesso' });
-    } catch (error) {
-      console.error('Erro ao atualizar profissional:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor ao atualizar profissional' });
-    }
-  });
 
-  app.put('/admin/horarios/:id', async (req, res) => {
+    try {
+        // Verifique se o profissional com o ID especificado existe no banco de dados
+        const profissional = await Profissional.findByPk(id);
+
+        if (!profissional) {
+            return res.status(404).json({ erro: 'Profissional não encontrado' });
+        }
+
+        // Atualize os campos do profissional com os novos dados
+        profissional.NOME = nome;
+        profissional.FUNCAO = funcao;
+        profissional.CONTATO = contato;
+        profissional.SITUACAO = situacao;
+
+        // Salve as alterações no banco de dados
+        await profissional.save();
+
+        // Responda com uma mensagem de sucesso
+        res.json({ sucesso: true, mensagem: 'Profissional atualizado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao atualizar profissional:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor ao atualizar profissional' });
+    }
+});
+
+app.put('/admin/horarios/:id', async (req, res) => {
     const { id } = req.params;
     const { horaLivre, situacao } = req.body;
+
+    try {
+        // Verifique se o horário com o ID especificado existe no banco de dados
+        const horario = await Horario.findByPk(id);
+
+        if (!horario) {
+            return res.status(404).json({ erro: 'Horário não encontrado' });
+        }
+
+        // Atualize os campos do horário com os novos dados
+        horario.HORA_LIVRE = horaLivre;
+        horario.SITUACAO = situacao;
+
+        // Salve as alterações no banco de dados
+        await horario.save();
+
+        // Responda com uma mensagem de sucesso
+        res.json({ sucesso: true, mensagem: 'Horário atualizado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao atualizar horário:', error);
+        res.status(500).json({ erro: 'Erro interno do servidor ao atualizar horário' });
+    }
+});
+
+// Rota para buscar eventos agendados do usuário
+app.get('/eventos-agendados/:userId', async (req, res) => {
+    const userId = req.params.userId;
   
     try {
-      // Verifique se o horário com o ID especificado existe no banco de dados
-      const horario = await Horario.findByPk(id);
+      const eventos = await Evento.findAll({
+        where: { idUser: userId }
+      });
   
-      if (!horario) {
-        return res.status(404).json({ erro: 'Horário não encontrado' });
-      }
-  
-      // Atualize os campos do horário com os novos dados
-      horario.HORA_LIVRE = horaLivre;
-      horario.SITUACAO = situacao;
-  
-      // Salve as alterações no banco de dados
-      await horario.save();
-  
-      // Responda com uma mensagem de sucesso
-      res.json({ sucesso: true, mensagem: 'Horário atualizado com sucesso' });
+      res.json(eventos); // Retorna os eventos encontrados em formato JSON
     } catch (error) {
-      console.error('Erro ao atualizar horário:', error);
-      res.status(500).json({ erro: 'Erro interno do servidor ao atualizar horário' });
+      console.error('Erro ao buscar eventos agendados:', error);
+      res.status(500).json({ error: 'Erro ao buscar eventos agendados' });  
     }
   });
   
-  
+
 //Outros
 const PORT = 8080
-app.listen(PORT, () => {
+app.listen(PORT, () => { 
     console.log("Servidor Rodando!!!")
 });
 

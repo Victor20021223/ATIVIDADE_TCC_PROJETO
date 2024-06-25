@@ -34,6 +34,29 @@
             </li>
           </ul>
         </div>
+        <div class="facaParte" style="margin-right: 50px;">
+          <a class="cadastro" href="/user/cancelamento" data-bs-toggle="modal"
+            data-bs-target="#cancelEventModal">Cancelar Horário</a>
+        </div>
+        <!-- Modal para cancelamento de eventos -->
+        <div class="modal fade" id="cancelEventModal" tabindex="-1" aria-labelledby="cancelEventModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="cancelEventModalLabel">Eventos Agendados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul id="eventList" class="list-group">
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
@@ -115,7 +138,7 @@
                   fetch('/profissional').then(res => res.json()),
                   fetch('/horarios').then(res => res.json()),
                   fetch('/user/details').then(res => res.json()),
-                  ]);
+                ]);
 
                 const selectServico = document.getElementById('eventService');
                 selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
@@ -184,6 +207,68 @@
             });
           },
         });
+
+        $('#cancelEventModal').on('show.bs.modal', function (event) {
+          const eventList = document.getElementById('eventList');
+
+          // Requisição para buscar o ID do usuário
+          $.get('/user/details', function (userData) {
+            const userId = userData.id;
+
+            // Requisição AJAX para buscar os eventos agendados do usuário
+            $.get(`/eventos-agendados/${userId}`, function (data) {
+              eventList.innerHTML = ''; // Limpa a lista antes de adicionar os novos eventos
+
+              data.forEach(function (evento) {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+
+                // Conteúdo do item da lista
+                const itemContent = `Serviço: ${evento.service}, Profissional: ${evento.professional}, Horário: ${evento.horario}, Data: ${evento.start}`;
+
+                // Criando um elemento de parágrafo para o conteúdo
+                const itemContentElement = document.createElement('p');
+                itemContentElement.textContent = itemContent;
+                listItem.appendChild(itemContentElement);
+
+                // Botão de cancelamento
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Cancelar';
+                cancelBtn.className = 'btn btn-danger btn-sm ms-2';
+                cancelBtn.addEventListener('click', function () {
+                  cancelarEvento(evento.id);
+                });
+                listItem.appendChild(cancelBtn);
+
+                eventList.appendChild(listItem);
+              });
+            });
+          }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('Erro ao buscar detalhes do usuário:', textStatus, errorThrown);
+            alert('Erro ao buscar detalhes do usuário.');
+          });
+        });
+
+        // Função para cancelar evento
+        function cancelarEvento(eventoId) {
+          if (confirm('Tem certeza que deseja cancelar este evento?')) {
+            // Requisição AJAX para cancelar o evento
+            $.ajax({
+              url: `/cancelar-evento/${eventoId}`, // Ajuste o endpoint conforme sua aplicação
+              type: 'DELETE', // Ou o método adequado para cancelamento
+              success: function (response) {
+                alert('Evento cancelado com sucesso!');
+                // Recarregar a lista de eventos após o cancelamento
+                $('#cancelEventModal').modal('hide');
+                $('#cancelEventModal').modal('show'); // Ou use outra forma de atualizar os eventos na lista
+              },
+              error: function (error) {
+                console.error('Erro ao cancelar evento:', error);
+                alert('Erro ao cancelar evento. Por favor, tente novamente.');
+              }
+            });
+          }
+        }
       });
     </script>
   </main>
