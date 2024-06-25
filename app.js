@@ -42,6 +42,7 @@ const Evento = require('./Models/Evento');
 const Cancelamento = require('./Models/Cancelamento_Evento');
 const { model } = require('mongoose');
 const { start } = require('repl');
+const { DATE } = require('sequelize');
 
 // Middleware para mensagens flash
 app.use((req, res, next) => {
@@ -196,29 +197,39 @@ app.get('/users/:id', async (req, res) => {
 //Rota para cancelar evento no CALENDAR
 app.post('/cancelar-evento/:eventoId', async (req, res) => {
     const eventoId = parseInt(req.params.eventoId);
-  
+    const { motivo } = req.body;
+
     try {
-      // Encontrar o evento pelo ID
-      const evento = eventos.find(evento => evento.id === eventoId);
-  
-      if (!evento) {
-        return res.status(404).json({ error: `Evento com ID ${eventoId} não encontrado.` });
-      }
-  
-      // Criar uma entrada na tabela de cancelamento_evento
-      const cancelamentoEvento = {
-        eventoId: evento.id,
-        idUser: evento.idUser,
-        motivo: req.body.motivo // Motivo do cancelamento enviado no corpo da requisição POST
-      };
-  
-      // Retornar uma mensagem de sucesso
-      res.json({ message: `Evento com ID ${eventoId} cancelado com sucesso.`, cancelamento: cancelamentoEvento });
+        // Verificar se o motivo foi fornecido
+        if (!motivo || motivo.trim() === '') {
+            return res.status(400).json({ error: 'Motivo do cancelamento é obrigatório.' });
+        }
+
+        // Encontrar o evento pelo ID
+        const evento = await Evento.findByPk(eventoId);
+
+        if (!evento) {
+            return res.status(404).json({ error: `Evento com ID ${eventoId} não encontrado.` });
+        }
+
+        // Criar entrada na tabela de cancelamento_evento
+        const cancelamentoEvento = await Cancelamento.create({
+            MOTIVO: motivo,
+            idUsers: evento.idUser, // Verifique se o nome do campo está correto no seu modelo
+            IdEventos: evento.id,
+        });
+
+        // Atualizar situação do evento para 'C' (cancelada)
+        evento.situacao = 'C';
+        await evento.save();
+
+        // Retornar mensagem de sucesso
+        res.json({ message: `Evento com ID ${eventoId} cancelado com sucesso.`, cancelamento: cancelamentoEvento });
     } catch (error) {
-      console.error('Erro ao cancelar evento:', error);
-      res.status(500).json({ error: 'Erro ao cancelar evento.' });
+        console.error('Erro ao cancelar evento:', error);
+        res.status(500).json({ error: 'Erro ao cancelar evento.' });
     }
-  });
+});
 
 app.get('/servico/:id', async (req, res) => {
     const servicoId = req.params.id;
@@ -335,6 +346,50 @@ app.get('/relatorio-eventos', async (req, res) => {
         res.status(500).send('Erro interno do servidor');
     }
 });
+
+// Rota para buscar eventos cancelados
+app.get('/api/eventos-cancelados', async (req, res) => {
+    try {
+        const totalEventosCancelados = await Evento.count({
+            where: {
+                situacao: 'C'
+            }
+        });
+
+        const userCancelados = await User.findAll();
+        const labels = userCancelados.map(user => user.NOME);
+        const data = userCancelados.map(() => totalEventosCancelados);
+
+        res.json({ labels, data });
+    } catch (error) {
+        console.error('Erro ao buscar eventos cancelados:', error);
+        res.status(500).json({ error: 'Erro ao buscar eventos cancelados.' });
+    }
+});
+
+
+// Rota para buscar eventos registrados
+app.get('/api/eventos-registrados', async (req, res) => {
+    try {
+        const totalEventosRegistrados = await Evento.count({
+            where: {
+                situacao: 'A'
+            }
+        });
+
+        const userRegistrados = await User.findAll();
+        const labels = userRegistrados.map(user => user.NOME);
+        const data = userRegistrados.map(() => totalEventosRegistrados);
+
+        res.json({ labels, data });
+    } catch (error) {
+        console.error('Erro ao buscar eventos registrados:', error);
+        res.status(500).json({ error: 'Erro ao buscar eventos registrados.' });
+    }
+});
+
+
+
 
 
 //Rotas USER
@@ -720,23 +775,26 @@ app.put('/admin/horarios/:id', async (req, res) => {
 // Rota para buscar eventos agendados do usuário
 app.get('/eventos-agendados/:userId', async (req, res) => {
     const userId = req.params.userId;
-  
+
     try {
-      const eventos = await Evento.findAll({
-        where: { idUser: userId }
-      });
-  
-      res.json(eventos); // Retorna os eventos encontrados em formato JSON
+        const eventos = await Evento.findAll({
+            where: { 
+              idUser: userId,
+              situacao: 'A'
+            }
+          });
+
+        res.json(eventos); // Retorna os eventos encontrados em formato JSON
     } catch (error) {
-      console.error('Erro ao buscar eventos agendados:', error);
-      res.status(500).json({ error: 'Erro ao buscar eventos agendados' });  
+        console.error('Erro ao buscar eventos agendados:', error);
+        res.status(500).json({ error: 'Erro ao buscar eventos agendados' });
     }
-  });
-  
+});
+
 
 //Outros
 const PORT = 8080
-app.listen(PORT, () => { 
+app.listen(PORT, () => {
     console.log("Servidor Rodando!!!")
 });
 

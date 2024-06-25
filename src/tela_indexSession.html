@@ -36,7 +36,7 @@
         </div>
         <div class="facaParte" style="margin-right: 50px;">
           <a class="cadastro" href="/user/cancelamento" data-bs-toggle="modal"
-            data-bs-target="#cancelEventModal">Cancelar Horário</a>
+            data-bs-target="#cancelEventModal">Horários Agendados</a>
         </div>
         <!-- Modal para cancelamento de eventos -->
         <div class="modal fade" id="cancelEventModal" tabindex="-1" aria-labelledby="cancelEventModalLabel"
@@ -106,8 +106,33 @@
         </div>
       </div>
     </div>
-    <script>
 
+    <!-- Modal para cancelamento de eventos com motivo -->
+    <div class="modal fade" id="cancelEventWithReasonModal" tabindex="-1"
+      aria-labelledby="cancelEventWithReasonModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cancelEventWithReasonModalLabel">Cancelar Evento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="cancelEventForm">
+              <div class="mb-3">
+                <label for="cancelReason" class="form-label">Motivo do Cancelamento</label>
+                <textarea class="form-control" id="cancelReason" rows="4" required></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="confirmCancelBtn">Confirmar Cancelamento</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
       document.addEventListener('DOMContentLoaded', function () {
         $('#calendario').fullCalendar({
           header: {
@@ -117,15 +142,13 @@
             right: 'month'
           },
           defaultView: 'month',
-          eventSources: [
-            {
-              url: '/eventos',
-              method: 'GET',
-              failure: function () {
-                alert('Erro ao carregar eventos.');
-              }
+          eventSources: [{
+            url: '/eventos',
+            method: 'GET',
+            failure: function () {
+              alert('Erro ao carregar eventos.');
             }
-          ],
+          }],
           dayClick: function (date) {
             $('#newEventModal').modal('show');
             $('#newEventForm').hide();
@@ -224,7 +247,7 @@
                 listItem.className = 'list-group-item';
 
                 // Conteúdo do item da lista
-                const itemContent = `Serviço: ${evento.service}, Profissional: ${evento.professional}, Horário: ${evento.horario}, Data: ${evento.start}`;
+                const itemContent = `Serviço: ${evento.service}, Profissional: ${evento.professional}, Horário: ${evento.horario}, Data: ${evento.start}, Situação: ${evento.situacao}`;
 
                 // Criando um elemento de parágrafo para o conteúdo
                 const itemContentElement = document.createElement('p');
@@ -236,7 +259,8 @@
                 cancelBtn.textContent = 'Cancelar';
                 cancelBtn.className = 'btn btn-danger btn-sm ms-2';
                 cancelBtn.addEventListener('click', function () {
-                  cancelarEvento(evento.id);
+                  // Ao clicar em cancelar, abrir o modal com o motivo
+                  abrirModalCancelamento(evento.id);
                 });
                 listItem.appendChild(cancelBtn);
 
@@ -249,22 +273,46 @@
           });
         });
 
+        // Função para abrir modal de cancelamento com motivo
+        function abrirModalCancelamento(eventoId) {
+          $('#cancelEventWithReasonModal').modal('show');
+
+          // Ação ao confirmar o cancelamento
+          $('#confirmCancelBtn').off('click').on('click', function () {
+            const motivo = $('#cancelReason').val();
+            cancelarEvento(eventoId, motivo);
+          });
+        }
+
         // Função para cancelar evento
-        function cancelarEvento(eventoId) {
+        function abrirModalCancelamento(eventoId) {
+          $('#cancelEventWithReasonModal').modal('show');
+
+          // Ação ao confirmar o cancelamento
+          $('#confirmCancelBtn').off('click').on('click', function () {
+            const motivo = $('#cancelReason').val();
+            cancelarEvento(eventoId, motivo);
+          });
+        }
+
+        // Função para cancelar evento
+        function cancelarEvento(eventoId, motivo) {
           if (confirm('Tem certeza que deseja cancelar este evento?')) {
-            // Requisição AJAX para cancelar o evento
+            // Requisição AJAX para cancelar o evento com motivo
             $.ajax({
               url: `/cancelar-evento/${eventoId}`, // Ajuste o endpoint conforme sua aplicação
-              type: 'DELETE', // Ou o método adequado para cancelamento
+              type: 'POST',
+              data: JSON.stringify({ motivo: motivo }),
+              contentType: 'application/json',
               success: function (response) {
-                alert('Evento cancelado com sucesso!');
+                alert('Pedido de cancelamento enviado com sucesso!');
                 // Recarregar a lista de eventos após o cancelamento
-                $('#cancelEventModal').modal('hide');
-                $('#cancelEventModal').modal('show'); // Ou use outra forma de atualizar os eventos na lista
+                $('#cancelEventWithReasonModal').modal('hide');
+                $('#calendario').fullCalendar('refetchEvents'); // Atualiza os eventos no calendário
               },
               error: function (error) {
                 console.error('Erro ao cancelar evento:', error);
-                alert('Erro ao cancelar evento. Por favor, tente novamente.');
+                alert('Erro ao enviar pedido de cancelamento. Por favor, tente novamente.');
               }
             });
           }

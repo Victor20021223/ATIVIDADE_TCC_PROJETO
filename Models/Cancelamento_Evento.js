@@ -12,11 +12,11 @@ const CancelamentoEvento = sequelize.define('cancelamento_evento', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  idUser: {
+  idUsers: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  idEvento: {
+  idEventos: {
     type: Sequelize.INTEGER,
     allowNull: true,
   },
