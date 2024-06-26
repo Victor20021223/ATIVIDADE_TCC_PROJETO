@@ -523,6 +523,165 @@ app.get('/relatorio-eventos-profissional', async (req, res) => {
     }
 });
 
+app.get('/relatorio-eventos-servico', async (req, res) => {
+    try {
+        const { idServico, dataInicio, dataFim } = req.query;
+
+        // Validar se os parâmetros necessários foram fornecidos
+        if (!idServico || !dataInicio || !dataFim) {
+            return res.status(400).send('ID do serviço, data de início e data de fim são obrigatórios.');
+        }
+
+        // Converter as datas para o formato correto (considerando que são no formato YYYY-MM-DD)
+        const dataInicioFormatted = new Date(dataInicio);
+        const dataFimFormatted = new Date(dataFim);
+
+        // Consultar eventos filtrados por serviço e data
+        const eventos = await Evento.findAll({
+            where: {
+                service: idServico,
+                start: {
+                    [Op.between]: [dataInicioFormatted, dataFimFormatted]
+                }
+            }
+        });
+
+        // Início da criação do documento PDF
+        const doc = new PDFDocument();
+        const fileName = 'relatorio_eventos_servico.pdf';
+
+        // Configuração do cabeçalho para fazer o navegador baixar o PDF
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        // Adicione o conteúdo ao documento PDF
+        doc.fontSize(16).text(`Relatório de Eventos do Serviço ID ${idServico}`, { align: 'center' });
+        doc.moveDown();
+
+        // Agrupar eventos por data
+        const eventosPorData = eventos.reduce((acc, evento) => {
+            const data = evento.start.split(' ')[0]; // Considera apenas a data
+            if (!acc[data]) acc[data] = [];
+            acc[data].push(evento);
+            return acc;
+        }, {});
+
+        doc.font('Helvetica').fontSize(12);
+
+        for (const [data, eventos] of Object.entries(eventosPorData)) {
+            // Adiciona cabeçalho da data
+            doc.fontSize(14).font('Helvetica-Bold').text(`Data: ${data}`, { align: 'left' });
+            doc.moveDown();
+
+            // Adiciona eventos
+            doc.fontSize(12).font('Helvetica');
+            for (const evento of eventos) {
+                const user = await User.findOne({ where: { ID: evento.idUser } });
+                const service = await Servicos.findOne({ where: { ID: evento.service } });
+                const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
+                const horario = await Horario.findOne({ where: { ID: evento.horario } });
+
+                doc.text(`Nome: ${user.NOME}`, { continued: true });
+                doc.text(` | Serviço: ${service ? service.DESCRICAO : 'N/A'}`, { continued: true });
+                doc.text(` | Profissional: ${profissional ? profissional.NOME : 'N/A'}`, { continued: true });
+                doc.text(` | Horário: ${horario ? horario.HORA_LIVRE : 'N/A'}`, { continued: true });
+                doc.text(` | Data: ${evento.start}`);
+
+                doc.moveDown();
+            }
+
+            // Adiciona um espaço entre diferentes datas
+            doc.moveDown();
+        }
+
+        // Finaliza o documento PDF
+        doc.end();
+    } catch (error) {
+        console.error('Erro ao buscar eventos por serviço:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
+
+app.get('/relatorio-eventos-horario', async (req, res) => {
+    try {
+        const { idHorario, dataInicio, dataFim } = req.query;
+
+        // Validar se os parâmetros necessários foram fornecidos
+        if (!idHorario || !dataInicio || !dataFim) {
+            return res.status(400).send('ID do horário, data de início e data de fim são obrigatórios.');
+        }
+
+        // Converter as datas para o formato correto (considerando que são no formato YYYY-MM-DD)
+        const dataInicioFormatted = new Date(dataInicio);
+        const dataFimFormatted = new Date(dataFim);
+
+        // Consultar eventos filtrados por horário e data
+        const eventos = await Evento.findAll({
+            where: {
+                horario: idHorario,
+                start: {
+                    [Op.between]: [dataInicioFormatted, dataFimFormatted]
+                }
+            }
+        });
+
+        // Início da criação do documento PDF
+        const doc = new PDFDocument();
+        const fileName = 'relatorio_eventos_horario.pdf';
+
+        // Configuração do cabeçalho para fazer o navegador baixar o PDF
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+
+        // Adicione o conteúdo ao documento PDF
+        doc.fontSize(16).text(`Relatório de Eventos do Horário ID ${idHorario}`, { align: 'center' });
+        doc.moveDown();
+
+        // Agrupar eventos por data
+        const eventosPorData = eventos.reduce((acc, evento) => {
+            const data = evento.start.split(' ')[0]; // Considera apenas a data
+            if (!acc[data]) acc[data] = [];
+            acc[data].push(evento);
+            return acc;
+        }, {});
+
+        doc.font('Helvetica').fontSize(12);
+
+        for (const [data, eventos] of Object.entries(eventosPorData)) {
+            // Adiciona cabeçalho da data
+            doc.fontSize(14).font('Helvetica-Bold').text(`Data: ${data}`, { align: 'left' });
+            doc.moveDown();
+
+            // Adiciona eventos
+            doc.fontSize(12).font('Helvetica');
+            for (const evento of eventos) {
+                const user = await User.findOne({ where: { ID: evento.idUser } });
+                const service = await Servicos.findOne({ where: { ID: evento.service } });
+                const profissional = await Profissional.findOne({ where: { ID: evento.professional } });
+                const horario = await Horario.findOne({ where: { ID: evento.horario } });
+
+                doc.text(`Nome: ${user.NOME}`, { continued: true });
+                doc.text(` | Serviço: ${service ? service.DESCRICAO : 'N/A'}`, { continued: true });
+                doc.text(` | Profissional: ${profissional ? profissional.NOME : 'N/A'}`, { continued: true });
+                doc.text(` | Horário: ${horario ? horario.HORA_LIVRE : 'N/A'}`, { continued: true });
+                doc.text(` | Data: ${evento.start}`);
+
+                doc.moveDown();
+            }
+
+            // Adiciona um espaço entre diferentes datas
+            doc.moveDown();
+        }
+
+        // Finaliza o documento PDF
+        doc.end();
+    } catch (error) {
+        console.error('Erro ao buscar eventos por horário:', error);
+        res.status(500).send('Erro interno do servidor');
+    }
+});
 // Rota para buscar eventos registrados
 app.get('/api/eventos-registrados', async (req, res) => {
     try {

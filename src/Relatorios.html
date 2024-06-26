@@ -57,15 +57,23 @@
                 style="width: 25%; display: flex; flex-direction: column; align-items: center; margin-top: 100px; justify-content: center; margin-right: 50px;">
                 <div class="cadastro">
                     <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalDados">Agendas
-                        Completa</a>
+                        Completas</a>
                 </div>
                 <div class="cadastro">
-                    <a href="#" class="btn btn-danger mb-3" data-bs-toggle="modal"
+                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal"
                         data-bs-target="#modalDadosCancelados">Agendas Canceladas</a>
                 </div>
                 <div class="cadastro">
-                    <a href="#" class="btn btn-info mb-3" data-bs-toggle="modal"
+                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal"
                         data-bs-target="#modalDadosProfissional">Agendas por Profissional</a>
+                </div>
+                <div class="cadastro">
+                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                        data-bs-target="#modalDadosServico">Agendas por Serviço</a>
+                </div>
+                <div class="cadastro">
+                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal"
+                        data-bs-target="#modalDadosHorario">Agendas por Horário</a>
                 </div>
             </div>
         </div>
@@ -99,7 +107,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-danger" onclick="baixarPDFCancelados()">Salvar em PDF</button>
+                    <button type="button" class="btn btn-success" onclick="baixarPDFCancelados()">Salvar em PDF</button>
                 </div>
             </div>
         </div>
@@ -137,13 +145,258 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-info" onclick="baixarPDFProfissional()">Salvar em PDF</button>
+                    <button type="button" class="btn btn-success" onclick="baixarPDFProfissional()">Salvar em
+                        PDF</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal para exibir dados detalhados de Agendas por Serviço -->
+    <div class="modal fade" id="modalDadosServico" tabindex="-1" aria-labelledby="modalDadosServicoLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDadosServicoLabel">Agendas por Serviço</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Campos de filtro de pesquisa -->
+                    <form id="filtroServicoForm">
+                        <div class="mb-3">
+                            <label for="idServico" class="form-label">ID do Serviço</label>
+                            <input type="text" class="form-control" id="idServico">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataInicioServico" class="form-label">Data de Início</label>
+                            <input type="date" class="form-control" id="dataInicioServico">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFimServico" class="form-label">Data de Fim</label>
+                            <input type="date" class="form-control" id="dataFimServico">
+                        </div>
+                    </form>
+                    <!-- Conteúdo dinâmico do modal -->
+                    <div id="conteudoModalServico">
+                        <!--<p>Resultados do filtro...</p>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="baixarPDFServico()">Salvar em PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para exibir dados detalhados de Agendas por Horário -->
+    <div class="modal fade" id="modalDadosHorario" tabindex="-1" aria-labelledby="modalDadosHorarioLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDadosHorarioLabel">Agendas por Horário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Campos de filtro de pesquisa -->
+                    <form id="filtroHorarioForm">
+                        <div class="mb-3">
+                            <label for="idHorario" class="form-label">ID do Horário</label>
+                            <input type="text" class="form-control" id="idHorario">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataInicioHorario" class="form-label">Data de Início</label>
+                            <input type="date" class="form-control" id="dataInicioHorario">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFimHorario" class="form-label">Data de Fim</label>
+                            <input type="date" class="form-control" id="dataFimHorario">
+                        </div>
+                    </form>
+                    <!-- Conteúdo dinâmico do modal -->
+                    <div id="conteudoModalHorario">
+                        <!--<p>Resultados do filtro...</p>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="baixarPDFHorario()">Salvar em PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para exibir dados detalhados de Agendas Completas -->
+    <div class="modal fade" id="modalDados" tabindex="-1" aria-labelledby="modalDadosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDadosLabel">Agendas Completas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Campos de filtro de pesquisa -->
+                    <form id="filtroCompletaForm">
+                        <div class="mb-3">
+                            <label for="dataInicioCompleta" class="form-label">Data de Início</label>
+                            <input type="date" class="form-control" id="dataInicioCompleta">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFimCompleta" class="form-label">Data de Fim</label>
+                            <input type="date" class="form-control" id="dataFimCompleta">
+                        </div>
+                    </form>
+                    <!-- Conteúdo dinâmico do modal -->
+                    <div id="conteudoModalCompleta">
+                        <!--<p>Resultados do filtro...</p>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" onclick="baixarPDFAgendasCompletas()">Salvar em PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+
+        function baixarPDFAgendasCompletas() {
+            // Fazer uma requisição AJAX para o servidor para obter o PDF de agendas completas
+            $.ajax({
+                url: '/relatorio-eventos',
+                method: 'GET',
+                data: {
+                    dataInicio: $('#dataInicioCompleta').val(),
+                    dataFim: $('#dataFimCompleta').val()
+                },
+                xhrFields: {
+                    responseType: 'blob' // Definir responseType como blob para receber um objeto Blob
+                },
+                success: function (data) {
+                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'relatorio_agendas_completas.pdf'); // Nome do arquivo para download
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao baixar PDF de agendas completas:', error);
+                    alert('Erro ao baixar PDF de agendas completas. Por favor, tente novamente mais tarde.');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Função para atualizar o modal de agendas completas com dados filtrados ao mudar as datas
+            $('#dataInicioCompleta, #dataFimCompleta').change(function () {
+                const dataInicio = $('#dataInicioCompleta').val();
+                const dataFim = $('#dataFimCompleta').val();
+
+                // Fazer uma requisição AJAX para buscar os dados filtrados de agendas completas
+                $.get('/relatorio-eventos', { dataInicio: dataInicio, dataFim: dataFim }, function (data) {
+                    // Atualizar o conteúdo do modal de agendas completas com os dados filtrados
+                    // $('#conteudoModalCompleta').html(data);
+                }).fail(function () {
+                    // Tratar falha na requisição AJAX aqui, se necessário
+                    // $('#conteudoModalCompleta').html('<p>Erro ao carregar dados do relatório de agendas completas.</p>');
+                });
+            });
+        });
+
+        function baixarPDFHorario() {
+            // Fazer uma requisição AJAX para o servidor para obter o PDF de agendas por horário
+            $.ajax({
+                url: '/relatorio-eventos-horario',
+                method: 'GET',
+                data: {
+                    idHorario: $('#idHorario').val(),
+                    dataInicio: $('#dataInicioHorario').val(),
+                    dataFim: $('#dataFimHorario').val()
+                },
+                xhrFields: {
+                    responseType: 'blob' // Importante: definir responseType como blob para receber um objeto Blob
+                },
+                success: function (data) {
+                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'relatorio_eventos_horario.pdf'); // Nome do arquivo para download
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao baixar PDF de eventos por horário:', error);
+                    alert('Erro ao baixar PDF de eventos por horário. Por favor, tente novamente mais tarde.');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Função para atualizar o modal de eventos por horário com dados filtrados ao mudar os campos
+            $('#idHorario, #dataInicioHorario, #dataFimHorario').change(function () {
+                const idHorario = $('#idHorario').val();
+                const dataInicio = $('#dataInicioHorario').val();
+                const dataFim = $('#dataFimHorario').val();
+
+                // Fazer uma requisição AJAX para buscar os dados filtrados de eventos por horário
+                $.get('/relatorio-eventos-horario', { idHorario: idHorario, dataInicio: dataInicio, dataFim: dataFim }, function (data) {
+                    // Atualizar o conteúdo do modal de eventos por horário com os dados filtrados
+                    //$('#conteudoModalHorario').html(data);
+                }).fail(function () {
+                    //$('#conteudoModalHorario').html('<p>Erro ao carregar dados do relatório de eventos por horário.</p>');
+                });
+            });
+        });
+
+        function baixarPDFServico() {
+            // Fazer uma requisição AJAX para o servidor para obter o PDF de agendas por serviço
+            $.ajax({
+                url: '/relatorio-eventos-servico',
+                method: 'GET',
+                data: {
+                    idServico: $('#idServico').val(),
+                    dataInicio: $('#dataInicioServico').val(),
+                    dataFim: $('#dataFimServico').val()
+                },
+                xhrFields: {
+                    responseType: 'blob' // Importante: definir responseType como blob para receber um objeto Blob
+                },
+                success: function (data) {
+                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'relatorio_eventos_servico.pdf'); // Nome do arquivo para download
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Erro ao baixar PDF de eventos por serviço:', error);
+                    alert('Erro ao baixar PDF de eventos por serviço. Por favor, tente novamente mais tarde.');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // Função para atualizar o modal de eventos por serviço com dados filtrados ao mudar os campos
+            $('#idServico, #dataInicioServico, #dataFimServico').change(function () {
+                const idServico = $('#idServico').val();
+                const dataInicio = $('#dataInicioServico').val();
+                const dataFim = $('#dataFimServico').val();
+
+                // Fazer uma requisição AJAX para buscar os dados filtrados de eventos por serviço
+                $.get('/relatorio-eventos-servico', { idServico: idServico, dataInicio: dataInicio, dataFim: dataFim }, function (data) {
+                    // Atualizar o conteúdo do modal de eventos por serviço com os dados filtrados
+                    //$('#conteudoModalServico').html(data);
+                }).fail(function () {
+                    //$('#conteudoModalServico').html('<p>Erro ao carregar dados do relatório de eventos por serviço.</p>');
+                });
+            });
+        });
 
         function baixarPDFProfissional() {
             // Fazer uma requisição AJAX para o servidor para obter o PDF de agendas por profissional
