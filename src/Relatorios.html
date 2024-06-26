@@ -56,8 +56,7 @@
             <div
                 style="width: 25%; display: flex; flex-direction: column; align-items: center; margin-top: 100px; justify-content: center; margin-right: 50px;">
                 <div class="cadastro">
-                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalDados">Agendas
-                        Completas</a>
+                    <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalDados">Agendas Completas</a>
                 </div>
                 <div class="cadastro">
                     <a href="#" class="btn btn-primary mb-3" data-bs-toggle="modal"
@@ -299,11 +298,7 @@
 
                 // Fazer uma requisição AJAX para buscar os dados filtrados de agendas completas
                 $.get('/relatorio-eventos', { dataInicio: dataInicio, dataFim: dataFim }, function (data) {
-                    // Atualizar o conteúdo do modal de agendas completas com os dados filtrados
-                    // $('#conteudoModalCompleta').html(data);
                 }).fail(function () {
-                    // Tratar falha na requisição AJAX aqui, se necessário
-                    // $('#conteudoModalCompleta').html('<p>Erro ao carregar dados do relatório de agendas completas.</p>');
                 });
             });
         });
@@ -345,10 +340,7 @@
 
                 // Fazer uma requisição AJAX para buscar os dados filtrados de eventos por horário
                 $.get('/relatorio-eventos-horario', { idHorario: idHorario, dataInicio: dataInicio, dataFim: dataFim }, function (data) {
-                    // Atualizar o conteúdo do modal de eventos por horário com os dados filtrados
-                    //$('#conteudoModalHorario').html(data);
                 }).fail(function () {
-                    //$('#conteudoModalHorario').html('<p>Erro ao carregar dados do relatório de eventos por horário.</p>');
                 });
             });
         });
@@ -390,10 +382,7 @@
 
                 // Fazer uma requisição AJAX para buscar os dados filtrados de eventos por serviço
                 $.get('/relatorio-eventos-servico', { idServico: idServico, dataInicio: dataInicio, dataFim: dataFim }, function (data) {
-                    // Atualizar o conteúdo do modal de eventos por serviço com os dados filtrados
-                    //$('#conteudoModalServico').html(data);
                 }).fail(function () {
-                    //$('#conteudoModalServico').html('<p>Erro ao carregar dados do relatório de eventos por serviço.</p>');
                 });
             });
         });
@@ -435,10 +424,7 @@
 
                 // Fazer uma requisição AJAX para buscar os dados filtrados de eventos por profissional
                 $.get('/relatorio-eventos-profissional', { idProfissional: idProfissional, dataInicio: dataInicio, dataFim: dataFim }, function (data) {
-                    // Atualizar o conteúdo do modal de eventos por profissional com os dados filtrados
-                    //$('#conteudoModalProfissional').html(data);
                 }).fail(function () {
-                    //$('#conteudoModalProfissional').html('<p>Erro ao carregar dados do relatório de eventos por profissional.</p>');
                 });
             });
         });
@@ -478,10 +464,7 @@
 
                 // Fazer uma requisição AJAX para buscar os dados filtrados de eventos cancelados
                 $.get('/relatorio-eventos-cancelados', { dataInicio: dataInicio, dataFim: dataFim }, function (data) {
-                    // Atualizar o conteúdo do modal de eventos cancelados com os dados filtrados
-                    //$('#conteudoModalCancelados').html(data);
                 }).fail(function () {
-                    //$('#conteudoModalCancelados').html('<p>Erro ao carregar dados do relatório de eventos cancelados.</p>');
                 });
             });
 
