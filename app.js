@@ -779,10 +779,6 @@ app.get('/user/login/add', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_CadastroUsuario.html")
 });
 
-app.get('/user/meusplanos', async (req, res) => {
-    res.sendFile(__dirname + "/src/MeusPlanos.html")
-});
-
 app.get('/user/sobrenos', async (req, res) => {
     res.sendFile(__dirname + "sobrenos.html");
 });
@@ -963,10 +959,6 @@ app.get('/admin/addHorario', async (req, res) => {
 
 app.get('/admin/relatorio', async (req, res) => {
     res.sendFile(__dirname + '/src/Relatorios.html')
-});
-
-app.get('/relatorioAgenda', async (req, res) => {
-    res.sendFile(__dirname + '/src/agendaList.html')
 });
 
 app.get('/admin/horarios/list', async (req, res) => {

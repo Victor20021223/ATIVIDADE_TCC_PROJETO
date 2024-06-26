@@ -14,7 +14,7 @@ body {
 }
 
 header {
-    background-color: aquamarine;
+    background-color: #D4F1F9;
     box-shadow: 0px 3px 10px #660bb100;
     color: black;
 }
@@ -78,7 +78,7 @@ td {
 }
 
 .container-fluid{
-    background-color: aquamarine;
+    background-color: #D4F1F9;
     padding: 10px;
     margin: 0 0;
     margin-top: 1px;
@@ -173,7 +173,7 @@ main #menu .confirma {
 
 main #menu .confirma a {
     text-decoration: none;
-    background-color: aqua;
+    background-color: #D4F1F9;
     padding: 12px;
     border: none;
     border-radius: 15px;
@@ -189,7 +189,7 @@ main #menu .confirma a:hover {
 main #menu .confirma button {
     margin: 0px 40px;
     padding: 10px;
-    background-color: aqua;
+    background-color: #D4F1F9;
     border: none;
     border-radius: 15px;
 }
@@ -204,7 +204,7 @@ main #menu .confirma button {
 .cadastro a {
     padding: 15px;
     border-radius: 5px;
-    background-color: aquamarine;
+    background-color: #D4F1F9;
     width: 150px;
     color: black;
 }

@@ -18,7 +18,7 @@
 <body>
   <header>
     <nav class="navbar navbar-expand-lg" id="Barra">
-      <div class="container-fluid p-2" style="background-color: aquamarine;">
+      <div class="container-fluid p-2" style="background-color: #7FFFD4;">
         <a class="navbar-brand" href="/">Sistema Agenda</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
           aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -206,7 +206,7 @@
             });
 
             const selectProfissional = document.getElementById('eventProfessional');
-            selectProfissional.innerHTML = '<option value="">Escolha um profissional</option>';
+            selectProfissional.innerHTML = '<option value="">Escolha um profissiona</option>';
             profissionais.forEach(profissional => {
               const option = document.createElement('option');
               option.value = profissional.ID;
@@ -251,6 +251,7 @@
             $('#newEventModal').modal('hide');
           }
         }
+
         $('#cancelEventModal').on('show.bs.modal', function (event) {
           const eventList = document.getElementById('eventList');
 
@@ -276,7 +277,25 @@
                 cancelBtn.addEventListener('click', function () {
                   abrirModalCancelamento(evento.id);
                 });
-                listItem.appendChild(cancelBtn);
+
+                // Adiciona a validação para permitir o cancelamento apenas com 1 dia de antecedência
+                const eventDate = moment(evento.start);
+                const today = moment();
+                const diffDays = eventDate.diff(today, 'days');
+
+                if (diffDays >= 1) {
+                  listItem.appendChild(cancelBtn);
+                } else if (diffDays === 0) {
+                  const notAtenttion = document.createElement('span');
+                  notAtenttion.textContent = ' - Andamento.';
+                  notAtenttion.style.color = 'orange';
+                  listItem.appendChild(notAtenttion);
+                } else {
+                  const notCancelableMsg = document.createElement('span');
+                  notCancelableMsg.textContent = ' - Concluído.';
+                  notCancelableMsg.style.color = 'green';
+                  listItem.appendChild(notCancelableMsg);
+                }
 
                 eventList.appendChild(listItem);
               });
