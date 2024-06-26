@@ -840,9 +840,9 @@ app.get('/eventos/by-date', async (req, res) => {
         const eventos = await Evento.findAll({
             where: {
                 start: {
-                    [Op.startsWith]: date // Verificar eventos que começam no dia especificado
+                    [Op.startsWith]: date
                 },
-                situacao: 'A' // Verificar eventos com situacao 'A'
+                situacao: 'A'
             }
         });
         res.json(eventos);
