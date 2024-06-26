@@ -42,6 +42,12 @@
             <li class="nav-item">
               <a class="nav-link" href="/admin/relatorio">Relatórios</a>
             </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#notificacoesModal">
+                <i class="bi bi-bell"></i> Notificações
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -64,6 +70,27 @@
                 <span class="visually-hidden">Carregando...</span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Notificações -->
+    <div class="modal fade" id="notificacoesModal" tabindex="-1" aria-labelledby="notificacoesModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="notificacoesModalLabel">Notificações de Novos Eventos</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ul id="notificacoesList" class="list-group">
+              <!-- Aqui serão listadas as notificações de novos eventos -->
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
           </div>
         </div>
       </div>
@@ -143,6 +170,35 @@
             console.log(event);
           },
         });
+
+        // Função para buscar novos eventos
+        function fetchNewEvents() {
+          axios.get('/novos-eventos')
+            .then(response => {
+              const notificacoesList = $('#notificacoesList');
+              const eventosNovos = response.data.filter(evento => !evento.mostrado); // Filtra eventos não mostrados
+
+              eventosNovos.forEach(evento => {
+                const notificacao = $('<li class="list-group-item">Novo evento de : ' + evento.usuario.NOME + ' as ' + evento.horarios.HORA_LIVRE + ' em ' + evento.start + '</li>');
+                notificacoesList.append(notificacao);
+              });
+
+              // Atualiza o estado de 'mostrado' para os eventos que foram exibidos
+              eventosNovos.forEach(evento => {
+                evento.mostrado = true;
+              });
+
+              if (eventosNovos.length > 0) {
+                $('#notificacoesModal').modal('show');
+              }
+            })
+            .catch(error => {
+              console.error('Erro ao buscar novos eventos:', error);
+            });
+        }
+
+        // Simulação de notificações de novos eventos (substitua pela lógica real de tempo ou polling)
+        setTimeout(fetchNewEvents, 10000); // Simula uma notificação após 10 segundos
       });
     </script>
   </main>

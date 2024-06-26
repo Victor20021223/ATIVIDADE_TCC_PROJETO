@@ -829,6 +829,27 @@ app.get('/horarios', async (req, res) => {
     }
 });
 
+app.get('/novos-eventos', async (req, res) => {
+    try {
+      // Ajustar a lógica para considerar eventos criados recentemente
+      const recentEvents = await Evento.findAll({
+        where: {
+          createdAt: {
+            [Op.gte]: new Date(new Date() - 24 * 60 * 60 * 1000) // Eventos das últimas 24 horas
+          }
+        },
+        include: [
+            { model: Horario, as: 'horarios' },
+            { model: User, as: 'usuario' },
+        ]
+      });
+      res.json(recentEvents);
+    } catch (error) {
+      console.error('Erro ao buscar novos eventos:', error);
+      res.status(500).json({ error: 'Erro ao buscar novos eventos' });
+    }
+  });
+
 app.get('/eventos/by-date', async (req, res) => {
     const { date } = req.query;
 
