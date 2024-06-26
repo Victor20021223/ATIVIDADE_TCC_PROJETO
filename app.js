@@ -118,6 +118,9 @@ function verificaAutenticacao(req, res, next) {
 app.get('/eventos', async (req, res) => {
     try {
         const eventos = await Evento.findAll({
+            where: {
+                situacao: 'A' // Filtra eventos com situacao = 'A'
+            },
             include: [
                 {
                     model: User,
