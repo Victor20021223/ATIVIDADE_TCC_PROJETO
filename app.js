@@ -43,6 +43,7 @@ const Evento = require('./Models/Evento');
 const Cancelamento = require('./Models/Cancelamento_Evento');
 const Empresa = require('./Models/Empresa');
 const { Sequelize } = require('sequelize');
+const { start } = require('repl');
 
 // Middleware para mensagens flash
 app.use((req, res, next) => {
@@ -173,7 +174,6 @@ app.post('/eventos', verificaAutenticacao, async (req, res, next) => {
     }
 });
 
-
 //Calendar Admin
 app.get('/users/:id', async (req, res) => {
     const userId = req.params.id;
@@ -218,7 +218,7 @@ app.post('/cancelar-evento/:eventoId', async (req, res) => {
             createdAt: evento.createdAt,
             updatedAt: evento.updatedAt,
             idUsers: evento.idUser,
-            idEventos: evento.id, 
+            idEventos: evento.id,
         });
 
         // Atualizar situação do evento para 'C' (cancelada)
@@ -832,6 +832,26 @@ app.get('/horarios', async (req, res) => {
         res.status(500).json({ erro: 'Erro interno do servidor' });
     }
 });
+
+app.get('/eventos/by-date', async (req, res) => {
+    const { date } = req.query;
+
+    try {
+        const eventos = await Evento.findAll({
+            where: {
+                start: {
+                    [Op.startsWith]: date // Verificar eventos que começam no dia especificado
+                },
+                situacao: 'A' // Verificar eventos com situacao 'A'
+            }
+        });
+        res.json(eventos);
+    } catch (error) {
+        console.error('Erro ao buscar eventos por data:', error);
+        res.status(500).json({ error: 'Erro ao buscar eventos por data' });
+    }
+});
+
 
 //Rotas POST
 

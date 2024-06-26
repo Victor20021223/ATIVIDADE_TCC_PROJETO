@@ -154,52 +154,10 @@
             $('#newEventForm').hide();
             $('#loadingSpinner').show();
 
-            const carregarDados = async () => {
-              try {
-                const [servicos, profissionais, horarios] = await Promise.all([
-                  fetch('/servicos').then(res => res.json()),
-                  fetch('/profissional').then(res => res.json()),
-                  fetch('/horarios').then(res => res.json()),
-                  fetch('/user/details').then(res => res.json()),
-                ]);
+            const selectedDate = date.format('YYYY-MM-DD'); // Formato esperado no backend
 
-                const selectServico = document.getElementById('eventService');
-                selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
-                servicos.forEach(servico => {
-                  const option = document.createElement('option');
-                  option.value = servico.ID;
-                  option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
-                  selectServico.appendChild(option);
-                });
-
-                const selectProfissional = document.getElementById('eventProfessional');
-                selectProfissional.innerHTML = '<option value="">Escolha um profissional</option>';
-                profissionais.forEach(profissional => {
-                  const option = document.createElement('option');
-                  option.value = profissional.ID;
-                  option.textContent = profissional.NOME;
-                  selectProfissional.appendChild(option);
-                });
-
-                const selectHorario = document.getElementById('eventHorario');
-                selectHorario.innerHTML = '<option value="">Escolha um horário</option>';
-                horarios.forEach(horario => {
-                  const option = document.createElement('option');
-                  option.value = horario.ID;
-                  option.textContent = horario.SITUACAO === 'A' ? horario.HORA_LIVRE : 'Indisponível';
-                  selectHorario.appendChild(option);
-                });
-
-                $('#loadingSpinner').hide();
-                $('#newEventForm').show();
-              } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                alert('Erro ao carregar dados.');
-                $('#newEventModal').modal('hide');
-              }
-            };
-
-            carregarDados();
+            carregarServicosProfissionais();
+            carregarHorarios(selectedDate);
 
             $('#newEventForm').off('submit').on('submit', function (e) {
               e.preventDefault();
@@ -209,8 +167,8 @@
                 service: $('#eventService').val(),
                 professional: $('#eventProfessional').val(),
                 horario: $('#eventHorario').val(),
-                start: moment().format(date.format()),
-                end: moment().add(1, 'hour').format(date.format())
+                start: date.format(),
+                end: moment(date).add(1, 'hour').format()
               };
 
               $.ajax({
@@ -231,37 +189,91 @@
           },
         });
 
+        async function carregarServicosProfissionais() {
+          try {
+            const [servicos, profissionais] = await Promise.all([
+              fetch('/servicos').then(res => res.json()),
+              fetch('/profissional').then(res => res.json())
+            ]);
+
+            const selectServico = document.getElementById('eventService');
+            selectServico.innerHTML = '<option value="">Escolha um serviço</option>';
+            servicos.forEach(servico => {
+              const option = document.createElement('option');
+              option.value = servico.ID;
+              option.textContent = `${servico.DESCRICAO} - R$ ${servico.VALOR.toFixed(2)}`;
+              selectServico.appendChild(option);
+            });
+
+            const selectProfissional = document.getElementById('eventProfessional');
+            selectProfissional.innerHTML = '<option value="">Escolha um profissional</option>';
+            profissionais.forEach(profissional => {
+              const option = document.createElement('option');
+              option.value = profissional.ID;
+              option.textContent = profissional.NOME;
+              selectProfissional.appendChild(option);
+            });
+
+            $('#loadingSpinner').hide();
+            $('#newEventForm').show();
+          } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            alert('Erro ao carregar dados.');
+            $('#newEventModal').modal('hide');
+          }
+        }
+
+        async function carregarHorarios(dataSelecionada) {
+          try {
+            const [horarios, eventos] = await Promise.all([
+              fetch('/horarios').then(res => res.json()),
+              fetch(`/eventos/by-date?date=${dataSelecionada}`).then(res => res.json())
+            ]);
+
+            const eventosHorarios = eventos.map(evento => evento.horario);
+
+            const selectHorario = document.getElementById('eventHorario');
+            selectHorario.innerHTML = '<option value="">Escolha um horário</option>';
+            horarios.forEach(horario => {
+              if (!eventosHorarios.includes(horario.ID)) {
+                const option = document.createElement('option');
+                option.value = horario.ID;
+                option.textContent = horario.HORA_LIVRE;
+                selectHorario.appendChild(option);
+              }
+            });
+
+            $('#loadingSpinner').hide();
+            $('#newEventForm').show();
+          } catch (error) {
+            console.error('Erro ao carregar horários:', error);
+            alert('Erro ao carregar horários.');
+            $('#newEventModal').modal('hide');
+          }
+        }
         $('#cancelEventModal').on('show.bs.modal', function (event) {
           const eventList = document.getElementById('eventList');
 
-          // Requisição para buscar o ID do usuário
           $.get('/user/details', function (userData) {
             const userId = userData.id;
 
-            // Requisição AJAX para buscar os eventos agendados do usuário
             $.get(`/eventos-agendados/${userId}`, function (data) {
-              eventList.innerHTML = ''; // Limpa a lista antes de adicionar os novos eventos
+              eventList.innerHTML = '';
 
               data.forEach(function (evento) {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item';
 
-                // Conteúdo do item da lista
                 const itemContent = `Serviço: ${evento.servico.DESCRICAO}, Profissional: ${evento.profissional.NOME}, Horário: ${evento.horarios.HORA_LIVRE}, Data: ${evento.start}`;
 
-
-
-                // Criando um elemento de parágrafo para o conteúdo
                 const itemContentElement = document.createElement('p');
                 itemContentElement.textContent = itemContent;
                 listItem.appendChild(itemContentElement);
 
-                // Botão de cancelamento
                 const cancelBtn = document.createElement('button');
                 cancelBtn.textContent = 'Cancelar';
                 cancelBtn.className = 'btn btn-danger btn-sm ms-2';
                 cancelBtn.addEventListener('click', function () {
-                  // Ao clicar em cancelar, abrir o modal com o motivo
                   abrirModalCancelamento(evento.id);
                 });
                 listItem.appendChild(cancelBtn);
@@ -275,42 +287,26 @@
           });
         });
 
-        // Função para abrir modal de cancelamento com motivo
         function abrirModalCancelamento(eventoId) {
           $('#cancelEventWithReasonModal').modal('show');
 
-          // Ação ao confirmar o cancelamento
           $('#confirmCancelBtn').off('click').on('click', function () {
             const motivo = $('#cancelReason').val();
             cancelarEvento(eventoId, motivo);
           });
         }
 
-        // Função para cancelar evento
-        function abrirModalCancelamento(eventoId) {
-          $('#cancelEventWithReasonModal').modal('show');
-
-          // Ação ao confirmar o cancelamento
-          $('#confirmCancelBtn').off('click').on('click', function () {
-            const motivo = $('#cancelReason').val();
-            cancelarEvento(eventoId, motivo);
-          });
-        }
-
-        // Função para cancelar evento
         function cancelarEvento(eventoId, motivo) {
           if (confirm('Tem certeza que deseja cancelar este evento?')) {
-            // Requisição AJAX para cancelar o evento com motivo
             $.ajax({
-              url: `/cancelar-evento/${eventoId}`, // Ajuste o endpoint conforme sua aplicação
+              url: `/cancelar-evento/${eventoId}`,
               type: 'POST',
               data: JSON.stringify({ motivo: motivo }),
               contentType: 'application/json',
               success: function (response) {
                 alert('Pedido de cancelamento enviado com sucesso!');
-                // Recarregar a lista de eventos após o cancelamento
                 $('#cancelEventWithReasonModal').modal('hide');
-                $('#calendario').fullCalendar('refetchEvents'); // Atualiza os eventos no calendário
+                $('#calendario').fullCalendar('refetchEvents');
               },
               error: function (error) {
                 console.error('Erro ao cancelar evento:', error);
@@ -320,6 +316,7 @@
           }
         }
       });
+
     </script>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
