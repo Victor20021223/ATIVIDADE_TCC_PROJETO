@@ -206,7 +206,8 @@ app.post('/cancelar-evento/:eventoId', async (req, res) => {
 
         // Encontrar o evento pelo ID
         const evento = await Evento.findByPk(eventoId);
-
+        console.log(eventoId);
+        console.log(evento.id);
         if (!evento) {
             return res.status(404).json({ error: `Evento com ID ${eventoId} não encontrado.` });
         }
@@ -214,8 +215,10 @@ app.post('/cancelar-evento/:eventoId', async (req, res) => {
         // Criar entrada na tabela de cancelamento_evento
         const cancelamentoEvento = await Cancelamento.create({
             MOTIVO: motivo,
-            idUsers: evento.idUser, // Verifique se o nome do campo está correto no seu modelo
-            IdEventos: evento.id,
+            createdAt: evento.createdAt,
+            updatedAt: evento.updatedAt,
+            idUsers: evento.idUser,
+            idEventos: evento.id, 
         });
 
         // Atualizar situação do evento para 'C' (cancelada)

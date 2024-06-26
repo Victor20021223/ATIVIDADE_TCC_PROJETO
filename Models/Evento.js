@@ -6,6 +6,11 @@ const Servicos = require('./Servicos');
 const Profissional = require('./Profissional');
 
 const Evento = sequelize.define('Evento', {
+    id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        primaryKey: true,
+    },
     idUser: {
         type: Sequelize.INTEGER,
         allowNull: false,
