@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/stylelogin.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <title>Profissionais</title>
+  <title>Serviços</title>
 </head>
 
 <body>
@@ -21,7 +21,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link " href="/admin">Home</a>
+              <a class="nav-link" href="/admin">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/admin/servicos">Serviços</a>
@@ -43,50 +43,50 @@
   <main class="container">
     <div class="row">
       <div class="col">
-        <h1 class="my-4">Lista de Profissionais</h1>
+        <h1 class="my-4">Lista de Serviços</h1>
         <table class="table table-striped table-bordered">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nome</th>
-              <th>Função</th>
-              <th>Contato</th>
+              <th>Descrição</th>
+              <th>Sobre</th>
+              <th>Valor</th>
               <th>Situação</th>
               <th>Ações</th>
             </tr>
           </thead>
-          <tbody id="tabelaProfissionais">
+          <tbody id="tabelaServicos">
             <!-- Aqui serão inseridas as linhas dinamicamente -->
           </tbody>
         </table>
         <div class="cadastro">
-          <a href="/admin/addProfissional" class="btn btn-primary">Cadastrar Profissional</a>
+          <a href="/admin/addServico" class="btn btn-primary">Cadastrar Serviço</a>
         </div>
       </div>
     </div>
 
     <!-- Modal de Edição -->
-    <div class="modal fade" id="editarProfissionalModal" tabindex="-1" aria-labelledby="editarProfissionalModalLabel"
+    <div class="modal fade" id="editarServicoModal" tabindex="-1" aria-labelledby="editarServicoModalLabel"
       aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="editarProfissionalModalLabel">Editar Profissional</h5>
+            <h5 class="modal-title" id="editarServicoModalLabel">Editar Serviço</h5>
           </div>
           <div class="modal-body">
-            <form id="editarProfissionalForm">
+            <form id="editarServicoForm">
               <input type="hidden" id="editID">
               <div class="mb-3">
-                <label for="editNome" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="editNome" required>
+                <label for="editDescricao" class="form-label">Descrição</label>
+                <input type="text" class="form-control" id="editDescricao" required>
               </div>
               <div class="mb-3">
-                <label for="editFuncao" class="form-label">Função</label>
-                <input type="text" class="form-control" id="editFuncao" required>
+                <label for="editSobre" class="form-label">Sobre</label>
+                <textarea class="form-control" id="editSobre" rows="3" required></textarea>
               </div>
               <div class="mb-3">
-                <label for="editContato" class="form-label">Contato</label>
-                <input type="text" class="form-control" id="editContato" required>
+                <label for="editValor" class="form-label">Valor</label>
+                <input type="text" class="form-control" id="editValor" required>
               </div>
               <div class="mb-3">
                 <label for="editSituacao" class="form-label">Situação</label>
@@ -98,7 +98,7 @@
             </form>
           </div>
           <div class="modal-footer">
-            <a href="/admin/profissional" class="btn btn-primary">Fechar</a>
+            <a href="/admin/servicos" class="btn btn-primary">Fechar</a>
             <button type="button" class="btn btn-primary" onclick="salvarEdicao()">Salvar Alterações</button>
           </div>
         </div>
@@ -120,108 +120,110 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    async function carregarProfissionais() {
+    async function carregarServicos() {
       try {
-        const response = await fetch('/admin/profissional/list');
+        const response = await fetch('/admin/servicos/list');
         if (!response.ok) {
-          throw new Error('Erro ao carregar profissionais.');
+          throw new Error('Erro ao carregar serviços.');
         }
 
-        const { erro, dataProfissional } = await response.json();
+        const { erro, dataServicos } = await response.json();
 
-        const tabelaProfissionais = document.getElementById('tabelaProfissionais');
-        tabelaProfissionais.innerHTML = '';
+        const tabelaServicos = document.getElementById('tabelaServicos');
+        tabelaServicos.innerHTML = '';
 
-        if (!erro && dataProfissional.length > 0) {
-          dataProfissional.forEach(profissional => {
-            const newRow = tabelaProfissionais.insertRow();
-            newRow.insertCell(0).innerText = profissional.ID;
-            newRow.insertCell(1).innerText = profissional.NOME;
-            newRow.insertCell(2).innerText = profissional.FUNCAO;
-            newRow.insertCell(3).innerText = profissional.CONTATO;
-            newRow.insertCell(4).innerText = profissional.SITUACAO;
+        if (!erro && dataServicos.length > 0) {
+          dataServicos.forEach(servico => {
+            const newRow = tabelaServicos.insertRow();
+            newRow.insertCell(0).innerText = servico.ID;
+            newRow.insertCell(1).innerText = servico.DESCRICAO;
+            newRow.insertCell(2).innerText = servico.SOBRE;
+            newRow.insertCell(3).innerText = servico.VALOR;
+            newRow.insertCell(4).innerText = servico.SITUACAO;
 
             // Botão Editar
             const editButton = document.createElement('button');
             editButton.innerText = 'Editar';
             editButton.classList.add('btn', 'btn-primary', 'btn-sm');
             editButton.setAttribute('data-bs-toggle', 'modal');
-            editButton.setAttribute('data-bs-target', '#editarProfissionalModal');
-            editButton.addEventListener('click', () => preencherFormularioEditar(profissional));
+            editButton.setAttribute('data-bs-target', '#editarServicoModal');
+            editButton.addEventListener('click', () => preencherFormularioEditar(servico));
             newRow.insertCell(5).appendChild(editButton);
           });
         } else {
-          const newRow = tabelaProfissionais.insertRow();
+          const newRow = tabelaServicos.insertRow();
           const cell = newRow.insertCell(0);
           cell.colSpan = 6;
-          cell.innerText = 'Nenhum profissional encontrado.';
+          cell.innerText = 'Nenhum serviço encontrado.';
         }
       } catch (error) {
-        console.error('Erro ao carregar profissionais:', error);
+        console.error('Erro ao carregar serviços:', error);
       }
     }
 
-    function preencherFormularioEditar(profissional) {
-      document.getElementById('editID').value = profissional.ID;
-      document.getElementById('editNome').value = profissional.NOME;
-      document.getElementById('editFuncao').value = profissional.FUNCAO;
-      document.getElementById('editContato').value = profissional.CONTATO;
-      document.getElementById('editSituacao').value = profissional.SITUACAO;
+    function preencherFormularioEditar(servico) {
+      document.getElementById('editID').value = servico.ID;
+      document.getElementById('editDescricao').value = servico.DESCRICAO;
+      document.getElementById('editSobre').value = servico.SOBRE;
+      document.getElementById('editValor').value = servico.VALOR;
+      document.getElementById('editSituacao').value = servico.SITUACAO;
     }
 
     async function salvarEdicao() {
       const id = document.getElementById('editID').value;
-      const nome = document.getElementById('editNome').value.trim();
-      const funcao = document.getElementById('editFuncao').value.trim();
-      const contato = document.getElementById('editContato').value.trim();
+      const descricao = document.getElementById('editDescricao').value.trim();
+      const sobre = document.getElementById('editSobre').value.trim();
+      const valor = document.getElementById('editValor').value.trim();
       const situacao = document.getElementById('editSituacao').value.trim();
 
       try {
-        const response = await fetch(`/admin/profissional/${id}`, {
+        const response = await fetch(`/admin/servicos/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            nome,
-            funcao,
-            contato,
+            descricao,
+            sobre,
+            valor,
             situacao
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Erro ao atualizar profissional.');
+          throw new Error('Erro ao atualizar serviço.');
         }
 
         // Atualiza localmente na tabela (simulado)
-        const tabelaProfissionais = document.getElementById('tabelaProfissionais');
-        const rows = tabelaProfissionais.getElementsByTagName('tr');
+        const tabelaServicos = document.getElementById('tabelaServicos');
+        const rows = tabelaServicos.getElementsByTagName('tr');
         for (let i = 1; i < rows.length; i++) {
           const cells = rows[i].getElementsByTagName('td');
           if (cells[0].innerText === id) {
-            cells[1].innerText = nome;
-            cells[2].innerText = funcao;
-            cells[3].innerText = contato;
+            cells[1].innerText = descricao;
+            cells[2].innerText = sobre;
+            cells[3].innerText = valor;
             cells[4].innerText = situacao;
             break;
           }
         }
-          // Exibe o Toast de sucesso
-          const toastElement = document.getElementById('successToast');
-          const toast = new bootstrap.Toast(toastElement);
-          toast.show();
 
-          // Fechar o modal após salvar
-          const modalElement = document.getElementById('editarProfissionalModal');
-          const modalInstance = bootstrap.Modal.getInstance(modalElement);
-          modalInstance.hide();
-        } catch (error) {
-          console.error('Erro ao salvar alterações:', error);
-        }
+        // Exibe o Toast de sucesso
+        const toastElement = document.getElementById('successToast');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+
+        // Fechar o modal após salvar
+        const modalElement = document.getElementById('editarServicoModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance.hide();
+      } catch (error) {
+        console.error('Erro ao salvar alterações:', error);
       }
+    }
 
-      window.onload = carregarProfissionais;
-    </script>
-  </body>
+    window.onload = carregarServicos;
+  </script>
+</body>
+
 </html>
