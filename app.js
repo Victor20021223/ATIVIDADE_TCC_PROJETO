@@ -931,7 +931,7 @@ app.post('/admin/login', async (req, res) => {
 });
 
 app.post('/addEmpresa', async (req, res) => {
-    const { NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA, start, end } = req.body;
+    const { NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA, start, end } = req.body; 
 
     try {
         // Verifica se o CNPJ já existe
@@ -944,6 +944,7 @@ app.post('/addEmpresa', async (req, res) => {
         const novaEmpresa = await Empresa.create({ NOME, CNPJ, EMAIL, TELEFONE, LOGRADOURO, NUMERO, BAIRRO, SENHA });
 
         res.status(201).json(novaEmpresa);
+        res.sendFile(__dirname + "/src/cad_loginEmpresa.html")
     } catch (error) {
         console.error('Erro ao salvar empresa:', error);
         res.status(500).json({ error: 'Erro ao salvar empresa.' });
