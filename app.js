@@ -722,6 +722,16 @@ app.get('/api/eventos-registrados', async (req, res) => {
     }
 });
 
+//Rotas Empresa
+app.get('/empresas', async (req, res) => {
+    try {
+      const empresas = await Empresa.findAll();
+      res.json(empresas);
+    } catch (error) {
+      res.status(500).send('Erro ao obter dados das empresas.');
+    }
+  });
+
 //Rotas USER
 
 //Rotas GET
@@ -779,8 +789,8 @@ app.get('/user/login/add', async (req, res) => {
     res.sendFile(__dirname + "/src/cad_CadastroUsuario.html")
 });
 
-app.get('/user/sobrenos', async (req, res) => {
-    res.sendFile(__dirname + "sobrenos.html");
+app.get('/sobrenos', verificaAutenticacao, (req, res) => {
+    res.sendFile(__dirname + '/src/SobreNos.html');
 });
 
 app.get('/agendar', async (req, res) => {
